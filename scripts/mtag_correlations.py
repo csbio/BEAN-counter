@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import itertools as it
 import cPickle
 
+barseq_path = os.getenv('BARSEQ_PATH')
 sys.path.append('./lib')
 
 import config_file_parser as cfp
