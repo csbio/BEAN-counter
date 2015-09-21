@@ -67,5 +67,5 @@ def cluster(dataset):
     handle = StringIO.StringIO(final_string)
     record = Bio.Cluster.read(handle)
 
-    return record
+    return record, rows_tree, cols_tree
 
