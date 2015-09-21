@@ -120,7 +120,7 @@ def smooth(xx, yy):
     yy_normalized[k] = xx[k] * yy[k] / lowess_line
     return yy_normalized
 
-def normalizeUsingAllControlsAndSave(config_params, outfolder, dataset, control_condition_ids):
+def normalizeUsingAllControlsAndSave(config_params, outfolder, dataset, control_condition_ids, lane_id):
     barcode_gene_ids, condition_ids, matrix = dataset
     
     # Make sure the counts are floats for all normalization procedures
@@ -130,7 +130,7 @@ def normalizeUsingAllControlsAndSave(config_params, outfolder, dataset, control_
     sample_detection_limit, control_detection_limit = get_detection_limits(config_params)
     
     # Dump out the raw count matrix before processing
-    raw_filename = os.path.join(outfolder, 'raw.dump.gz')
+    raw_filename = os.path.join(outfolder, '{}_raw.dump.gz'.format(lane_id))
     raw_of = gzip.open(raw_filename, 'wb')
     cPickle.dump(dataset, raw_of)
     raw_of.close()
@@ -161,14 +161,14 @@ def normalizeUsingAllControlsAndSave(config_params, outfolder, dataset, control_
     
     # Dump out the lowess-normalized matrix
     lowess_dataset = [barcode_gene_ids, condition_ids, matrix]
-    lowess_filename = os.path.join(outfolder, 'lowess_norm.dump.gz')
+    lowess_filename = os.path.join(outfolder, '{}_lowess_norm.dump.gz'.format(lane_id))
     lowess_of = gzip.open(lowess_filename, 'wb')
     cPickle.dump(lowess_dataset, lowess_of)
     lowess_of.close()
 
-    return lowess_dataset,  mean_control_profile
+    return lowess_dataset, mean_control_profile
 
-def deviations_globalmean(config_params, outfolder, lowess_dataset, mean_control_profile):
+def deviations_globalmean(config_params, outfolder, lowess_dataset, mean_control_profile, lane_id):
     barcode_gene_ids, condition_ids, matrix = lowess_dataset
     
     # control_matrix_gene_barcode_ids, control_matrix_condition_ids, control_matrix = get_control_dataset(lowess_dataset, control_condition_ids)
@@ -181,14 +181,14 @@ def deviations_globalmean(config_params, outfolder, lowess_dataset, mean_control
 
     # Dump out the deviation matrix
     deviation_dataset = [barcode_gene_ids, condition_ids, matrix]
-    deviation_filename = os.path.join(outfolder, 'deviation.dump.gz')
+    deviation_filename = os.path.join(outfolder, '{}_deviation.dump.gz'.format(lane_id))
     deviation_of = gzip.open(deviation_filename, 'wb')
     cPickle.dump(deviation_dataset, deviation_of)
     deviation_of.close()
 
     return deviation_dataset
 
-def getAsymetricSigmaForScipyMatrix(raw_mean_control_profile, dev_control_matrix):
+def getAsymmetricSigmaForScipyMatrix(raw_mean_control_profile, dev_control_matrix):
     dev_control_matrix_tall = np.zeros((0, 1))
     repeated_raw_mean_control_profile = np.zeros((0, 1))
     raw_mean_control_profile = np.matrix(raw_mean_control_profile).transpose()
@@ -219,7 +219,7 @@ def getAsymetricSigmaForScipyMatrix(raw_mean_control_profile, dev_control_matrix
 
     return np.sqrt( lowess_neg ).real , np.sqrt( lowess_pos ).real, np.sqrt(lowess_symmetric[range(raw_mean_control_profile.shape[0])]).real
 
-def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, control_condition_ids):
+def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, control_condition_ids, lane_id):
     barcode_gene_ids, condition_ids, matrix = deviation_dataset
     
     # Get the detection limits
@@ -240,7 +240,7 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
     # Compute the mean control profile on the raw control profiles (again)
     mean_control_profile = np.log( np.nanmean( control_raw_matrix, axis=1 ))
 
-    lowess_neg, lowess_pos, lowess_symmetric = getAsymetricSigmaForScipyMatrix(mean_control_profile, control_matrix)
+    lowess_neg, lowess_pos, lowess_symmetric = getAsymmetricSigmaForScipyMatrix(mean_control_profile, control_matrix)
     for i in range(control_matrix.shape[1]):
         deviation = np.array( control_matrix[:, [i]] )
         k = wellbehaved(deviation) # this remains same but nevertheless I have put it here
@@ -258,7 +258,7 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
 
     # Dump out the iscaled deviation matrix
     scaled_dev_dataset = [barcode_gene_ids, condition_ids, scaled_dev_matrix]
-    scaled_dev_filename = os.path.join(outfolder, 'scaled_dev.dump.gz')
+    scaled_dev_filename = os.path.join(outfolder, '{}_scaled_dev.dump.gz'.format(lane_id))
     scaled_dev_of = gzip.open(scaled_dev_filename, 'wb')
     cPickle.dump(scaled_dev_dataset, scaled_dev_of)
     scaled_dev_of.close()
@@ -289,13 +289,13 @@ def main(config_file, lane_id):
 
     # Proceed with algorithm to obtain chemical genetic interaction zscores (scaled deviations)
     print "Normalizing ... ",
-    normalized_dataset, mean_control_profile = normalizeUsingAllControlsAndSave(config_params, outfolder, filtered_dataset, control_condition_ids)
+    normalized_dataset, mean_control_profile = normalizeUsingAllControlsAndSave(config_params, outfolder, filtered_dataset, control_condition_ids, lane_id)
     print "Done"
     print "Calculating deviations ... ",
-    deviation_dataset = deviations_globalmean(config_params, outfolder, normalized_dataset, mean_control_profile)
+    deviation_dataset = deviations_globalmean(config_params, outfolder, normalized_dataset, mean_control_profile, lane_id)
     print "Done"
     print "Scaling interactions ... ",
-    scaled_dev_dataset = scaleInteractions(config_params, outfolder, deviation_dataset, filtered_dataset, control_condition_ids)
+    scaled_dev_dataset = scaleInteractions(config_params, outfolder, deviation_dataset, filtered_dataset, control_condition_ids, lane_id)
     print "Done"
     
 # call: python counts_to_zscores.py <config_file> <lane_id>
