@@ -84,7 +84,12 @@ def cluster_count_matrix(config_file, lane_id):
 
     sample_detection_limit, control_detection_limit = get_detection_limits(config_params)
 
-    genes, conditions, matrix = load_dumped_count_matrix(config_params, lane_id)
+    # If the file does not exist, then do not attempt to cluster it!
+    try:
+        genes, conditions, matrix = load_dumped_count_matrix(config_params, lane_id)
+    except IOError:
+        return None
+
     thresholded_matrix = matrix
     
     thresholded_matrix[thresholded_matrix < sample_detection_limit] = sample_detection_limit
@@ -102,7 +107,11 @@ def cluster_zscore_matrix(config_file, lane_id):
 
     config_params = cfp.parse(config_file)
 
-    dataset = load_dumped_zscore_matrix(config_params, lane_id)
+    # If the file does not exist, then do not attempt to cluster it!
+    try:
+        dataset = load_dumped_zscore_matrix(config_params, lane_id)
+    except: IOError:
+        return None
     
     record, rows_tree, cols_tree = clus.cluster(dataset)
 
