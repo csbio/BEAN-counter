@@ -18,8 +18,8 @@ import itertools as it
 import cPickle
 
 barseq_path = os.getenv('BARSEQ_PATH')
-sys.path.append('./scripts')
-sys.path.append('./lib')
+sys.path.append(os.path.join(barseq_path, 'scripts'))
+sys.path.append(os.path.join(barseq_path, 'lib'))
 
 import config_file_parser as cfp
 import compressed_file_opener as cfo
@@ -66,15 +66,11 @@ lane_ids = get_all_lane_ids(sample_table)
 # or index tags change for some reason.
 for lane_id in lane_ids:
     raw_fastq_to_count_matrix.main(config_file, lane_id)
-    clus_wrap.cluster_count_matrix(config_file, lane_id)
-    # Also, produce clustered output of count matrices for quick browsing
     
 # An initial round of cg interaction scoring is performed
 # at the lane level, 
 for lane_id in lane_ids:    
     counts_to_zscores.main(config_file, lane_id)
-    clus_wrap.cluster_zscore_matrix(config_file, lane_id)
-    # Also, produce clustered output of cg scores
 
 # Calculate index tag (condition) correlations on
 # the DMSO profiles, for removal in the matrix
@@ -94,7 +90,6 @@ filter_final_count_matrix.main(config_file)
 
 # Calculate chemical-genetic interaction z-scores on the entire dataset
 counts_to_zscores.main(config_file, 'all_lanes')
-clus_wrap.cluster_zscore_matrix(config_file, 'all_lanes')
 
 
 
