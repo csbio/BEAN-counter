@@ -22,6 +22,14 @@ import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 import cluster_dataset_wrappers as clus_wrap
 
+import argparse
+
+# Parse the command line arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('-str_cols', '--strain_columns', help = 'the columns from the barcode table to be included in the visualization')
+parser.add_argument('cond_cols', '--condition_columns', help = 'the columns from the sample table to be included in the visualization')
+args = parser.parse_args()
+
 # Function definitions
 def get_all_lane_ids(sample_table):
     return np.unique(np.array(sample_table['lane']))
@@ -55,5 +63,5 @@ lane_ids = np.append(lane_ids, 'all_lanes')
 # This only needs to be run once, unless the barcodes
 # or index tags change for some reason.
 for lane_id in lane_ids:
-    clus_wrap.cluster_count_matrix(config_file, lane_id)
+    clus_wrap.cluster_count_matrix(config_file, lane_id, args.strain_columns, args.condition_columns)
 

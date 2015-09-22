@@ -18,6 +18,23 @@ def get_sample_table(config_params):
     # can coerce to different types.
     tab = pd.read_table(filename, dtype = 'S')
     return tab
+    
+def get_barcode_table(config_params):
+
+    species_config_params = get_species_config_params(config_params)
+
+    filename = species_config_params['gene_barcode_file']
+    full_path = os.path.join('./data/barcodes/{0}'.format(filename))
+
+    tab = pd.read_table(full_path, dtype = 'S')
+    return tab
+
+def get_species_config_params(config_params):
+    species_config_file = './data/species_config_file.txt'
+    all_species_params = cfp.parse_species_config(species_config_file)
+    species_id = config_params['species_ID']
+    species_params = all_species_params[species_id]
+    return species_params
 
 def get_lane_data_path(config_params, lane_id):
 
@@ -76,6 +93,29 @@ def get_clustered_zscore_matrix_filename(config_params, lane_id):
     lane_interactions_path = get_lane_interactions_path(config_params, lane_id)
     return os.path.join(lane_interactions_path, '{}_scaled_dev'.format(lane_id))
 
+def customize_strains(strains, config_params, fmt_string):
+
+    barcode_table = get_barcode_table(config_params)
+    barcode_table_cols = barcode_table.columns.values
+    
+    cols_with_commas = [',' in x for x in barcode_table_cols]
+    if np.any(cols_with_commas):
+        num_with_commas = np.sum(cols_with_commas)
+        raise ColumnError('{} barcode table column names contain commas,\nwhich must be addressed before visualizing'.format(num_with_commas))
+
+    custom_columns = fmt_string.split(',')
+    custom_barcode_table = barcode_table[custom_columns].set_index(['Barcode', 'Strain_ID'])
+    strain_indices = [tuple(strain.split('_')) for strain in strains]
+    
+    custom_strains = []
+    for strain in strain_indices:
+        custom_strain = custom_barcode_table.ix[strain].values
+        custom_strain_strings = [str(x) for x in custom_strain]
+        custom_strain_final = '_'.join(custom_strain_strings)
+        custom_strains.append(custom_strain_final)
+
+    return np.array(custom_strains)
+
 def customize_conditions(conditions, config_params, fmt_string):
 
     sample_table = get_sample_table(config_params)
@@ -84,7 +124,7 @@ def customize_conditions(conditions, config_params, fmt_string):
     cols_with_commas = [',' in x for x in sample_table_cols]
     if np.any(cols_with_commas):
         num_with_commas = np.sum(cols_with_commas)
-        raise ColumnError('{} sample table columns contain commas,\nwhich must be addressed before visualizing'.format(num_with_commas))
+        raise ColumnError('{} sample table column names contain commas,\nwhich must be addressed before visualizing'.format(num_with_commas))
 
     custom_columns = fmt_string.split(',')
     custom_sample_table = sample_table[custom_columns].set_index(['screen_name', 'expt_id'])
@@ -114,7 +154,7 @@ class ColumnError(ColError):
 # the output (the CDT labels)
 # In the future, these functions will take in inputs to customize
 # the output (the CDT labels)
-def cluster_count_matrix(config_file, lane_id, cond_fmt_string, strain_fmt_string):
+def cluster_count_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_string):
 
     config_params = cfp.parse(config_file)
 
@@ -143,7 +183,7 @@ def cluster_count_matrix(config_file, lane_id, cond_fmt_string, strain_fmt_strin
     record.save(f, rows_tree, cols_tree)
 
 
-def cluster_zscore_matrix(config_file, lane_id):
+def cluster_zscore_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_string):
 
     config_params = cfp.parse(config_file)
 
