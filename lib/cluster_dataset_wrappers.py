@@ -78,6 +78,10 @@ def get_clustered_zscore_matrix_filename(config_params, lane_id):
 
 
 
+# In the future, these functions will take in inputs to customize
+# the output (the CDT labels)
+# In the future, these functions will take in inputs to customize
+# the output (the CDT labels)
 def cluster_count_matrix(config_file, lane_id):
 
     config_params = cfp.parse(config_file)
