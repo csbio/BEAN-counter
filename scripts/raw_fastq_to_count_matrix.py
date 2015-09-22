@@ -81,6 +81,7 @@ def get_barcode_to_gene(species_config_params):
     for line in f:
         barcode, gene = line.rstrip().split('\t')
         if barcode_2_gene.has_key(barcode):
+            # This should be changed to an actual error
             sys.exit('duplicate barcodes detected')
         else:
             barcode_2_gene[barcode] = '{0}_{1}'.format(gene, barcode)
