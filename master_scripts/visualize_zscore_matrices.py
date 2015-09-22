@@ -1,0 +1,59 @@
+# This script converts all dumped count matrices into CDTs,
+# which are visualized using Java Treeview. I anticipate
+# future versions will be smart and avoid re-clustering
+# datasets if the data themselves have not changed.
+
+import pandas as pd
+import numpy as np
+import scipy
+import sys, os, gzip
+import matplotlib
+matplotlib.use('Agg') # Force matplotlib to not use any Xwindows backend.
+import matplotlib.pyplot as plt
+import itertools as it
+import cPickle
+
+barseq_path = os.getenv('BARSEQ_PATH')
+sys.path.append(os.path.join(barseq_path, 'scripts'))
+sys.path.append(os.path.join(barseq_path, 'lib'))
+
+import config_file_parser as cfp
+import compressed_file_opener as cfo
+import cg_file_tools as cg_file
+import cluster_dataset_wrappers as clus_wrap
+
+# Function definitions
+def get_all_lane_ids(sample_table):
+    return np.unique(np.array(sample_table['lane']))
+
+def get_sample_table(config_params):
+
+    filename = config_params['sample_table_file']
+
+    # Read everything in as a string, to prevent vexing
+    # number interpretation problems! Methods further down
+    # can coerce to different types.
+    tab = pd.read_table(filename, dtype = 'S')
+    return tab
+
+###########################################
+#######  Here is the main script  #########
+###########################################
+
+# Get the config file, which is the only argument needed for the pipeline
+config_file = sys.argv[1]
+config_params = cfp.parse(config_file)
+
+# Read in the sample table
+sample_table = get_sample_table(config_params)
+
+# Grab all of the ids of the lanes to process
+lane_ids = get_all_lane_ids(sample_table)
+lane_ids = np.append(lane_ids, 'all_lanes')
+
+# First, get one strain X condition count matrix per lane
+# This only needs to be run once, unless the barcodes
+# or index tags change for some reason.
+for lane_id in lane_ids:
+    clus_wrap.cluster_zscore_matrix(config_file, lane_id)
+
