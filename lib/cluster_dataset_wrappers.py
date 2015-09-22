@@ -76,13 +76,45 @@ def get_clustered_zscore_matrix_filename(config_params, lane_id):
     lane_interactions_path = get_lane_interactions_path(config_params, lane_id)
     return os.path.join(lane_interactions_path, '{}_scaled_dev'.format(lane_id))
 
+def customize_conditions(conditions, config_params, fmt_string):
 
+    sample_table = get_sample_table(config_params)
+    sample_table_cols = sample_table.columns.values
+    
+    cols_with_commas = [',' in x for x in sample_table_cols]
+    if np.any(cols_with_commas):
+        num_with_commas = np.sum(cols_with_commas)
+        raise ColumnError('{} sample table columns contain commas,\nwhich must be addressed before visualizing'.format(num_with_commas))
+
+    custom_columns = fmt_string.split(',')
+    custom_sample_table = sample_table[custom_columns].set_index(['screen_name', 'expt_id'])
+    condition_indices = [tuple(cond.split('-')) for cond in conditions]
+    
+    custom_conditions = []
+    for cond in condition_indices:
+        custom_cond = custom_sample_table.ix[cond].values
+        custom_cond_strings = [str(x) for x in custom_cond]
+        custom_cond_final = '_'.join(custom_cond_strings)
+        custom_conditions.append(custom_cond_final)
+
+    return np.array(custom_conditions)
+
+
+# Define an error class to handle when the sample table columns
+# have commas
+class ColumnError(ColError):
+    '''
+    Raise when a table's columns contain commas
+    and the code is trying to reference those
+    columns to customize row/column names in
+    the clustering output.
+    '''
 
 # In the future, these functions will take in inputs to customize
 # the output (the CDT labels)
 # In the future, these functions will take in inputs to customize
 # the output (the CDT labels)
-def cluster_count_matrix(config_file, lane_id):
+def cluster_count_matrix(config_file, lane_id, cond_fmt_string, strain_fmt_string):
 
     config_params = cfp.parse(config_file)
 
@@ -99,7 +131,11 @@ def cluster_count_matrix(config_file, lane_id):
     thresholded_matrix[thresholded_matrix < sample_detection_limit] = sample_detection_limit
     logged_matrix = np.log2(thresholded_matrix)
 
-    dataset = [genes, conditions, logged_matrix]
+    # Customize the strain and condition names for interpretable visualization!
+    custom_genes = customize_strains(genes, config_params, strain_fmt_string)
+    custom_conditions = customize_conditions(conditions, config_params, condition_fmt_string)
+
+    dataset = [custom_genes, custom_conditions, logged_matrix]
 
     record, rows_tree, cols_tree = clus.cluster(dataset)
 
@@ -113,9 +149,15 @@ def cluster_zscore_matrix(config_file, lane_id):
 
     # If the file does not exist, then do not attempt to cluster it!
     try:
-        dataset = load_dumped_zscore_matrix(config_params, lane_id)
+        genes, conditions, matrix = load_dumped_zscore_matrix(config_params, lane_id)
     except: IOError:
         return None
+    
+    # Customize the strain and condition names for interpretable visualization!
+    custom_genes = customize_strains(genes, config_params, strain_fmt_string)
+    custom_conditions = customize_conditions(conditions, config_params, condition_fmt_string)
+
+    dataset = [custom_genes, custom_conditions, matrix]
     
     record, rows_tree, cols_tree = clus.cluster(dataset)
 
