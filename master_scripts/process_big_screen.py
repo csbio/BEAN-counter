@@ -16,6 +16,7 @@ matplotlib.use('Agg') # Force matplotlib to not use any Xwindows backend.
 import matplotlib.pyplot as plt
 import itertools as it
 import cPickle
+import time
 
 barseq_path = os.getenv('BARSEQ_PATH')
 sys.path.append(os.path.join(barseq_path, 'scripts'))
@@ -65,19 +66,29 @@ lane_ids = get_all_lane_ids(sample_table)
 # This only needs to be run once, unless the barcodes
 # or index tags change for some reason.
 for lane_id in lane_ids:
+    print 'generating read count matrix for lane {}...'.format(lane_id)
+    start = time.time()
     raw_fastq_to_count_matrix.main(config_file, lane_id)
+    end = time.time()
+    print 'time to process = {}'.format(time.strftime('%H:%M:%S', time.gmtime(end - start)))
     
 # An initial round of cg interaction scoring is performed
 # at the lane level, 
 for lane_id in lane_ids:    
+    print 'generating z-score matrix for lane {}...'.format(lane_id)
+    start = time.time()
     counts_to_zscores.main(config_file, lane_id)
+    end = time.time()
+    print 'time to process = {}'.format(time.strftime('%H:%M:%S', time.gmtime(end - start)))
 
 # Calculate index tag (condition) correlations on
 # the DMSO profiles, for removal in the matrix
 # filtering step
+print 'computing index tag correlations...'
 mtag_correlations.main(config_file)
 
 # Merge all of the count matrices into one big count matrix
+print 'merging count matrices...'
 merge_count_matrices.main(config_file)
 
 # Filter out all of the strains and conditions with the following issues:
@@ -86,10 +97,15 @@ merge_count_matrices.main(config_file)
 #    in the control conditions
 # 3) If the strains or conditions did not meet the count degree thresholds
 #    specified in the config file (advanced options)
+print 'filtering the final count matrix...'
 filter_final_count_matrix.main(config_file)
 
 # Calculate chemical-genetic interaction z-scores on the entire dataset
+print 'generating z-score matrix for all lanes'
+start = time.time()
 counts_to_zscores.main(config_file, 'all_lanes')
+end = time.time()
+print 'time to process = {}'.format(time.strftime('%H:%M:%S', time.gmtime(end - start)))
 
 
 
