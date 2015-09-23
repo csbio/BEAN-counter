@@ -142,7 +142,7 @@ def customize_conditions(conditions, config_params, fmt_string):
 
 # Define an error class to handle when the sample table columns
 # have commas
-class ColumnError(ColError):
+class ColumnError(Exception):
     '''
     Raise when a table's columns contain commas
     and the code is trying to reference those
@@ -190,7 +190,7 @@ def cluster_zscore_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_stri
     # If the file does not exist, then do not attempt to cluster it!
     try:
         genes, conditions, matrix = load_dumped_zscore_matrix(config_params, lane_id)
-    except: IOError:
+    except IOError:
         return None
     
     # Customize the strain and condition names for interpretable visualization!
