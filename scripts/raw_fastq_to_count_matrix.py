@@ -22,7 +22,8 @@ import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 
 def get_species_config_params(config_params):
-    species_config_file = './data/species_config_file.txt'
+    barseq_path = os.getenv('BARSEQ_PATH')
+    species_config_file = os.path.join(barseq_path, 'data/species_config_file.txt')
     all_species_params = cfp.parse_species_config(species_config_file)
     species_id = config_params['species_ID']
     species_params = all_species_params[species_id]
