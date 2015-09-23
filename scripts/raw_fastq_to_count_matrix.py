@@ -73,22 +73,27 @@ def get_barseq_filename(config_params, lane_id):
     return os.path.join(path, '{0}_{1}'.format(lane_id, 'barseq.txt.gz'))
 
 def get_barcode_to_gene(species_config_params):
-
+    barseq_path = os.getenv('BARSEQ_PATH')
+    
     filename = species_config_params['gene_barcode_file']
-    full_path = os.path.join('./data/barcodes/{0}'.format(filename))
+    full_path = os.path.join(barseq_path, 'data/barcodes', filename)
 
-    f = open(full_path)
-    barcode_2_gene = {}
-    for line in f:
-        barcode, gene = line.rstrip().split('\t')
-        if barcode_2_gene.has_key(barcode):
+    barcode_tab = pd.read_table(full_path, dtype = 'S')
+
+    barcode_2_strain = {}
+
+    barcodes = barcode_tab['Barcode']
+    strain_ids = barcode_tab['Strain_ID']
+    for i in range(len(barcodes)):
+        barcode = barcodes[i]
+        strain_id = strain_ids[i]
+        if barcode_2_strain.has_key(barcode):
             # This should be changed to an actual error
             sys.exit('duplicate barcodes detected')
         else:
-            barcode_2_gene[barcode] = '{0}_{1}'.format(gene, barcode)
+            barcode_2_strain[barcode] = '{0}_{1}'.format(strain_id, barcode)
 
-    f.close()
-    return barcode_2_gene
+    return barcode_2_strain
 
 def get_index_tag_to_condition(config_params, lane_id):
 
