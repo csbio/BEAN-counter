@@ -22,7 +22,7 @@ def parse(filename):
     params = {}
 
     for line in f:
-        print line
+        # print line
         if line.lstrip().startswith('#'):
             continue
         if line.lstrip() == '':
@@ -50,16 +50,16 @@ def parse_species_config(filename):
         except:
             break
 
-        print line
+        # print line
         if line.lstrip().startswith('#'):
             continue
         if line.lstrip() == '':
             continue
         
         if line.startswith('species_ID'):
-            print 'Species_start'
+            # print 'Species_start'
             spec_param, spec_id = get_key_val(line)
-            print spec_param, spec_id
+            # print spec_param, spec_id
 
             spec_params[spec_id] = {}
            
