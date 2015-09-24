@@ -57,7 +57,7 @@ def combine_zscore_matrices(config_params):
     for lane_id in all_lane_ids:
         print lane_id
         lane_interactions_path = get_lane_interactions_path(config_params, lane_id)
-        lane_interactions_filename = os.path.join(lane_interactions_path, 'scaled_dev.dump.gz')
+        lane_interactions_filename = os.path.join(lane_interactions_path, '{}_scaled_dev.dump.gz'.format(lane_id))
         f = gzip.open(lane_interactions_filename)
 
         gene_barcode_ids, condition_ids, zscore_matrix = cPickle.load(f)
