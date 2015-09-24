@@ -85,7 +85,8 @@ def main(config_file):
 
     # Get a new folder to house the combined count matrix
     combined_count_folder = get_lane_data_path(config_params, 'all_lanes')
-    os.makedirs(combined_count_folder)
+    if not os.path.isdir(combined_count_folder):
+        os.makedirs(combined_count_folder)
 
     # Dump out the combined count matrix!
     combined_count_filename = get_dumped_count_matrix_filename(config_params, 'all_lanes')
