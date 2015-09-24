@@ -105,13 +105,18 @@ def get_index_tag_correlation_path(config_params):
 def filter_dataset_for_index_tags(dataset, config_params):
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
+    
+    sample_table = get_sample_table(config_params)
 
     index_tag_corr_path = get_index_tag_correlation_path(config_params)
     index_tag_corr_filename = os.path.join(index_tag_corr_path, 'control_index_tag_correlations.dump')
-    
-    index_tags, correlations = cPickle.load(index_tag_corr_filename)
-    index_tags_to_remove = [tag[i] for i,corr in enumerate(correlations) if corr >= index_tag_correlation_threshold]
-    index_tags_to_keep = [tag[i] for i,corr in enumerate(correlations) if corr < index_tag_correlation_threshold]
+   
+    index_tag_correlation_cutoff = config_params['index_tag_correlation_cutoff']
+
+    f = open(index_tag_corr_filename, 'rt')
+    index_tags, correlations = cPickle.load(f)
+    index_tags_to_remove = [index_tags[i] for i,corr in enumerate(correlations) if corr >= index_tag_correlation_cutoff]
+    index_tags_to_keep = [index_tags[i] for i,corr in enumerate(correlations) if corr < index_tag_correlation_cutoff]
    
     sample_table = sample_table.set_index('index_tag')
     to_remove_table = sample_table.ix[index_tags_to_remove]
