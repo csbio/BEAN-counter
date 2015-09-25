@@ -111,11 +111,13 @@ def filter_dataset_for_index_tags(dataset, config_params):
     index_tag_corr_path = get_index_tag_correlation_path(config_params)
     index_tag_corr_filename = os.path.join(index_tag_corr_path, 'control_index_tag_correlations.dump')
    
-    index_tag_correlation_cutoff = config_params['index_tag_correlation_cutoff']
+    index_tag_correlation_cutoff = float(config_params['index_tag_correlation_cutoff'])
 
     f = open(index_tag_corr_filename, 'rt')
     index_tags, correlations = cPickle.load(f)
     index_tags_to_remove = [index_tags[i] for i,corr in enumerate(correlations) if corr >= index_tag_correlation_cutoff]
+    # print 'index_tags_to_remove:'
+    # print '\n'.join(index_tags_to_remove) + '\n'
     index_tags_to_keep = [index_tags[i] for i,corr in enumerate(correlations) if corr < index_tag_correlation_cutoff]
    
     sample_table = sample_table.set_index('index_tag')
@@ -148,7 +150,7 @@ def filter_dataset_for_count_degree(dataset, config_params, sample_table):
     passing_strain_read_count_matrix = matrix >= strain_pass_read_count
     passing_strain_read_count_sums = np.nansum(passing_strain_read_count_matrix, axis = 1)
     passing_strain_fraction = passing_strain_read_count_sums / float(passing_strain_read_count_matrix.shape[1])
-    print passing_strain_fraction
+    # print passing_strain_fraction
     strains_to_keep_inds = passing_strain_fraction >= strain_pass_fraction
     strains_to_remove_inds = np.invert(strains_to_keep_inds)
     strains_to_remove = barcode_gene_ids[strains_to_remove_inds]
@@ -157,7 +159,7 @@ def filter_dataset_for_count_degree(dataset, config_params, sample_table):
     passing_condition_read_count_matrix = matrix >= condition_pass_read_count
     passing_condition_read_count_sums = np.nansum(passing_condition_read_count_matrix, axis = 0)
     passing_condition_fraction = passing_condition_read_count_sums / float(passing_condition_read_count_matrix.shape[0])
-    print passing_condition_fraction
+    # print passing_condition_fraction
     conditions_to_keep_inds = passing_condition_fraction >= condition_pass_fraction
     conditions_to_remove_inds = np.invert(conditions_to_keep_inds)
     conditions_to_remove = condition_ids[conditions_to_remove_inds]
@@ -174,7 +176,7 @@ def filter_dataset_for_count_degree(dataset, config_params, sample_table):
 
     return [filtered_barcode_gene_ids, filtered_condition_ids, filtered_matrix], conditions_to_remove_table.reset_index(), strains_to_remove
 
-def write_filtered_strains_conditions(config_params, filtered_include_tab, filtered_barcodes, filtered_degree_condition_table, filtered_degree_barcodes):
+def write_filtered_strains_conditions(config_params, filtered_include_tab, filtered_barcodes, filtered_index_tag_condition_table, filtered_degree_condition_table, filtered_degree_barcodes):
     filtered_path = get_filtered_strains_conditions_path(config_params)
     if not os.path.isdir(filtered_path):
         os.makedirs(filtered_path)
@@ -187,6 +189,11 @@ def write_filtered_strains_conditions(config_params, filtered_include_tab, filte
     cond_degree_file = os.path.join(filtered_path, 'count_degree_excluded_conditions.txt')
     filtered_degree_condition_table.to_csv(cond_degree_file, sep = '\t', index = False)
 
+    # Write out the conditions excluded because they were tagged with index tags
+    # that had within-tag correlations above the specified threshold.
+    filtered_index_tag_file = os.path.join(filtered_path, 'index_tag_correlation_excluded_conditions.txt')
+    filtered_index_tag_condition_table.to_csv(filtered_index_tag_file, sep = '\t', index = False)
+
     # Write out the barcodes that were specifed as "do not include"
     filtered_barcode_file = os.path.join(filtered_path, 'prespecified_excluded_strains.txt')
     with open(filtered_barcode_file, 'wt') as f:
@@ -194,6 +201,7 @@ def write_filtered_strains_conditions(config_params, filtered_include_tab, filte
             f.write(barcode.replace('_', '\t') + '\n')
 
     # Write out the barcodes excluded because of their count degree
+    ###### Perhaps change this in the future so it exports in the same format as the barcode table
     strain_degree_file = os.path.join(filtered_path, 'count_degree_excluded_strains.txt')
     with open(strain_degree_file, 'wt') as f1:
         for barcode in filtered_degree_barcodes:
@@ -224,7 +232,8 @@ def main(config_file):
     dataset, filtered_degree_condition_table, filtered_degree_barcodes = filter_dataset_for_count_degree(dataset, config_params, sample_table)
 
     # Write filtered conditions/barcodes out to file
-    write_filtered_strains_conditions(config_params, filtered_include_tab, filtered_barcodes, filtered_degree_condition_table, filtered_degree_barcodes)
+    ##### filtered index
+    write_filtered_strains_conditions(config_params, filtered_include_tab, filtered_barcodes, filtered_index_tag_condition_table, filtered_degree_condition_table, filtered_degree_barcodes)
 
     # Dump the dataset out to file
     dump_filtered_count_matrix(config_params, dataset)
