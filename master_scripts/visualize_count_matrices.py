@@ -27,7 +27,9 @@ import argparse
 # Parse the command line arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('-str_cols', '--strain_columns', help = 'the columns from the barcode table to be included in the visualization')
-parser.add_argument('cond_cols', '--condition_columns', help = 'the columns from the sample table to be included in the visualization')
+parser.add_argument('-cond_cols', '--condition_columns', help = 'the columns from the sample table to be included in the visualization')
+parser.add_argument('config_file', help = 'the config file used to analyze the dataset')
+
 args = parser.parse_args()
 
 # Function definitions
@@ -49,7 +51,7 @@ def get_sample_table(config_params):
 ###########################################
 
 # Get the config file, which is the only argument needed for the pipeline
-config_file = sys.argv[1]
+config_file = args.config_file
 config_params = cfp.parse(config_file)
 
 # Read in the sample table
@@ -57,11 +59,12 @@ sample_table = get_sample_table(config_params)
 
 # Grab all of the ids of the lanes to process
 lane_ids = get_all_lane_ids(sample_table)
-lane_ids = np.append(lane_ids, 'all_lanes')
+lane_ids = np.append(lane_ids, ['all_lanes', 'all_lanes_filtered'])
 
 # First, get one strain X condition count matrix per lane
 # This only needs to be run once, unless the barcodes
 # or index tags change for some reason.
 for lane_id in lane_ids:
+    print 'clustering {} count matrix...'.format(lane_id)
     clus_wrap.cluster_count_matrix(config_file, lane_id, args.strain_columns, args.condition_columns)
 
