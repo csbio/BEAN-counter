@@ -68,7 +68,7 @@ def filter_dataset_for_include(dataset, sample_table):
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
 
-    bool_dict = {'True': True, 'False': False}
+    bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False}
     include_bool_ind = np.array([bool_dict[x] for x in sample_table['include?']])
     include_table = sample_table[include_bool_ind]
     include_screen_names = include_table['screen_name']
@@ -86,7 +86,7 @@ def get_control_condition_ids(dataset, sample_table):
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
    
-    bool_dict = {'True': True, 'False': False}
+    bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False}
     control_bool_ind = np.array([bool_dict[x] for x in sample_table['control?']])
     control_table = sample_table[control_bool_ind]
     control_screen_names = control_table['screen_name']

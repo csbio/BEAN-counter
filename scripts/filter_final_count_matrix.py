@@ -65,7 +65,7 @@ def filter_dataset_for_include_2(dataset, sample_table):
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
    
-    bool_dict = {'True': True, 'False': False}
+    bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False}
     include_bool_ind = np.array([bool_dict[x] for x in sample_table['include?']])
     include_table = sample_table[include_bool_ind]
     not_include_table = sample_table[np.invert(include_bool_ind)]
