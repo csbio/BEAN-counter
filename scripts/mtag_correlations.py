@@ -80,18 +80,20 @@ def dump_dataset(dataset, filename):
     f.close()
 
 def get_control_condition_ids(dataset, sample_table):
-    
+
     [barcode_gene_ids, condition_ids, matrix] = dataset
-    
-    control_table = sample_table[sample_table['control?'].astype(np.bool)]
+
+    bool_dict = {'True': True, 'False': False}
+    control_bool_ind = np.array([bool_dict[x] for x in sample_table['control?']])
+    control_table = sample_table[control_bool_ind]
     control_screen_names = control_table['screen_name']
     control_expt_ids = control_table['expt_id']
     control_condition_ids = ['{0}-{1}'.format(*x) for x in it.izip(control_screen_names, control_expt_ids)]
-    
+
     control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if cond_id in control_condition_ids])
     final_control_condition_ids = condition_ids[control_condition_indices]
 
-    return control_condition_ids
+    return final_control_condition_ids
 
 def get_control_dataset(dataset, control_condition_ids):
 

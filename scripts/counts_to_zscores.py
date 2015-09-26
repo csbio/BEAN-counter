@@ -67,8 +67,10 @@ def load_dumped_count_matrix(config_params, lane_id):
 def filter_dataset_for_include(dataset, sample_table):
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
-    
-    include_table = sample_table[sample_table['include?'].astype(np.bool)]
+
+    bool_dict = {'True': True, 'False': False}
+    include_bool_ind = np.array([bool_dict[x] for x in sample_table['include?']])
+    include_table = sample_table[include_bool_ind]
     include_screen_names = include_table['screen_name']
     include_expt_ids = include_table['expt_id']
     include_condition_ids = ['{0}-{1}'.format(*x) for x in it.izip(include_screen_names, include_expt_ids)]
@@ -83,8 +85,10 @@ def filter_dataset_for_include(dataset, sample_table):
 def get_control_condition_ids(dataset, sample_table):
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
-    
-    control_table = sample_table[sample_table['control?'].astype(np.bool)]
+   
+    bool_dict = {'True': True, 'False': False}
+    control_bool_ind = np.array([bool_dict[x] for x in sample_table['control?']])
+    control_table = sample_table[control_bool_ind]
     control_screen_names = control_table['screen_name']
     control_expt_ids = control_table['expt_id']
     control_condition_ids = ['{0}-{1}'.format(*x) for x in it.izip(control_screen_names, control_expt_ids)]
@@ -281,7 +285,7 @@ def main(config_file, lane_id):
     # Read in the count matrix from dumped file
     dataset = load_dumped_count_matrix(config_params, lane_id)
 
-    # Filter out samples flagged as "do not include" (include? == False)
+    # Filter out samples flagged as "do not include" (include? == True)
     filtered_dataset = filter_dataset_for_include(dataset, sample_table)
 
     # Get list of control samples (control? = True)

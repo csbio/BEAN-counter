@@ -64,9 +64,12 @@ def dump_dataset(dataset, filename):
 def filter_dataset_for_include_2(dataset, sample_table):
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
-    
-    include_table = sample_table[sample_table['include?'].astype(np.bool)]
-    not_include_table = sample_table[np.invert(sample_table['include?'].astype(np.bool))]
+   
+    bool_dict = {'True': True, 'False': False}
+    include_bool_ind = np.array([bool_dict[x] for x in sample_table['include?']])
+    include_table = sample_table[include_bool_ind]
+    not_include_table = sample_table[np.invert(include_bool_ind)]
+
     include_screen_names = include_table['screen_name']
     include_expt_ids = include_table['expt_id']
     include_condition_ids = ['{0}-{1}'.format(*x) for x in it.izip(include_screen_names, include_expt_ids)]
