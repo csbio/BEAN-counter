@@ -3,6 +3,9 @@
 # locations for the cluster files.
 import os,sys
 import numpy as np
+import pandas as pd
+import gzip
+import cPickle
 
 import config_file_parser as cfp
 
@@ -22,15 +25,17 @@ def get_sample_table(config_params):
 def get_barcode_table(config_params):
 
     species_config_params = get_species_config_params(config_params)
-
+    
+    barseq_path = os.getenv('BARSEQ_PATH')
     filename = species_config_params['gene_barcode_file']
-    full_path = os.path.join('./data/barcodes/{0}'.format(filename))
+    full_path = os.path.join(barseq_path, 'data/barcodes', filename)
 
     tab = pd.read_table(full_path, dtype = 'S')
     return tab
 
 def get_species_config_params(config_params):
-    species_config_file = './data/species_config_file.txt'
+    barseq_path = os.getenv('BARSEQ_PATH')
+    species_config_file = os.path.join(barseq_path, 'data/species_config_file.txt')
     all_species_params = cfp.parse_species_config(species_config_file)
     species_id = config_params['species_ID']
     species_params = all_species_params[species_id]
@@ -104,11 +109,12 @@ def customize_strains(strains, config_params, fmt_string):
         raise ColumnError('{} barcode table column names contain commas,\nwhich must be addressed before visualizing'.format(num_with_commas))
 
     custom_columns = fmt_string.split(',')
-    custom_barcode_table = barcode_table[custom_columns].set_index(['Barcode', 'Strain_ID'])
-    strain_indices = [tuple(strain.split('_')) for strain in strains]
+    custom_barcode_table = barcode_table[custom_columns].set_index(['Strain_ID', 'Barcode'], drop = False)
+    strain_keys = [tuple(strain.split('_')) for strain in strains]
     
     custom_strains = []
-    for strain in strain_indices:
+    for strain in strain_keys:
+        # print strain
         custom_strain = custom_barcode_table.ix[strain].values
         custom_strain_strings = [str(x) for x in custom_strain]
         custom_strain_final = '_'.join(custom_strain_strings)
@@ -127,11 +133,11 @@ def customize_conditions(conditions, config_params, fmt_string):
         raise ColumnError('{} sample table column names contain commas,\nwhich must be addressed before visualizing'.format(num_with_commas))
 
     custom_columns = fmt_string.split(',')
-    custom_sample_table = sample_table[custom_columns].set_index(['screen_name', 'expt_id'])
-    condition_indices = [tuple(cond.split('-')) for cond in conditions]
+    custom_sample_table = sample_table[custom_columns].set_index(['screen_name', 'expt_id'], drop = False)
+    condition_keys = [tuple(cond.split('-')) for cond in conditions]
     
     custom_conditions = []
-    for cond in condition_indices:
+    for cond in condition_keys:
         custom_cond = custom_sample_table.ix[cond].values
         custom_cond_strings = [str(x) for x in custom_cond]
         custom_cond_final = '_'.join(custom_cond_strings)
@@ -164,6 +170,7 @@ def cluster_count_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_strin
     try:
         genes, conditions, matrix = load_dumped_count_matrix(config_params, lane_id)
     except IOError:
+        print "could not find '{}' count matrix".format(lane_id)
         return None
 
     thresholded_matrix = matrix
@@ -173,7 +180,7 @@ def cluster_count_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_strin
 
     # Customize the strain and condition names for interpretable visualization!
     custom_genes = customize_strains(genes, config_params, strain_fmt_string)
-    custom_conditions = customize_conditions(conditions, config_params, condition_fmt_string)
+    custom_conditions = customize_conditions(conditions, config_params, cond_fmt_string)
 
     dataset = [custom_genes, custom_conditions, logged_matrix]
 
@@ -191,11 +198,12 @@ def cluster_zscore_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_stri
     try:
         genes, conditions, matrix = load_dumped_zscore_matrix(config_params, lane_id)
     except IOError:
+        print "could not find '{}' zscore matrix".format(lane_id)
         return None
     
     # Customize the strain and condition names for interpretable visualization!
     custom_genes = customize_strains(genes, config_params, strain_fmt_string)
-    custom_conditions = customize_conditions(conditions, config_params, condition_fmt_string)
+    custom_conditions = customize_conditions(conditions, config_params, cond_fmt_string)
 
     dataset = [custom_genes, custom_conditions, matrix]
     

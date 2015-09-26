@@ -1,7 +1,7 @@
 import scipy
 from scipy.spatial.distance import pdist
 
-import numpy
+import numpy as np
 from numpy import random
 
 import fastcluster
@@ -17,6 +17,14 @@ def cluster(dataset):
 
     genes, conditions, matrix = dataset
 
+    # Remove rows and columns that do not have any values - they kill the clustering process!
+    good_rows = np.nansum(matrix, axis = 1).astype(np.bool)
+    good_cols = np.nansum(matrix, axis = 0).astype(np.bool)
+
+    genes = np.array(genes)[good_rows]
+    conditions = np.array(conditions)[good_cols]
+    matrix = matrix[np.ix_(good_rows, good_cols)]
+
     num_genes = len(genes)
     num_conds = len(conditions)
 
@@ -25,7 +33,9 @@ def cluster(dataset):
     rows_dist = pdist(matrix, 'cosine')
 
     # Cluster the matrix using fastcluster!
+    print 'clustering columns...'
     cols_clust_mat = fastcluster.average(cols_dist)
+    print 'clustering rows...'
     rows_clust_mat = fastcluster.average(rows_dist)
 
     # Transform the values in the clustering matrices so they can be used with Bio.Cluster
