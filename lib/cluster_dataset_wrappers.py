@@ -101,6 +101,7 @@ def get_clustered_zscore_matrix_filename(config_params, lane_id):
 def customize_strains(strains, config_params, fmt_string):
 
     barcode_table = get_barcode_table(config_params)
+    barcode_table = barcode_table.set_index(['Strain_ID', 'Barcode'], drop = False)
     barcode_table_cols = barcode_table.columns.values
     
     cols_with_commas = [',' in x for x in barcode_table_cols]
@@ -109,7 +110,7 @@ def customize_strains(strains, config_params, fmt_string):
         raise ColumnError('{} barcode table column names contain commas,\nwhich must be addressed before visualizing'.format(num_with_commas))
 
     custom_columns = fmt_string.split(',')
-    custom_barcode_table = barcode_table[custom_columns].set_index(['Strain_ID', 'Barcode'], drop = False)
+    custom_barcode_table = barcode_table[custom_columns]
     strain_keys = [tuple(strain.split('_')) for strain in strains]
     
     custom_strains = []
@@ -125,6 +126,7 @@ def customize_strains(strains, config_params, fmt_string):
 def customize_conditions(conditions, config_params, fmt_string):
 
     sample_table = get_sample_table(config_params)
+    sample_table = sample_table.set_index(['screen_name', 'expt_id'], drop = False)
     sample_table_cols = sample_table.columns.values
     
     cols_with_commas = [',' in x for x in sample_table_cols]
@@ -133,7 +135,7 @@ def customize_conditions(conditions, config_params, fmt_string):
         raise ColumnError('{} sample table column names contain commas,\nwhich must be addressed before visualizing'.format(num_with_commas))
 
     custom_columns = fmt_string.split(',')
-    custom_sample_table = sample_table[custom_columns].set_index(['screen_name', 'expt_id'], drop = False)
+    custom_sample_table = sample_table[custom_columns]
     condition_keys = [tuple(cond.split('-')) for cond in conditions]
     
     custom_conditions = []
