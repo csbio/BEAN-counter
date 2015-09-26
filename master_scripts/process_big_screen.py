@@ -65,31 +65,31 @@ lane_ids = get_all_lane_ids(sample_table)
 # First, get one strain X condition count matrix per lane
 # This only needs to be run once, unless the barcodes
 # or index tags change for some reason.
-for lane_id in lane_ids:
-    print 'generating read count matrix for lane {}...'.format(lane_id)
-    start = time.time()
-    raw_fastq_to_count_matrix.main(config_file, lane_id)
-    end = time.time()
-    print 'time to process = {}'.format(time.strftime('%H:%M:%S', time.gmtime(end - start)))
+#for lane_id in lane_ids:
+#    print 'generating read count matrix for lane {}...'.format(lane_id)
+#    start = time.time()
+#    raw_fastq_to_count_matrix.main(config_file, lane_id)
+#    end = time.time()
+#    print 'time to process = {}'.format(time.strftime('%H:%M:%S', time.gmtime(end - start)))
     
 # An initial round of cg interaction scoring is performed
 # at the lane level, 
-for lane_id in lane_ids:    
-    print 'generating z-score matrix for lane {}...'.format(lane_id)
-    start = time.time()
-    counts_to_zscores.main(config_file, lane_id)
-    end = time.time()
-    print 'time to process = {}'.format(time.strftime('%H:%M:%S', time.gmtime(end - start)))
+#for lane_id in lane_ids:    
+#    print 'generating z-score matrix for lane {}...'.format(lane_id)
+#    start = time.time()
+#    counts_to_zscores.main(config_file, lane_id)
+#    end = time.time()
+#    print 'time to process = {}'.format(time.strftime('%H:%M:%S', time.gmtime(end - start)))
 
 # Calculate index tag (condition) correlations on
 # the DMSO profiles, for removal in the matrix
 # filtering step
-print 'computing index tag correlations...'
-mtag_correlations.main(config_file)
+#print 'computing index tag correlations...'
+#mtag_correlations.main(config_file)
 
 # Merge all of the count matrices into one big count matrix
-print 'merging count matrices...'
-merge_count_matrices.main(config_file)
+#print 'merging count matrices...'
+#merge_count_matrices.main(config_file)
 
 # Filter out all of the strains and conditions with the following issues:
 # 1) They were flagged to be excluded a priori
@@ -103,7 +103,7 @@ filter_final_count_matrix.main(config_file)
 # Calculate chemical-genetic interaction z-scores on the entire dataset
 print 'generating z-score matrix for all lanes'
 start = time.time()
-counts_to_zscores.main(config_file, 'all_lanes')
+counts_to_zscores.main(config_file, 'all_lanes_filtered')
 end = time.time()
 print 'time to process = {}'.format(time.strftime('%H:%M:%S', time.gmtime(end - start)))
 
