@@ -17,7 +17,7 @@
 
 
 species_ID: S_cerevisiae_minipool
-gene_barcode_file: S_cerevisiae_minipool_v2.txt
+gene_barcode_file: S-cerevisiae_minipool_information.txt
 common_primer_start: 10
 common_primer_length: 18
 common_primer_sequence: GATGTCCACGAGGTCTCT
@@ -29,7 +29,7 @@ gene_info_file:
 ---
 
 species_ID: S_cerevisiae_whole_genome
-gene_barcode_file: S_cerevisiae_all_up_barcodes.txt
+gene_barcode_file: S-cerevisiae_all-up-barcodes_information.txt
 common_primer_start: 10
 common_primer_length: 18
 common_primer_sequence: GATGTCCACGAGGTCTCT
