@@ -114,6 +114,15 @@ def get_control_index_tag_correlations(control_dataset, sample_table):
     matrix = matrix.astype(np.float)
     matrix[np.isnan(matrix)] = 0
 
+    # Remove rows (strains) and columns (conditions) that do not have
+    # any values - they kill the clustering process!
+    good_rows = np.nansum(matrix, axis = 1).astype(np.bool)
+    good_cols = np.nansum(matrix, axis = 0).astype(np.bool)
+
+    gene_barcode_ids = np.array(gene_barcode_ids)[good_rows]
+    condition_ids = np.array(condition_ids)[good_cols]
+    matrix = matrix[np.ix_(good_rows, good_cols)]
+
     # rowvar = 0 forces correlation computation on the columns of the matrix
     corr_mat = np.corrcoef(matrix, rowvar = 0)
     print corr_mat
@@ -132,7 +141,7 @@ def get_control_index_tag_correlations(control_dataset, sample_table):
         index_tag_to_conditions[index_tag].append(condition_id)
     print index_tag_to_conditions.items()[0:10]
 
-    # For each index tag, get the correlation matrix that corresponds only to that matrix.
+    # For each index tag, get the correlation matrix that corresponds only to that tag.
     # Then, take the nanmean of the upper triangular of that matrix to get that index tag's
     # correlation with itself across control conditions
     mean_index_tag_corrs = []
@@ -142,15 +151,30 @@ def get_control_index_tag_correlations(control_dataset, sample_table):
         print index_tag_condition_ids
         index_tag_inds = np.array([i for i, cond_id in enumerate(condition_ids) if cond_id in index_tag_condition_ids], dtype = np.int)
         print index_tag_inds
-        index_tag_ind_1, index_tag_ind_2 = np.hsplit(np.vstack(it.combinations(index_tag_inds, 2)), 2)
-        one_index_tag_corr = corr_mat[np.squeeze(index_tag_ind_1), np.squeeze(index_tag_ind_2)]
-        # print index_tag_corr_mat
-        
-        mean_index_tag_corrs.append(np.nanmean(one_index_tag_corr))
+        # This bugs out, probably when there is one are zero columns
+        # in the correlation matrix with a particular index tag.
+        # Solution? Append a big, fat "0.000" to the array of index
+        # tag correlations, because we cannot compute the correlation!
+        # Also, because of code higher up within this function, no
+        # correlations should have nans anymore. Every column and row
+        # vector contains no nans and has a nonzero absolute degree.
+        if index_tag_inds.size > 1:
+            index_tag_ind_1, index_tag_ind_2 = np.hsplit(np.vstack(it.combinations(index_tag_inds, 2)), 2)
+            one_index_tag_corr = corr_mat[np.squeeze(index_tag_ind_1), np.squeeze(index_tag_ind_2)]
+            # print index_tag_corr_mat
+            mean_index_tag_corrs.append(np.nanmean(one_index_tag_corr))
+        else:
+            # I believe appending a 'nan' is the most appropriate
+            # thing to do here, and I do not believe it will screw
+            # anything up in future steps that depend on these
+            # correlations (not many - just filtering out the most
+            # correlated index tags). And np.nan > float(x) returns
+            # False, not 'nan'. This is required for the filtering.
+            mean_index_tag_corrs.append(np.nan)
        
     mean_index_tag_corrs = np.array(mean_index_tag_corrs)
 
-    corrs_sort_indices = mean_index_tag_corrs.argsort()[::-1]
+    corrs_sort_indices = np.argsort(-mean_index_tag_corrs)
     index_tags_sorted = index_tags[corrs_sort_indices]
     mean_index_tag_corrs_sorted = mean_index_tag_corrs[corrs_sort_indices]
 
