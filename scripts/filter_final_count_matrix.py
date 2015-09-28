@@ -93,6 +93,11 @@ def filter_dataset_for_barcodes(dataset, config_params):
         gene_barcode_ids_to_remove = [line.rstrip().replace('\t', '_') for line in f]
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
+    #print 'all barcodes:'
+    #print barcode_gene_ids
+    #print '\n\n'
+    #print 'barcodes to remove:'
+    #print gene_barcode_ids_to_remove
     inds_to_keep = np.array([i for i, bg_id in enumerate(barcode_gene_ids) if bg_id not in gene_barcode_ids_to_remove])
 
     filtered_barcode_gene_ids = barcode_gene_ids[inds_to_keep]
