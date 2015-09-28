@@ -246,7 +246,7 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
 
     lowess_neg, lowess_pos, lowess_symmetric = getAsymmetricSigmaForScipyMatrix(mean_control_profile, control_matrix)
     for i in range(matrix.shape[1]):
-        deviation = np.array( control_matrix[:, [i]] )
+        deviation = np.array( matrix[:, [i]] )
         k = wellbehaved(deviation) # this remains same but nevertheless I have put it here
         I = np.argsort(abs(deviation[k]))
         I = I[range(int( I.shape[0]*0.75) )] # median 75%
