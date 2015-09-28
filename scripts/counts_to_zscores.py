@@ -245,7 +245,7 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
     mean_control_profile = np.log( np.nanmean( control_raw_matrix, axis=1 ))
 
     lowess_neg, lowess_pos, lowess_symmetric = getAsymmetricSigmaForScipyMatrix(mean_control_profile, control_matrix)
-    for i in range(control_matrix.shape[1]):
+    for i in range(matrix.shape[1]):
         deviation = np.array( control_matrix[:, [i]] )
         k = wellbehaved(deviation) # this remains same but nevertheless I have put it here
         I = np.argsort(abs(deviation[k]))
@@ -294,12 +294,18 @@ def main(config_file, lane_id):
     # Proceed with algorithm to obtain chemical genetic interaction zscores (scaled deviations)
     print "Normalizing ... ",
     normalized_dataset, mean_control_profile = normalizeUsingAllControlsAndSave(config_params, outfolder, filtered_dataset, control_condition_ids, lane_id)
+    print "Column sums: "
+    print np.nanmean(normalized_dataset[2], axis = 0)
     print "Done"
     print "Calculating deviations ... ",
     deviation_dataset = deviations_globalmean(config_params, outfolder, normalized_dataset, mean_control_profile, lane_id)
+    print "Column sums: "
+    print np.nanmean(deviation_dataset[2], axis = 0)
     print "Done"
     print "Scaling interactions ... ",
     scaled_dev_dataset = scaleInteractions(config_params, outfolder, deviation_dataset, filtered_dataset, control_condition_ids, lane_id)
+    print "Column sums: "
+    print np.nanmean(scaled_dev_dataset[2], axis = 0)
     print "Done"
     
 # call: python counts_to_zscores.py <config_file> <lane_id>
