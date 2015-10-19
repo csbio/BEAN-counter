@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # This script will read in a count matrix and, given a sample table that
 # indicates which samples are controls and which should be excluded,
 # generates chemical genetic interaction z-scores.
@@ -19,6 +20,7 @@ import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 
+sys.path.append(os.path.join(barseq_path, 'lib/python2.7/site-packages')) 
 from mlabwrap import mlab
 
 
@@ -63,6 +65,10 @@ def load_dumped_count_matrix(config_params, lane_id):
     f.close()
 
     return dataset
+
+def a_is_row_in_b(a, b):
+
+    return np.any(np.all(a == b, axis = 1))
     
 def filter_dataset_for_include(dataset, sample_table):
     
@@ -73,9 +79,9 @@ def filter_dataset_for_include(dataset, sample_table):
     include_table = sample_table[include_bool_ind]
     include_screen_names = include_table['screen_name']
     include_expt_ids = include_table['expt_id']
-    include_condition_ids = ['{0}-{1}'.format(*x) for x in it.izip(include_screen_names, include_expt_ids)]
+    include_condition_ids = np.array(list(it.izip(include_screen_names, include_expt_ids)))
     
-    include_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if cond_id in include_condition_ids])
+    include_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, include_condition_ids)])
     
     filtered_condition_ids = condition_ids[include_condition_indices]
     filtered_matrix = matrix[:, include_condition_indices]
@@ -91,9 +97,9 @@ def get_control_condition_ids(dataset, sample_table):
     control_table = sample_table[control_bool_ind]
     control_screen_names = control_table['screen_name']
     control_expt_ids = control_table['expt_id']
-    control_condition_ids = ['{0}-{1}'.format(*x) for x in it.izip(control_screen_names, control_expt_ids)]
+    control_condition_ids = np.array(list(it.izip(control_screen_names, control_expt_ids)))
     
-    control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if cond_id in control_condition_ids])
+    control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, control_condition_ids)])
     final_control_condition_ids = condition_ids[control_condition_indices]
 
     return final_control_condition_ids
@@ -102,7 +108,7 @@ def get_control_dataset(dataset, control_condition_ids):
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
     
-    control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if cond_id in control_condition_ids])
+    control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, control_condition_ids)])
     
     control_condition_ids = condition_ids[control_condition_indices]
     control_matrix = matrix[:, control_condition_indices]
@@ -273,7 +279,7 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
 def main(config_file, lane_id):
     
     # Read in the config params
-    print 'parsing parameters...'
+    # print 'parsing parameters...'
     config_params = cfp.parse(config_file)
     sample_table = get_sample_table(config_params)
 
@@ -294,17 +300,17 @@ def main(config_file, lane_id):
     # Proceed with algorithm to obtain chemical genetic interaction zscores (scaled deviations)
     print "Normalizing ... ",
     normalized_dataset, mean_control_profile = normalizeUsingAllControlsAndSave(config_params, outfolder, filtered_dataset, control_condition_ids, lane_id)
-    print "Column sums: "
+    print "Column means: "
     print np.nanmean(normalized_dataset[2], axis = 0)
     print "Done"
     print "Calculating deviations ... ",
     deviation_dataset = deviations_globalmean(config_params, outfolder, normalized_dataset, mean_control_profile, lane_id)
-    print "Column sums: "
+    print "Column means: "
     print np.nanmean(deviation_dataset[2], axis = 0)
     print "Done"
     print "Scaling interactions ... ",
     scaled_dev_dataset = scaleInteractions(config_params, outfolder, deviation_dataset, filtered_dataset, control_condition_ids, lane_id)
-    print "Column sums: "
+    print "Column means: "
     print np.nanmean(scaled_dev_dataset[2], axis = 0)
     print "Done"
     
