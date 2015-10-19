@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # This script takes in the barseq_counter main configuration and species configuration files
 # and a sequencing lane identifier. It exports 1) reports on the total number
 # of reads, the number of reads matching the common primer, and the number of reads that
@@ -91,7 +92,7 @@ def get_barcode_to_gene(species_config_params):
             # This should be changed to an actual error
             sys.exit('duplicate barcodes detected')
         else:
-            barcode_2_strain[barcode] = '{0}_{1}'.format(strain_id, barcode)
+            barcode_2_strain[barcode] = (strain_id, barcode)
 
     return barcode_2_strain
 
@@ -113,7 +114,7 @@ def get_index_tag_to_condition(config_params, lane_id):
         screen_name = screen_names[i]
         expt_id = expt_ids[i]
         
-        index_tag_to_condition[index_tag] = '{0}-{1}'.format(screen_name, expt_id)
+        index_tag_to_condition[index_tag] = (screen_name, expt_id)
 
     return index_tag_to_condition
 
@@ -192,7 +193,7 @@ def correct_barcode_map(config_params, barcodes_in_data, barcode_to_gene):
         for unmatched_barcode in unmatched_barcodes:
             barcode_dist = jf.hamming_distance(orig_barcode, unmatched_barcode)
             if barcode_dist <= barcode_error_cutoff:
-                print 'bad : corrected --> {0} : {1}'.format(unmatched_barcode, orig_barcode)
+                # print 'bad : corrected --> {0} : {1}'.format(unmatched_barcode, orig_barcode)
                 if correcting_map.has_key(unmatched_barcode):
                     correcting_map[unmatched_barcode].append(orig_barcode)
                 else:
