@@ -111,7 +111,7 @@ def customize_strains(strains, config_params, fmt_string):
 
     custom_columns = fmt_string.split(',')
     custom_barcode_table = barcode_table[custom_columns]
-    strain_keys = [tuple(strain.split('_')) for strain in strains]
+    strain_keys = [tuple(strain) for strain in strains]
     
     custom_strains = []
     for strain in strain_keys:
@@ -136,7 +136,7 @@ def customize_conditions(conditions, config_params, fmt_string):
 
     custom_columns = fmt_string.split(',')
     custom_sample_table = sample_table[custom_columns]
-    condition_keys = [tuple(cond.split('-')) for cond in conditions]
+    condition_keys = [tuple(cond) for cond in conditions]
     
     custom_conditions = []
     for cond in condition_keys:
