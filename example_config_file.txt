@@ -26,6 +26,16 @@ species_ID: S_cerevisiae_minipool
 # count matrix from all lanes. This file is formatted similarly to the barcode interpretation file.
 barcodes_to_remove_file: /project/chadm/chemical_genomics_data/datasets/RIKEN_2014_rescreen/RIKEN+RIKEN_RESCREEN_new-pipeline/remove_GTR1_AVT5.txt
 
+# Removing conditions tagged with bad/suspicious index tags. Select from the following options:
+# 0) Type "0" if no index tags should be removed
+# 1) Type "1" if pre-defined index tags should be removed (in the data/index_tags/index_tags_to_remove.txt file)
+#    (This is best for small screens)
+# 2) Type "2" if badly behaving index tags should be discovered from the data and removed,
+#    based on the correlations of control conditions possessing the same index tag. The
+#    correlation cutoff for removal is specified in the "index_tag_correlation_cutoff"
+#    parameter below (this is best for larger screens)
+# 3) Type "3" if procedures for both "1" and "2" should be performed.
+index_tag_removal: 2
 
 ##### ADVANCED OPTIONS
 ##### DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING :-)
