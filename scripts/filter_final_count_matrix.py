@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # This script reads in the combined count matrix and filters out all of the
 # conditions and strains that either do not meet specified quality measures
 # and/or are specifically slated for removal
@@ -61,6 +62,10 @@ def dump_dataset(dataset, filename):
     cPickle.dump(dataset, f)
     f.close()
 
+def a_is_row_in_b(a, b):
+
+    return np.any(np.all(a == b, axis = 1))
+
 def filter_dataset_for_include_2(dataset, sample_table):
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
@@ -72,9 +77,9 @@ def filter_dataset_for_include_2(dataset, sample_table):
 
     include_screen_names = include_table['screen_name']
     include_expt_ids = include_table['expt_id']
-    include_condition_ids = ['{0}-{1}'.format(*x) for x in it.izip(include_screen_names, include_expt_ids)]
+    include_condition_ids = np.array(list(it.izip(include_screen_names, include_expt_ids)))
     
-    include_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if cond_id in include_condition_ids])
+    include_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, include_condition_ids)])
     
     filtered_condition_ids = condition_ids[include_condition_indices]
     filtered_matrix = matrix[:, include_condition_indices]
@@ -90,15 +95,17 @@ def filter_dataset_for_barcodes(dataset, config_params):
     if not os.path.exists(barcodes_to_remove_file):
         return dataset, []
     with open(barcodes_to_remove_file, 'rt') as f:
-        gene_barcode_ids_to_remove = [line.rstrip().replace('\t', '_') for line in f]
+        # Throw away the header
+        f.readline()
+        gene_barcode_ids_to_remove = np.array([line.rstrip().split('\t')[::-1] for line in f])
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
-    #print 'all barcodes:'
-    #print barcode_gene_ids
+    #print 'barcodes 1-10:'
+    #print barcode_gene_ids[0:10]
     #print '\n\n'
     #print 'barcodes to remove:'
     #print gene_barcode_ids_to_remove
-    inds_to_keep = np.array([i for i, bg_id in enumerate(barcode_gene_ids) if bg_id not in gene_barcode_ids_to_remove])
+    inds_to_keep = np.array([i for i, bg_id in enumerate(barcode_gene_ids) if not a_is_row_in_b(bg_id, gene_barcode_ids_to_remove)])
 
     filtered_barcode_gene_ids = barcode_gene_ids[inds_to_keep]
     filtered_matrix = matrix[inds_to_keep, :]
@@ -124,8 +131,8 @@ def filter_dataset_for_index_tags(dataset, config_params):
     f = open(index_tag_corr_filename, 'rt')
     index_tags, correlations = cPickle.load(f)
     index_tags_to_remove = np.array([index_tags[i] for i,corr in enumerate(correlations) if corr >= index_tag_correlation_cutoff])
-    print 'index_tags_to_remove:'
-    print '\n'.join(index_tags_to_remove) + '\n'
+    # print 'index_tags_to_remove:'
+    # print '\n'.join(index_tags_to_remove) + '\n'
    
     to_remove_idx = sample_table['index_tag'].isin(index_tags_to_remove)
     to_remove_table = sample_table[to_remove_idx]
@@ -133,9 +140,9 @@ def filter_dataset_for_index_tags(dataset, config_params):
 
     to_keep_screen_names = to_keep_table['screen_name']
     to_keep_expt_ids = to_keep_table['expt_id']
-    to_keep_condition_ids = ['{0}-{1}'.format(*x) for x in it.izip(to_keep_screen_names, to_keep_expt_ids)]
+    to_keep_condition_ids = np.array(list(it.izip(to_keep_screen_names, to_keep_expt_ids)))
 
-    to_keep_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if cond_id in to_keep_condition_ids])
+    to_keep_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, to_keep_condition_ids)])
     
     filtered_condition_ids = condition_ids[to_keep_condition_indices]
     filtered_matrix = matrix[:, to_keep_condition_indices]
@@ -170,10 +177,10 @@ def filter_dataset_for_count_degree(dataset, config_params, sample_table):
     conditions_to_keep_inds = passing_condition_fraction >= condition_pass_fraction
     conditions_to_remove_inds = np.invert(conditions_to_keep_inds)
     conditions_to_remove = condition_ids[conditions_to_remove_inds]
-    conditions_to_remove_split = [tuple(x.split('-')) for x in conditions_to_remove]
+    conditions_to_remove_tuple = [tuple(x) for x in conditions_to_remove]
 
     sample_table = sample_table.set_index(['screen_name', 'expt_id'])
-    conditions_to_remove_table = sample_table.loc[conditions_to_remove_split]
+    conditions_to_remove_table = sample_table.loc[conditions_to_remove_tuple]
 
     # Return conditions and strains rejected by the count degree criteria 
     filtered_barcode_gene_ids = barcode_gene_ids[strains_to_keep_inds]
@@ -205,14 +212,14 @@ def write_filtered_strains_conditions(config_params, filtered_include_tab, filte
     filtered_barcode_file = os.path.join(filtered_path, 'prespecified_excluded_strains.txt')
     with open(filtered_barcode_file, 'wt') as f:
         for barcode in filtered_barcodes:
-            f.write(barcode.replace('_', '\t') + '\n')
+            f.write('\t'.join(barcode) + '\n')
 
     # Write out the barcodes excluded because of their count degree
     ###### Perhaps change this in the future so it exports in the same format as the barcode table
     strain_degree_file = os.path.join(filtered_path, 'count_degree_excluded_strains.txt')
     with open(strain_degree_file, 'wt') as f1:
         for barcode in filtered_degree_barcodes:
-            f1.write(barcode.replace('_', '\t') + '\n')
+            f1.write('\t'.join(barcode) + '\n')
 
 def dump_filtered_count_matrix(config_params, dataset):
    
@@ -227,7 +234,7 @@ def dump_filtered_count_matrix(config_params, dataset):
 def main(config_file):
 
     # Read in the config params
-    print 'parsing parameters...'
+    # print 'parsing parameters...'
     config_params = cfp.parse(config_file)
     sample_table = get_sample_table(config_params)
 
