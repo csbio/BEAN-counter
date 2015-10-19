@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # This script converts all dumped count matrices into CDTs,
 # which are visualized using Java Treeview. I anticipate
 # future versions will be smart and avoid re-clustering
