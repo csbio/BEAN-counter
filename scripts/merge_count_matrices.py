@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # This script reads in all of the count matrices from a screen and
 # merges them together. Filtering steps are performed in the next script
 
@@ -60,7 +61,7 @@ def combine_count_matrices(config_params):
         condition_id_list.append(condition_ids)
 
     all_count_matrix = np.hstack(count_matrix_list)
-    all_condition_ids = np.hstack(condition_id_list)
+    all_condition_ids = np.vstack(condition_id_list)
 
     # Note: for all matrices, the gene_barcode_ids, should be the same. When generating the count matrix,
     # I do not let any gene_barcode_ids disappear, even if they have no counts whatsoever. This should
