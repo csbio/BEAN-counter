@@ -2,9 +2,9 @@
 # This script takes in the barseq_counter main configuration and species configuration files
 # and a sequencing lane identifier. It exports 1) reports on the total number
 # of reads, the number of reads matching the common primer, and the number of reads that
-# match index tags and barcodes; 2) a file of "index_tag\tbarcode" for all sequences matching
-# the common primer; and 3) a matrix of counts, rows being the barcodes (genes) and columns
-# being the conditions.
+# match index tags and barcodes; 2) a **temporary** file of "index_tag\tbarcode" for all
+# sequences matching the common primer; and 3) a matrix of counts, rows being the barcodes
+# (genes) and columns being the conditions.
 
 import pandas as pd
 import numpy as np
@@ -68,10 +68,15 @@ def get_lane_reports_path(config_params, lane_id):
     output_folder = config_params['output_folder']
     return os.path.join(output_folder, 'reports', lane_id)
 
-def get_barseq_filename(config_params, lane_id):
+def get_barseq_tmp_filename(config_params, lane_id):
 
     path = get_lane_data_path(config_params, lane_id)
-    return os.path.join(path, '{0}_{1}'.format(lane_id, 'barseq.txt.gz'))
+    return os.path.join(path, 'tmp', '{0}_{1}'.format(lane_id, 'barseq.txt.gz'))
+
+def remove_barseq_tmp_file(config_params, lane_id):
+    fname = get_barseq_tmp_filename(config_params, lane_id)
+    os.remove(fname)
+    return None
 
 def get_barcode_to_gene(species_config_params):
     barseq_path = os.getenv('BARSEQ_PATH')
@@ -88,11 +93,8 @@ def get_barcode_to_gene(species_config_params):
     for i in range(len(barcodes)):
         barcode = barcodes[i]
         strain_id = strain_ids[i]
-        if barcode_2_strain.has_key(barcode):
-            # This should be changed to an actual error
-            sys.exit('duplicate barcodes detected')
-        else:
-            barcode_2_strain[barcode] = (strain_id, barcode)
+        assert not barcode_2_strain.has_key(barcode), 'Duplicate barcodes detected - please review the barcode to strain mapping'
+        barcode_2_strain[barcode] = (strain_id, barcode)
 
     return barcode_2_strain
 
@@ -141,14 +143,15 @@ def read_fastq(config_params, species_config_params, folder, out_path, lane_id):
     common_primer_start = int(species_config_params['common_primer_start'])
     common_primer_end = common_primer_start + int(species_config_params['common_primer_length'])
     common_primer_seq = species_config_params['common_primer_sequence']
+    common_primer_tolerance = int(config_params['common_primer_tolerance'])
     index_tag_start = int(species_config_params['index_tag_start'])
     index_tag_end = index_tag_start + int(species_config_params['index_tag_length'])
     barcode_start = int(species_config_params['genetic_barcode_start'])
     barcode_end = barcode_start + int(species_config_params['genetic_barcode_length'])
 
-    out_filename = get_barseq_filename(config_params, lane_id)
+    out_filename = get_barseq_tmp_filename(config_params, lane_id)
 
-    of = gzip.open(out_filename, 'wb')
+    of = open(out_filename, 'wt')
 
     fastq_filenames = [os.path.join(folder, x) for x in os.listdir(folder) if x.count('fastq') > 0]
 
@@ -159,13 +162,13 @@ def read_fastq(config_params, species_config_params, folder, out_path, lane_id):
     for filename in fastq_filenames:
         compressed_file_opener = cfo.get_compressed_file(filename)
         f = compressed_file_opener.open()
-        for line in f:
+        for line_count, line in enumerate(f):
             line_count += 1
             if line_count % 4 == 2:
                 string = line.strip()
                 common_primer = string[common_primer_start:common_primer_end]
                 common_primer_dist = jf.hamming_distance(common_primer, common_primer_seq)
-                if common_primer_dist <= 2:
+                if common_primer_dist <= common_primer_tolerance:
                     common_primer_count += 1
                     index_tag = string[index_tag_start:index_tag_end]
                     barcode = string[barcode_start:barcode_end]
@@ -182,7 +185,7 @@ def read_fastq(config_params, species_config_params, folder, out_path, lane_id):
 
 def correct_barcode_map(config_params, barcodes_in_data, barcode_to_gene):
 
-    barcode_error_cutoff = int(config_params['barcode_error_cutoff'])
+    barcode_tolerance = int(config_params['barcode_tolerance'])
 
     orig_barcodes = set(barcode_to_gene.keys())
     full_map = {x:x for x in orig_barcodes}
@@ -192,7 +195,7 @@ def correct_barcode_map(config_params, barcodes_in_data, barcode_to_gene):
     for orig_barcode in barcode_to_gene.keys():
         for unmatched_barcode in unmatched_barcodes:
             barcode_dist = jf.hamming_distance(orig_barcode, unmatched_barcode)
-            if barcode_dist <= barcode_error_cutoff:
+            if barcode_dist <= barcode_tolerance:
                 # print 'bad : corrected --> {0} : {1}'.format(unmatched_barcode, orig_barcode)
                 if correcting_map.has_key(unmatched_barcode):
                     correcting_map[unmatched_barcode].append(orig_barcode)
@@ -229,8 +232,8 @@ def get_barseq_matrix(config_params, lane_id, barcode_to_gene, barcode_correctin
     matrix = np.zeros([len(barcodes), len(index_tags)], dtype = np.int)
 
     # Open the barseq file
-    barseq_filename = get_barseq_filename(config_params, lane_id)
-    f = gzip.open(barseq_filename)
+    barseq_filename = get_barseq_tmp_filename(config_params, lane_id)
+    f = open(barseq_filename, 'rt')
 
     for line in f:
         index_tag, barcode = line.rstrip().split('\t')
@@ -325,7 +328,7 @@ def dump_count_matrix(config_params, lane_id, barcodes, conditions, matrix):
 
 def main(config_file, lane_id):
 
-    print 'parsing parameters...'
+    # print 'parsing parameters...'
     config_params = cfp.parse(config_file)
     species_config_params = get_species_config_params(config_params)
 
@@ -347,9 +350,9 @@ def main(config_file, lane_id):
     # written in later, although we see no need for it)
     print 'correcting barcodes...'
     barcode_correcting_map = correct_barcode_map(config_params, barcodes_in_data, barcode_to_gene)
-    print 'number of barcodes that will be counted: {}'.format(np.array([len(x) for x in barcode_correcting_map]).sum())
+    print 'number of barcodes that will be counted: {}'.format(len(barcode_correcting_map))
 
-    # Loop over the barseq file (index_tag\tbarcode) and assemble the matrix of read counts
+    # Loop over the barseq file (index_tag\tbarcode\n) and assemble the matrix of read counts
     print 'generating barseq matrix...'
     corrected_barcodes, index_tags, matrix = get_barseq_matrix(config_params, lane_id, barcode_to_gene, barcode_correcting_map, index_tag_to_condition)
 
@@ -368,6 +371,9 @@ def main(config_file, lane_id):
     # Dump out the final count matrix to file - other scripts will read it and turn it into a readable matrix/CDT
     print 'dumping count matrix...'
     dump_count_matrix(config_params, lane_id, barcode_gene_ids, condition_ids, matrix)
+
+    # Remove the temporary barseq file
+    remove_barseq_tmp_file(config_params)
  
 
 # call: python fastq_to_count_matrix.py <config_file> <lane_id>
