@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # This script reads in all of the per-lane condition-strain interaction
 # files (z-scores) and computes index tag correlations. It outputs
 # graphs and a sorted list with the most correlated index tags at the
@@ -46,6 +47,10 @@ def get_all_lane_ids(sample_table):
 
     return np.unique(np.array(sample_table['lane']))
 
+def a_is_row_in_b(a, b):
+
+    return np.any(np.all(a == b, axis = 1))
+
 def combine_zscore_matrices(config_params):
 
     sample_table = get_sample_table(config_params)
@@ -66,7 +71,7 @@ def combine_zscore_matrices(config_params):
         condition_id_list.append(condition_ids)
 
     all_zscore_matrix = np.hstack(zscore_matrix_list)
-    all_condition_ids = np.hstack(condition_id_list)
+    all_condition_ids = np.vstack(condition_id_list)
 
     # Note: for all matrices, the gene_barcode_ids, should be the same. When generating the count matrix,
     # I do not let any gene_barcode_ids disappear, even if they have no counts whatsoever. This should
@@ -88,9 +93,9 @@ def get_control_condition_ids(dataset, sample_table):
     control_table = sample_table[control_bool_ind]
     control_screen_names = control_table['screen_name']
     control_expt_ids = control_table['expt_id']
-    control_condition_ids = ['{0}-{1}'.format(*x) for x in it.izip(control_screen_names, control_expt_ids)]
+    control_condition_ids = np.array(list(it.izip(control_screen_names, control_expt_ids)))
 
-    control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if cond_id in control_condition_ids])
+    control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, control_condition_ids)])
     final_control_condition_ids = condition_ids[control_condition_indices]
 
     return final_control_condition_ids
@@ -99,7 +104,7 @@ def get_control_dataset(dataset, control_condition_ids):
 
     [barcode_gene_ids, condition_ids, matrix] = dataset
 
-    control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if cond_id in control_condition_ids])
+    control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, control_condition_ids)])
 
     control_condition_ids = condition_ids[control_condition_indices]
     control_matrix = matrix[:, control_condition_indices]
@@ -128,7 +133,7 @@ def get_control_index_tag_correlations(control_dataset, sample_table):
     print corr_mat
 
     condition_id_to_index_tag = get_condition_id_to_index_tag(sample_table)
-    index_tags = np.unique([condition_id_to_index_tag[condition_id] for condition_id in condition_ids])
+    index_tags = np.unique([condition_id_to_index_tag[tuple(condition_id)] for condition_id in condition_ids])
     print index_tags[0:10]
 
     index_tag_to_conditions = {}
@@ -136,6 +141,8 @@ def get_control_index_tag_correlations(control_dataset, sample_table):
         condition_id = mapping[0]
         index_tag = mapping[1]
 
+        # Reversing the mapping now, each key is an index tag, each value is
+        # a list of condition id tuples (should be fine)
         if not index_tag_to_conditions.has_key(index_tag):
             index_tag_to_conditions[index_tag] = []
         index_tag_to_conditions[index_tag].append(condition_id)
@@ -147,9 +154,9 @@ def get_control_index_tag_correlations(control_dataset, sample_table):
     mean_index_tag_corrs = []
     for index_tag in index_tags:
         # Get indices of correlation matrix (symmetric)
-        index_tag_condition_ids = index_tag_to_conditions[index_tag]
+        index_tag_condition_ids = np.vstack(index_tag_to_conditions[index_tag])
         print index_tag_condition_ids
-        index_tag_inds = np.array([i for i, cond_id in enumerate(condition_ids) if cond_id in index_tag_condition_ids], dtype = np.int)
+        index_tag_inds = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, index_tag_condition_ids)], dtype = np.int)
         print index_tag_inds
         # This bugs out, probably when there is one are zero columns
         # in the correlation matrix with a particular index tag.
@@ -193,8 +200,9 @@ def get_condition_id_to_index_tag(sample_table):
         index_tag = index_tags[i]
         screen_name = screen_names[i]
         expt_id = expt_ids[i]
-       
-        condition_id = '{0}-{1}'.format(screen_name, expt_id)    
+      
+        # Here the condition id is a tuple instead of a ndarray - watch out!!!
+        condition_id = (screen_name, expt_id)    
         condition_id_to_index_tag[condition_id] = index_tag        
 
     return condition_id_to_index_tag
