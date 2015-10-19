@@ -68,6 +68,11 @@ def get_lane_reports_path(config_params, lane_id):
     output_folder = config_params['output_folder']
     return os.path.join(output_folder, 'reports', lane_id)
 
+def get_barseq_tmp_folder(config_params, lane_id):
+
+    path = get_lane_data_path(config_params, lane_id)
+    return os.path.join(path, 'tmp')
+
 def get_barseq_tmp_filename(config_params, lane_id):
 
     path = get_lane_data_path(config_params, lane_id)
@@ -149,13 +154,15 @@ def read_fastq(config_params, species_config_params, folder, out_path, lane_id):
     barcode_start = int(species_config_params['genetic_barcode_start'])
     barcode_end = barcode_start + int(species_config_params['genetic_barcode_length'])
 
+    out_tmp_dir = get_barseq_tmp_folder(config_params, lane_id)
+    if not os.path.isdir(out_tmp_dir):
+        os.makedirs(out_tmp_dir)
     out_filename = get_barseq_tmp_filename(config_params, lane_id)
 
     of = open(out_filename, 'wt')
 
     fastq_filenames = [os.path.join(folder, x) for x in os.listdir(folder) if x.count('fastq') > 0]
 
-    line_count = 0
     common_primer_count = 0
     barcodes = set()
     index_tags = set()
@@ -163,7 +170,6 @@ def read_fastq(config_params, species_config_params, folder, out_path, lane_id):
         compressed_file_opener = cfo.get_compressed_file(filename)
         f = compressed_file_opener.open()
         for line_count, line in enumerate(f):
-            line_count += 1
             if line_count % 4 == 2:
                 string = line.strip()
                 common_primer = string[common_primer_start:common_primer_end]
