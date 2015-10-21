@@ -23,26 +23,27 @@ species_ID: S_cerevisiae_minipool
 
 # File that specifies which barcodes to remove from a dataset. Strains with this barcode survive
 # the "per-lane" rounds of processing and are removed in the step that creates the final filtered
-# count matrix from all lanes. This file is formatted similarly to the barcode interpretation file.
+# count matrix from all lanes. This is just a '\n'-delimited file of the barcode sequences to be
+# removed
 barcodes_to_remove_file: /project/chadm/chemical_genomics_data/datasets/RIKEN_2014_rescreen/RIKEN+RIKEN_RESCREEN_new-pipeline/remove_GTR1_AVT5.txt
 
-# Removing conditions tagged with bad/suspicious index tags. Select from the following options:
-# 0) Type "0" if no index tags should be removed
-# 1) Type "1" if pre-defined index tags should be removed (in the data/index_tags/index_tags_to_remove.txt file)
-#    (This is best for small screens)
-# 2) Type "2" if badly behaving index tags should be discovered from the data and removed,
-#    based on the correlations of control conditions possessing the same index tag. The
-#    correlation cutoff for removal is specified in the "index_tag_correlation_cutoff"
-#    parameter below (this is best for larger screens)
-# 3) Type "3" if procedures for both "1" and "2" should be performed.
-index_tag_removal: 2
+# Should conditions matching the "barcode-specific" pattern (positive interactions for barcodes
+# beginning with one particular base) be removed? (can apply to small or large screens)
+# (True / False)
+remove_barcode_specific_conditions: True
+
+# Should conditions associated with highly-self-correlating index tags (in control conditions) be removed?
+# (Intended for use in larger screens, e.g. 10+ lanes)
+# (True / False)
+remove_correlated_index_tags: True
+
 
 ##### ADVANCED OPTIONS
 ##### DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING :-)
 # Set the number of errors allowed in the common primer and
 # genetic barcode (up to and including)
-common_primer_tolerance: 2
-barcode_error_tolerance: 2
+common_primer_error_cutoff: 2
+barcode_error_cutoff: 2
 
 # Set the read count at which strains in control conditions are "not detected"
 # These are set to NA and excluded from the mean control profile
@@ -65,9 +66,11 @@ strain_pass_fraction: 0.5
 condition_pass_read_count: 20
 condition_pass_fraction: 0.5
 
-# Index tag correlation cutoff. If the correlation of all DMSO conditions with a particular index tag is
+# Index tag correlation cutoff. If the mean correlation of all DMSO conditions with a particular index tag is
 # above "index_tag_correlation_cutoff", all conditions with that index tag are removed from the dataset
 index_tag_correlation_cutoff: 0.4
 
-
+# Barcode-specific correlation to template cutoff. Remove any condition that correlates to any of the
+# "barcode-specific" profiles more strongly than this value.
+barcode_specific_template_correlation_cutoff: 0.3
 
