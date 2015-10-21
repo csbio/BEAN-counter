@@ -68,18 +68,13 @@ def get_lane_reports_path(config_params, lane_id):
     output_folder = config_params['output_folder']
     return os.path.join(output_folder, 'reports', lane_id)
 
-def get_barseq_tmp_folder(config_params, lane_id):
+def get_barseq_filename(config_params, lane_id):
 
     path = get_lane_data_path(config_params, lane_id)
-    return os.path.join(path, 'tmp')
+    return os.path.join(path, '{0}_{1}'.format(lane_id, 'barseq.txt'))
 
-def get_barseq_tmp_filename(config_params, lane_id):
-
-    path = get_lane_data_path(config_params, lane_id)
-    return os.path.join(path, 'tmp', '{0}_{1}'.format(lane_id, 'barseq.txt.gz'))
-
-def remove_barseq_tmp_file(config_params, lane_id):
-    fname = get_barseq_tmp_filename(config_params, lane_id)
+def remove_barseq_file(config_params, lane_id):
+    fname = get_barseq_filename(config_params, lane_id)
     os.remove(fname)
     return None
 
@@ -154,10 +149,9 @@ def read_fastq(config_params, species_config_params, folder, out_path, lane_id):
     barcode_start = int(species_config_params['genetic_barcode_start'])
     barcode_end = barcode_start + int(species_config_params['genetic_barcode_length'])
 
-    out_tmp_dir = get_barseq_tmp_folder(config_params, lane_id)
-    if not os.path.isdir(out_tmp_dir):
-        os.makedirs(out_tmp_dir)
-    out_filename = get_barseq_tmp_filename(config_params, lane_id)
+    out_filename = get_barseq_filename(config_params, lane_id)
+    # print out_filename
+    # print common_primer_tolerance
 
     of = open(out_filename, 'wt')
 
@@ -170,20 +164,23 @@ def read_fastq(config_params, species_config_params, folder, out_path, lane_id):
         compressed_file_opener = cfo.get_compressed_file(filename)
         f = compressed_file_opener.open()
         for line_count, line in enumerate(f):
-            if line_count % 4 == 2:
+            # print line_count, line
+            if line_count % 4 == 1:
                 string = line.strip()
                 common_primer = string[common_primer_start:common_primer_end]
                 common_primer_dist = jf.hamming_distance(common_primer, common_primer_seq)
+                # print common_primer_dist
                 if common_primer_dist <= common_primer_tolerance:
                     common_primer_count += 1
                     index_tag = string[index_tag_start:index_tag_end]
                     barcode = string[barcode_start:barcode_end]
                     index_tags.update(set([index_tag]))
                     barcodes.update(set([barcode]))
+                    # print "index_tag, barcode : {}, {}".format(index_tag, barcode)
                     of.write('{0}\t{1}\n'.format(index_tag, barcode))
         f.close()
 
-    total_counts = line_count / 4
+    total_counts = (line_count + 1)/ 4
 
     of.close()
 
@@ -238,7 +235,7 @@ def get_barseq_matrix(config_params, lane_id, barcode_to_gene, barcode_correctin
     matrix = np.zeros([len(barcodes), len(index_tags)], dtype = np.int)
 
     # Open the barseq file
-    barseq_filename = get_barseq_tmp_filename(config_params, lane_id)
+    barseq_filename = get_barseq_filename(config_params, lane_id)
     f = open(barseq_filename, 'rt')
 
     for line in f:
@@ -379,7 +376,7 @@ def main(config_file, lane_id):
     dump_count_matrix(config_params, lane_id, barcode_gene_ids, condition_ids, matrix)
 
     # Remove the temporary barseq file
-    remove_barseq_tmp_file(config_params)
+    remove_barseq_file(config_params, lane_id)
  
 
 # call: python fastq_to_count_matrix.py <config_file> <lane_id>
