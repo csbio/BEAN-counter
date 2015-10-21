@@ -41,7 +41,7 @@ def get_lane_interactions_path(config_params, lane_id):
 def get_index_tag_correlation_path(config_params):
 
     output_folder = config_params['output_folder']
-    return os.path.join(output_folder, 'index_tag_correlations')
+    return os.path.join(output_folder, 'index_tag_qc')
 
 def get_all_lane_ids(sample_table):
 
@@ -77,6 +77,70 @@ def combine_zscore_matrices(config_params):
     # I do not let any gene_barcode_ids disappear, even if they have no counts whatsoever. This should
     # simplify initial processing steps, and the filtering does not need to happen until later.
     return gene_barcode_ids, all_condition_ids, all_zscore_matrix
+
+def generate_barcode_specific_template_profiles(gene_barcode_ids):
+    
+    profile_ids = ['A', 'C', 'G', 'T']
+    profiles = []
+    for base in profile_ids:
+        profiles.append(np.array([1 if x[1][0] == base else 0 for x in gene_barcode_ids]))
+    profile_mat = np.vstack(profiles).transpose()
+    return profile_ids, profile_mat
+
+def compute_max_correlation_barcode_specific_offenders(template_profile_ids, template_profile_mat, condition_ids, matrix):
+
+    # First, fill NaNs in matrix with very small random noise
+    # Get the indices of NaNs in the matrix
+    nan_inds = np.isnan(matrix)
+    num_nans = np.sum(nan_inds)
+
+    # Replace the NaN values with extremely small noise values
+    # (noise has standard deviation of 1 million times less than the data)
+    np.random.seed(15263748)
+    data_sd = np.nanstd(matrix)
+    noise = np.random.randn(num_nans) * data_sd / 1e6
+    matrix[nan_inds] = noise
+
+    # Compute the correlation coefficients between the template profiles and
+    # the observed profiles.
+    corr_mat = pearson_between_two_mats_columns(matrix, template_profile_mat)
+
+    # Get the max value for each condition (row in this correlation matrix)
+    max_corrs = np.max(corr_mat, axis = 1)
+
+    # Match the template profiles to the condition profiles that match them the best
+    corr_mat_inds = corr_mat == max_corrs[:, None]
+    print corr_mat_inds[0:10]
+    template_profile_ids = np.array(template_profile_ids)
+    most_correlated_template_profiles = np.array([','.join(template_profile_ids[bool_inds]) for bool_inds in corr_mat_inds])
+
+    # Sort by the max_correlations, descending order
+    sort_inds = np.argsort(-max_corrs)
+    max_corrs_sorted = max_corrs[sort_inds]
+    condition_ids_sorted = condition_ids[sort_inds]
+    most_correlated_template_profiles_sorted = most_correlated_template_profiles[sort_inds]
+
+    # These max_corrs should line up with the condition_ids for printing out to file
+    return condition_ids_sorted, max_corrs_sorted, most_correlated_template_profiles_sorted
+
+def pearson_between_two_mats_columns(A, B):
+    '''
+    Computes Pearson correlations between columns of two matrices.
+    The column names of A will be the row names of the resulting correlation matrix.
+    Adapted from Divakar on:
+    http://stackoverflow.com/questions/30143417/computing-the-correlation-coefficient-between-two-multi-dimensional-arrays
+    '''
+    
+    # Subtract the column means from each column
+    A_mA = A - A.mean(axis = 0)[None, :]
+    B_mB = B - B.mean(axis = 0)[None, :]
+
+    # Get the sum of squares of errors for each column
+    ssA = (A_mA**2).sum(0)
+    ssB = (B_mB**2).sum(0)
+
+    # And compute the correlation coefficient!
+    return np.dot(A_mA.T, B_mB) / np.sqrt(np.dot(ssA[:,None],ssB[None]))
 
 def dump_dataset(dataset, filename):
 
@@ -222,6 +286,21 @@ def write_index_tag_corrs(index_tags, index_tag_corrs, index_tag_path):
     cPickle.dump([index_tags, index_tag_corrs], dump_f)
     dump_f.close()
 
+def write_barcode_specific_template_corrs(condition_ids, template_correlations, template_ids, index_tag_path):
+    
+    txt_filename = os.path.join(index_tag_path, 'barcode-specific_template_correlations.txt')
+    dump_filename = os.path.join(index_tag_path, 'barcode-specific_template_correlations.dump')
+
+    txt_f = open(txt_filename, 'wt')
+    txt_f.write('condition_id\tcorrelation with template\tfirst barcode base\n')
+    for i in range(len(condition_ids)):
+        txt_f.write('{0}\t{1}\t{2}\n'.format(condition_ids[i], template_correlations[i], template_ids[i]))
+    txt_f.close()
+
+    dump_f = open(dump_filename, 'wt')
+    cPickle.dump([condition_ids, template_correlations, template_ids], dump_f)
+    dump_f.close()
+
 def plot_control_index_tag_correlations(index_tag_corrs, index_tag_path):
 
     plt_filename = os.path.join(index_tag_path, 'control_index_tag_correlations_hist.png')
@@ -236,7 +315,7 @@ def plot_control_index_tag_correlations(index_tag_corrs, index_tag_path):
 def main(config_file):
 
     # Read in the config params
-    print 'parsing parameters...'
+    # print 'parsing parameters...'
     config_params = cfp.parse(config_file)
     sample_table = get_sample_table(config_params)
 
@@ -256,7 +335,7 @@ def main(config_file):
     control_condition_ids = get_control_condition_ids(dataset, sample_table)
     control_dataset = get_control_dataset(dataset, control_condition_ids)
     per_lane_control_zscore_dataset_filename = os.path.join(index_tag_path, 'combined_per_lane_control_zscore_dataset.dump.gz')
-    dump_dataset(dataset, per_lane_control_zscore_dataset_filename)
+    dump_dataset(control_dataset, per_lane_control_zscore_dataset_filename)
 
     # Get the sorted index tag correlations for control conditions
     index_tags_sorted, control_index_tag_correlations_sorted = get_control_index_tag_correlations(control_dataset, sample_table)
@@ -264,7 +343,14 @@ def main(config_file):
     # Export the sorted index tag correlations to dump and text files
     write_index_tag_corrs(index_tags_sorted, control_index_tag_correlations_sorted, index_tag_path)   
 
-    # Plot a histogram of the index tag correlations
+    # Get the correlations of each profile to the barcode-specific template profiles
+    template_profile_ids, template_profile_mat = generate_barcode_specific_template_profiles(dataset[0])
+    condition_ids_sorted, barcode_specific_template_correlations_sorted, template_profile_ids_sorted = compute_max_correlation_barcode_specific_offenders(template_profile_ids, template_profile_mat, dataset[1], dataset[2])
+
+    # Export the sorted correlations of profiles to the barcode-specific template profiles
+    write_barcode_specific_template_corrs(condition_ids_sorted, barcode_specific_template_correlations_sorted, template_profile_ids_sorted, index_tag_path)   
+    
+    ## Plot a histogram of the index tag correlations
     plot_control_index_tag_correlations(control_index_tag_correlations_sorted, index_tag_path)
 
 # call: python mtag_correlations.py <config_file>
