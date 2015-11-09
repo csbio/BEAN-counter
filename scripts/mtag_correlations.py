@@ -89,7 +89,7 @@ def generate_barcode_specific_template_profiles(gene_barcode_ids):
     profile_mat = np.vstack(profiles).transpose()
     return profile_ids, profile_mat
 
-def compute_max_correlation_barcode_specific_offenders(template_profile_ids, template_profile_mat, condition_ids, matrix):
+def compute_max_correlation_barcode_specific_offenders(template_profile_ids, template_profile_mat, condition_ids, matrix, config_params):
 
     # First, fill NaNs in matrix with very small random noise
     # Get the indices of NaNs in the matrix
@@ -178,7 +178,7 @@ def get_control_dataset(dataset, control_condition_ids):
 
     return [barcode_gene_ids, control_condition_ids, control_matrix]
 
-def get_control_index_tag_correlations(control_dataset, sample_table):
+def get_control_index_tag_correlations(control_dataset, sample_table, config_params):
 
     gene_barcode_ids, condition_ids, matrix = control_dataset
 
@@ -344,14 +344,14 @@ def main(config_file):
     dump_dataset(control_dataset, per_lane_control_zscore_dataset_filename)
 
     # Get the sorted index tag correlations for control conditions
-    index_tags_sorted, control_index_tag_correlations_sorted = get_control_index_tag_correlations(control_dataset, sample_table)
+    index_tags_sorted, control_index_tag_correlations_sorted = get_control_index_tag_correlations(control_dataset, sample_table, config_params)
     
     # Export the sorted index tag correlations to dump and text files
     write_index_tag_corrs(index_tags_sorted, control_index_tag_correlations_sorted, index_tag_path)   
 
     # Get the correlations of each profile to the barcode-specific template profiles
     template_profile_ids, template_profile_mat = generate_barcode_specific_template_profiles(dataset[0])
-    condition_ids_sorted, barcode_specific_template_correlations_sorted, template_profile_ids_sorted = compute_max_correlation_barcode_specific_offenders(template_profile_ids, template_profile_mat, dataset[1], dataset[2])
+    condition_ids_sorted, barcode_specific_template_correlations_sorted, template_profile_ids_sorted = compute_max_correlation_barcode_specific_offenders(template_profile_ids, template_profile_mat, dataset[1], dataset[2], config_params)
 
     # Export the sorted correlations of profiles to the barcode-specific template profiles
     write_barcode_specific_template_corrs(condition_ids_sorted, barcode_specific_template_correlations_sorted, template_profile_ids_sorted, index_tag_path)   
