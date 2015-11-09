@@ -178,7 +178,7 @@ def print_pr_values(config_params, precision, recall, ncomps):
     pr_folder = os.path.join(plot_folder, 'PR_data')
     if not os.path.isdir(pr_folder):
         os.makedirs(pr_folder)
-#        filename = os.path.join(pr_folder, 'PR_index-tag-effect_{}-components-removed.txt.gz'.format(ncomps))
+        filename = os.path.join(pr_folder, 'PR_index-tag-effect_{}-components-removed.txt.gz'.format(ncomps))
 
     f = gzip.open(filename, 'wb')
     f.write('Recall\tPrecision\n')
