@@ -71,7 +71,7 @@ def a_is_row_in_b(a, b):
 
     return np.any(np.all(a == b, axis = 1))
     
-def filter_dataset_for_include(dataset, sample_table):
+def filter_dataset_for_include(dataset, sample_table, config_params):
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
 
@@ -163,9 +163,9 @@ def normalizeUsingAllControlsAndSave(config_params, outfolder, dataset, control_
         print 'mean control profile:'
         print mean_control_profile
         print 'mean control profile shape:'
-        print x.shape
+        print mean_control_profile.shape
         print 'mean of mean control profile:'
-        print mean_control_profile.mean()
+        print np.nanmean(mean_control_profile)
 
     # Replace each profile in the matrix with a smoothed profile
     # In the process, set the counts for any strain under the sample count detection limit
@@ -208,7 +208,7 @@ def deviations_globalmean(config_params, outfolder, lowess_dataset, mean_control
 
     return deviation_dataset
 
-def getAsymmetricSigmaForScipyMatrix(raw_mean_control_profile, dev_control_matrix):
+def getAsymmetricSigmaForScipyMatrix(raw_mean_control_profile, dev_control_matrix, config_params):
     dev_control_matrix_tall = np.zeros((0, 1))
     repeated_raw_mean_control_profile = np.zeros((0, 1))
     raw_mean_control_profile = np.matrix(raw_mean_control_profile).transpose()
@@ -259,7 +259,7 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
     # Compute the mean control profile on the raw control profiles (again)
     mean_control_profile = np.log( np.nanmean( control_raw_matrix, axis=1 ))
 
-    lowess_neg, lowess_pos, lowess_symmetric = getAsymmetricSigmaForScipyMatrix(mean_control_profile, control_matrix)
+    lowess_neg, lowess_pos, lowess_symmetric = getAsymmetricSigmaForScipyMatrix(mean_control_profile, control_matrix, config_params)
     for i in range(matrix.shape[1]):
         deviation = np.array( matrix[:, [i]] )
         k = wellbehaved(deviation) # this remains same but nevertheless I have put it here
@@ -300,7 +300,7 @@ def main(config_file, lane_id):
     dataset = load_dumped_count_matrix(config_params, lane_id)
 
     # Filter out samples flagged as "do not include" (include? == True)
-    filtered_dataset = filter_dataset_for_include(dataset, sample_table)
+    filtered_dataset = filter_dataset_for_include(dataset, sample_table, config_params)
 
     # Get list of control samples (control? = True)
     control_condition_ids = get_control_condition_ids(dataset, sample_table)
