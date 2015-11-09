@@ -20,6 +20,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
+from cg_common_functions import *
 
 def get_sample_table(config_params):
 
@@ -100,11 +101,12 @@ def filter_dataset_for_barcodes(dataset, config_params):
         gene_barcode_ids_to_remove = np.array([line.rstrip().split('\t')[::-1] for line in f])
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
-    #print 'barcodes 1-10:'
-    #print barcode_gene_ids[0:10]
-    #print '\n\n'
-    #print 'barcodes to remove:'
-    #print gene_barcode_ids_to_remove
+    if get_verbosity(config_params) >= 2:
+        print 'barcodes 1-10:'
+        print barcode_gene_ids[0:10]
+        print '\n\n'
+        print 'barcodes to remove:'
+        print gene_barcode_ids_to_remove
     inds_to_keep = np.array([i for i, bg_id in enumerate(barcode_gene_ids) if not a_is_row_in_b(bg_id, gene_barcode_ids_to_remove)])
 
     filtered_barcode_gene_ids = barcode_gene_ids[inds_to_keep]
@@ -165,8 +167,9 @@ def filter_dataset_for_barcode_specific_patterns(dataset, config_params):
     f = open(barcode_spec_corr_filename, 'rt')
     barcode_spec_condition_ids, barcode_spec_correlations, start_base = cPickle.load(f)
     cond_ids_to_remove = np.array([barcode_spec_condition_ids[i] for i,corr in enumerate(barcode_spec_correlations) if corr >= barcode_specific_correlation_cutoff])
-    # print 'index_tags_to_remove:'
-    # print '\n'.join(index_tags_to_remove) + '\n'
+    if get_verbosity(config_params) >= 2:
+        print 'index_tags_to_remove:'
+        print '\n'.join(index_tags_to_remove) + '\n'
    
     to_remove_idx = np.array([a_is_row_in_b(tuple(x[1]), cond_ids_to_remove) for x in sample_table[['screen_name', 'expt_id']].iterrows()])
     to_remove_table = sample_table[to_remove_idx]
@@ -190,9 +193,10 @@ def filter_dataset_for_barcode_specific_patterns(dataset, config_params):
     cor_tab = cor_tab.set_index('cond_ids')
     # Now rearrange the table based on the "to_remove_table"
     cor_tab_cond_ids_idx = [tuple(x[1]) for x in to_remove_table[['screen_name', 'expt_id']].iterrows()]
-    # print cor_tab_cond_ids_idx
     cor_tab_ordered = cor_tab.ix[cor_tab_cond_ids_idx]
-    # print cor_tab_ordered
+    if get_verbosity(config_params) >= 3:
+        print cor_tab_cond_ids_idx
+        print cor_tab_ordered
     to_remove_table['barcode-specific_effect_correlation'] = np.array(cor_tab_ordered['corrs'])
     to_remove_table['barcode-specific_effect_start_base'] = np.array(cor_tab_ordered['bases'])
 
@@ -221,7 +225,8 @@ def filter_dataset_for_count_degree(dataset, config_params, sample_table):
     passing_condition_read_count_matrix = matrix >= condition_pass_read_count
     passing_condition_read_count_sums = np.nansum(passing_condition_read_count_matrix, axis = 0)
     passing_condition_fraction = passing_condition_read_count_sums / float(passing_condition_read_count_matrix.shape[0])
-    # print passing_condition_fraction
+    if get_verbosity(config_params) >= 3:
+        print passing_condition_fraction
     conditions_to_keep_inds = passing_condition_fraction >= condition_pass_fraction
     conditions_to_remove_inds = np.invert(conditions_to_keep_inds)
     conditions_to_remove = condition_ids[conditions_to_remove_inds]
@@ -301,7 +306,6 @@ def dump_filtered_count_matrix(config_params, dataset):
 def main(config_file):
 
     # Read in the config params
-    # print 'parsing parameters...'
     config_params = cfp.parse(config_file)
     sample_table = get_sample_table(config_params)
 
@@ -314,28 +318,46 @@ def main(config_file):
     remove_barcode_specific_conds = bool_dict[config_params['remove_barcode_specific_conditions']]
 
     dataset = load_dumped_count_matrix(config_params, 'all_lanes')
+    if get_verbosity(config_params) >= 2:
+        print dataset[2].shape
 
-    print 'Filtering out...'
-    print '\tPrespecified conditions to exclude'
+    if get_verbosity(config_params) >= 1:
+        print 'Filtering out...'
+        print '\tPrespecified conditions to exclude'
     dataset, filtered_include_tab = filter_dataset_for_include_2(dataset, sample_table)
+    if get_verbosity(config_params) >= 2:
+        print dataset[2].shape
     write_filtered_include_table(filtered_include_tab, config_params)
 
-    print '\tPrespecified barcodes to exclude'
+    if get_verbosity(config_params) >= 1:
+        print '\tPrespecified barcodes to exclude'
     dataset, filtered_barcodes = filter_dataset_for_barcodes(dataset, config_params)
+    if get_verbosity(config_params) >= 2:
+        print dataset[2].shape
+    
     write_filtered_strain_file(filtered_barcodes, config_params)
     
     if remove_mtag_offenders:
-        print '\tHighly-correlated index tags'
+        if get_verbosity(config_params) >= 1:
+            print '\tHighly-correlated index tags'
         dataset, filtered_index_tag_condition_table = filter_dataset_for_index_tags(dataset, config_params)
+        if get_verbosity(config_params) >= 2:
+            print dataset[2].shape
         write_correlated_index_tags_excluded_conditions(filtered_index_tag_condition_table, config_params)
 
     if remove_barcode_specific_conds:
-        print '\tConditions with barcode-specific signatures'
+        if get_verbosity(config_params) >= 1:
+            print '\tConditions with barcode-specific signatures'
         dataset, filtered_barcode_specific_condition_table = filter_dataset_for_barcode_specific_patterns(dataset, config_params)
+        if get_verbosity(config_params) >= 2:
+            print dataset[2].shape
         write_barcode_specific_excluded_conditions(filtered_barcode_specific_condition_table, config_params)
 
-    print '\tConditions and strains with low counts'
+    if get_verbosity(config_params) >= 1:
+        print '\tConditions and strains with low counts'
     dataset, filtered_degree_condition_table, filtered_degree_barcodes = filter_dataset_for_count_degree(dataset, config_params, sample_table)
+    if get_verbosity(config_params) >= 2:
+        print dataset[2].shape
     write_count_degree_excluded_conditions(filtered_degree_condition_table, config_params)
     write_count_degree_excluded_strains(filtered_degree_barcodes, config_params)
 
