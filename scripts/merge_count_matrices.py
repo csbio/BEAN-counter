@@ -18,6 +18,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
+from cg_common_functions import *
 
 def get_sample_table(config_params):
 
@@ -77,7 +78,6 @@ def dump_dataset(dataset, filename):
 def main(config_file):
 
     # Read in the config params
-    print 'parsing parameters...'
     config_params = cfp.parse(config_file)
     sample_table = get_sample_table(config_params)
 

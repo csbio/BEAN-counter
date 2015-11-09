@@ -21,6 +21,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
+from cg_common_functions import *
 
 def get_species_config_params(config_params):
     barseq_path = os.getenv('BARSEQ_PATH')
@@ -164,12 +165,14 @@ def read_fastq(config_params, species_config_params, folder, out_path, lane_id):
         compressed_file_opener = cfo.get_compressed_file(filename)
         f = compressed_file_opener.open()
         for line_count, line in enumerate(f):
-            # print line_count, line
+            if get_verbosity(config_params) >= 3:
+                print line_count, line
             if line_count % 4 == 1:
                 string = line.strip()
                 common_primer = string[common_primer_start:common_primer_end]
                 common_primer_dist = jf.hamming_distance(common_primer, common_primer_seq)
-                # print common_primer_dist
+                if get_verbosity(config_params) >= 3:
+                    print common_primer_dist
                 if common_primer_dist <= common_primer_tolerance:
                     common_primer_count += 1
                     index_tag = string[index_tag_start:index_tag_end]
@@ -199,7 +202,8 @@ def correct_barcode_map(config_params, barcodes_in_data, barcode_to_gene):
         for unmatched_barcode in unmatched_barcodes:
             barcode_dist = jf.hamming_distance(orig_barcode, unmatched_barcode)
             if barcode_dist <= barcode_tolerance:
-                # print 'bad : corrected --> {0} : {1}'.format(unmatched_barcode, orig_barcode)
+                if get_verbosity(config_params) >= 3:
+                    print 'bad : corrected --> {0} : {1}'.format(unmatched_barcode, orig_barcode)
                 if correcting_map.has_key(unmatched_barcode):
                     correcting_map[unmatched_barcode].append(orig_barcode)
                 else:
@@ -331,40 +335,47 @@ def dump_count_matrix(config_params, lane_id, barcodes, conditions, matrix):
 
 def main(config_file, lane_id):
 
-    # print 'parsing parameters...'
     config_params = cfp.parse(config_file)
     species_config_params = get_species_config_params(config_params)
 
     # Loop over the raw fastq files, write out the "index_tag\tbarcode" file,
     # and return all encountered index tags and barcodes
-    print 'parsing fastq file(s)...'
+    if get_verbosity(config_params) >= 1:
+        print 'parsing fastq file(s)...'
     total_counts, common_primer_counts, barcodes_in_data, index_tags_in_data = fastq_to_barseq(config_params, species_config_params, lane_id)
 
     # Get maps of barcode to barcode_gene (keeps the strains unique/traceable), and index tag to condition
-    print 'creating mappings from barcodes and index tags...'
+    if get_verbosity(config_params) >= 1:
+        print 'creating mappings from barcodes and index tags...'
     barcode_to_gene = get_barcode_to_gene(species_config_params)
     index_tag_to_condition = get_index_tag_to_condition(config_params, lane_id)
 
-    print 'barcode to gene map: {}'.format(barcode_to_gene.items()[0:5])
-    print 'index tag to condition map: {}'.format(index_tag_to_condition.items()[0:5])
+    if get_verbosity(config_params) >= 1:
+        print 'barcode to gene map: {}'.format(barcode_to_gene.items()[0:5])
+        print 'index tag to condition map: {}'.format(index_tag_to_condition.items()[0:5])
 
     # Correct the barcodes within the specified error tolerance
     # (There is no function to correct the index tags - this could easily be
     # written in later, although we see no need for it)
-    print 'correcting barcodes...'
+    if get_verbosity(config_params) >= 1:
+        print 'correcting barcodes...'
     barcode_correcting_map = correct_barcode_map(config_params, barcodes_in_data, barcode_to_gene)
-    print 'number of barcodes that will be counted: {}'.format(len(barcode_correcting_map))
+    if get_verbosity(config_params) >= 1:
+        print 'number of barcodes that will be counted: {}'.format(len(barcode_correcting_map))
 
     # Loop over the barseq file (index_tag\tbarcode\n) and assemble the matrix of read counts
-    print 'generating barseq matrix...'
+    if get_verbosity(config_params) >= 1:
+        print 'generating barseq matrix...'
     corrected_barcodes, index_tags, matrix = get_barseq_matrix(config_params, lane_id, barcode_to_gene, barcode_correcting_map, index_tag_to_condition)
 
-    print 'number of barcodes: {}'.format(len(corrected_barcodes))
-    print 'number of index tags: {}'.format(len(index_tags))
-    print 'matrix shape: {0} rows x {1} columns'.format(*matrix.shape)
+    if get_verbosity(config_params) >= 1:
+        print 'number of barcodes: {}'.format(len(corrected_barcodes))
+        print 'number of index tags: {}'.format(len(index_tags))
+        print 'matrix shape: {0} rows x {1} columns'.format(*matrix.shape)
 
     # Generate reports for index tags and barcodes
-    print 'generating reports...'
+    if get_verbosity(config_params) >= 1:
+        print 'generating reports...'
     generate_reports(config_params, lane_id, corrected_barcodes, index_tags, matrix, total_counts, common_primer_counts)
 
     # Convert the barcodes to their condition names and unique gene/barcode names
@@ -372,7 +383,8 @@ def main(config_file, lane_id):
     condition_ids = np.array([index_tag_to_condition[tag] for tag in index_tags])
 
     # Dump out the final count matrix to file - other scripts will read it and turn it into a readable matrix/CDT
-    print 'dumping count matrix...'
+    if get_verbosity(config_params) >= 1:
+        print 'dumping count matrix...'
     dump_count_matrix(config_params, lane_id, barcode_gene_ids, condition_ids, matrix)
 
     # Remove the temporary barseq file

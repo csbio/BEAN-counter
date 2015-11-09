@@ -19,6 +19,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
+from cg_common_functions import *
 
 sys.path.append(os.path.join(barseq_path, 'lib/python2.7/site-packages')) 
 from mlabwrap import mlab
@@ -80,9 +81,13 @@ def filter_dataset_for_include(dataset, sample_table):
     include_screen_names = include_table['screen_name']
     include_expt_ids = include_table['expt_id']
     include_condition_ids = np.array(list(it.izip(include_screen_names, include_expt_ids)))
-    
+
     include_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, include_condition_ids)])
     
+    if get_verbosity(config_params) >= 2:
+        print condition_ids
+        print include_condition_ids
+        print include_condition_indices
     filtered_condition_ids = condition_ids[include_condition_indices]
     filtered_matrix = matrix[:, include_condition_indices]
 
@@ -154,19 +159,25 @@ def normalizeUsingAllControlsAndSave(config_params, outfolder, dataset, control_
     control_matrix[control_matrix < control_detection_limit] = np.nan
     # Compute the mean control profile
     mean_control_profile = np.log( np.nanmean( control_matrix, axis=1 ))
-    # print mean_control_profile
-    # print mean_control_profile.mean()
-    #print x.shape
+    if get_verbosity(config_params) >= 2:
+        print 'mean control profile:'
+        print mean_control_profile
+        print 'mean control profile shape:'
+        print x.shape
+        print 'mean of mean control profile:'
+        print mean_control_profile.mean()
 
     # Replace each profile in the matrix with a smoothed profile
     # In the process, set the counts for any strain under the sample count detection limit
     # to the sample count detection limit. This prevents logging of zero values
     for j in range(matrix.shape[1]):
-        #print j
+        if get_verbosity(config_params) >= 3:
+            print j
         y = matrix[:, j]
         y[y < sample_detection_limit] = sample_detection_limit
         y_log = np.log(y)
-        #print y
+        if get_verbosity(config_params) >= 3:
+            print y
         matrix[:, j] = smooth(mean_control_profile, y_log)
     
     # Dump out the lowess-normalized matrix
@@ -183,7 +194,6 @@ def deviations_globalmean(config_params, outfolder, lowess_dataset, mean_control
     
     # control_matrix_gene_barcode_ids, control_matrix_condition_ids, control_matrix = get_control_dataset(lowess_dataset, control_condition_ids)
     
-    #print type(allcontrols)
     # Subtract the mean control profile from each profile in the lowess-normalized matrix
     # mean_control_profile = np.log( np.nanmean( control_matrix, axis=1 ))
     for j in range(matrix.shape[1]):
@@ -203,7 +213,6 @@ def getAsymmetricSigmaForScipyMatrix(raw_mean_control_profile, dev_control_matri
     repeated_raw_mean_control_profile = np.zeros((0, 1))
     raw_mean_control_profile = np.matrix(raw_mean_control_profile).transpose()
     for i in range(dev_control_matrix.shape[1]):
-        #print allcontrols.shape, diffcontrols[:, [i]].shape
         dev_control_matrix_tall = np.vstack((dev_control_matrix_tall, dev_control_matrix[:, [i]]))
         repeated_raw_mean_control_profile = np.vstack((repeated_raw_mean_control_profile, raw_mean_control_profile))
     dev_control_matrix_tall = np.array(dev_control_matrix_tall)
@@ -211,8 +220,10 @@ def getAsymmetricSigmaForScipyMatrix(raw_mean_control_profile, dev_control_matri
     neg = dev_control_matrix_tall < 0
     dev_control_matrix_tall_squared = dev_control_matrix_tall**2
     lowess = np.zeros(dev_control_matrix_tall.shape)
-    #print xs[pos],  allcontrols_squared[pos]
-    #print xs.shape, allcontrols_squared.shape, pos.shape, scipy.nonzero(pos)[0].shape[0]
+    for i in range(dev_control_matrix.shape[1]):
+        if get_verbosity(config_params) >= 3:
+            print dev_control_matrix_tall[pos],  dev_control_matrix_tall_squared[pos]
+            print dev_control_matrix_tall.shape, dev_control_matrix_tall_squared.shape, pos.shape, scipy.nonzero(pos)[0].shape[0]
     lowess[pos] = np.array( mlab.smooth(repeated_raw_mean_control_profile[pos],  dev_control_matrix_tall_squared[pos] , 0.3, 'lowess')  ).transpose()[0]
     lowess[neg] = np.array( mlab.smooth(repeated_raw_mean_control_profile[neg],  dev_control_matrix_tall_squared[neg] , 0.3, 'lowess')  ).transpose()[0]
     lowess_pos = np.zeros(raw_mean_control_profile.shape) + np.nan
@@ -223,8 +234,6 @@ def getAsymmetricSigmaForScipyMatrix(raw_mean_control_profile, dev_control_matri
                 lowess_pos[i] = lowess[j]
             else:
                 lowess_neg[i] = lowess[j]
-    #print scipy.nonzero(wellbehaved(xs))[0].shape[0]
-    #print scipy.nonzero(wellbehaved(allcontrols))[0].shape[0]
     lowess_symmetric = np.array( mlab.smooth(repeated_raw_mean_control_profile,  dev_control_matrix_tall, 'lowess')  ).transpose()[0]
 
     return np.sqrt( lowess_neg ).real , np.sqrt( lowess_pos ).real, np.sqrt(lowess_symmetric[range(raw_mean_control_profile.shape[0])]).real
@@ -279,7 +288,6 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
 def main(config_file, lane_id):
     
     # Read in the config params
-    # print 'parsing parameters...'
     config_params = cfp.parse(config_file)
     sample_table = get_sample_table(config_params)
 
@@ -298,21 +306,25 @@ def main(config_file, lane_id):
     control_condition_ids = get_control_condition_ids(dataset, sample_table)
 
     # Proceed with algorithm to obtain chemical genetic interaction zscores (scaled deviations)
-    print "Normalizing ... ",
+    if get_verbosity(config_params) >= 1:
+        print "Normalizing ... "
     normalized_dataset, mean_control_profile = normalizeUsingAllControlsAndSave(config_params, outfolder, filtered_dataset, control_condition_ids, lane_id)
-    print "Column means: "
-    print np.nanmean(normalized_dataset[2], axis = 0)
-    print "Done"
-    print "Calculating deviations ... ",
+    if get_verbosity(config_params) >= 1:
+        print "Column means: "
+        print np.nanmean(normalized_dataset[2], axis = 0)
+        print "Done"
+        print "Calculating deviations ... "
     deviation_dataset = deviations_globalmean(config_params, outfolder, normalized_dataset, mean_control_profile, lane_id)
-    print "Column means: "
-    print np.nanmean(deviation_dataset[2], axis = 0)
-    print "Done"
-    print "Scaling interactions ... ",
+    if get_verbosity(config_params) >= 1:
+        print "Column means: "
+        print np.nanmean(deviation_dataset[2], axis = 0)
+        print "Done"
+        print "Scaling interactions ... "
     scaled_dev_dataset = scaleInteractions(config_params, outfolder, deviation_dataset, filtered_dataset, control_condition_ids, lane_id)
-    print "Column means: "
-    print np.nanmean(scaled_dev_dataset[2], axis = 0)
-    print "Done"
+    if get_verbosity(config_params) >= 1:
+        print "Column means: "
+        print np.nanmean(scaled_dev_dataset[2], axis = 0)
+        print "Done"
     
 # call: python counts_to_zscores.py <config_file> <lane_id>
 if '__name__' == '__main__':

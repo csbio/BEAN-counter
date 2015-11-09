@@ -21,6 +21,7 @@ sys.path.append('./lib')
 import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
+from cg_common_functions import *
 
 
 def get_sample_table(config_params):
@@ -60,7 +61,8 @@ def combine_zscore_matrices(config_params):
     condition_id_list = []
 
     for lane_id in all_lane_ids:
-        print lane_id
+        if get_verbosity(config_params) >= 2:
+            print lane_id
         lane_interactions_path = get_lane_interactions_path(config_params, lane_id)
         lane_interactions_filename = os.path.join(lane_interactions_path, '{}_scaled_dev.dump.gz'.format(lane_id))
         f = gzip.open(lane_interactions_filename)
@@ -110,7 +112,8 @@ def compute_max_correlation_barcode_specific_offenders(template_profile_ids, tem
 
     # Match the template profiles to the condition profiles that match them the best
     corr_mat_inds = corr_mat == max_corrs[:, None]
-    print corr_mat_inds[0:10]
+    if get_verbosity(config_params) >= 2:
+        print corr_mat_inds[0:10]
     template_profile_ids = np.array(template_profile_ids)
     most_correlated_template_profiles = np.array([','.join(template_profile_ids[bool_inds]) for bool_inds in corr_mat_inds])
 
@@ -194,11 +197,12 @@ def get_control_index_tag_correlations(control_dataset, sample_table):
 
     # rowvar = 0 forces correlation computation on the columns of the matrix
     corr_mat = np.corrcoef(matrix, rowvar = 0)
-    print corr_mat
 
     condition_id_to_index_tag = get_condition_id_to_index_tag(sample_table)
     index_tags = np.unique([condition_id_to_index_tag[tuple(condition_id)] for condition_id in condition_ids])
-    print index_tags[0:10]
+    if get_verbosity(config_params) >= 2:
+        print corr_mat
+        print index_tags[0:10]
 
     index_tag_to_conditions = {}
     for mapping in condition_id_to_index_tag.iteritems():
@@ -210,7 +214,8 @@ def get_control_index_tag_correlations(control_dataset, sample_table):
         if not index_tag_to_conditions.has_key(index_tag):
             index_tag_to_conditions[index_tag] = []
         index_tag_to_conditions[index_tag].append(condition_id)
-    print index_tag_to_conditions.items()[0:10]
+    if get_verbosity(config_params) >= 2:
+        print index_tag_to_conditions.items()[0:10]
 
     # For each index tag, get the correlation matrix that corresponds only to that tag.
     # Then, take the nanmean of the upper triangular of that matrix to get that index tag's
@@ -219,9 +224,10 @@ def get_control_index_tag_correlations(control_dataset, sample_table):
     for index_tag in index_tags:
         # Get indices of correlation matrix (symmetric)
         index_tag_condition_ids = np.vstack(index_tag_to_conditions[index_tag])
-        print index_tag_condition_ids
         index_tag_inds = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, index_tag_condition_ids)], dtype = np.int)
-        print index_tag_inds
+        if get_verbosity(config_params) >= 3:
+            print index_tag_condition_ids
+            print index_tag_inds
         # This bugs out, probably when there is one are zero columns
         # in the correlation matrix with a particular index tag.
         # Solution? Append a big, fat "0.000" to the array of index
@@ -232,7 +238,8 @@ def get_control_index_tag_correlations(control_dataset, sample_table):
         if index_tag_inds.size > 1:
             index_tag_ind_1, index_tag_ind_2 = np.hsplit(np.vstack(it.combinations(index_tag_inds, 2)), 2)
             one_index_tag_corr = corr_mat[np.squeeze(index_tag_ind_1), np.squeeze(index_tag_ind_2)]
-            # print index_tag_corr_mat
+            if get_verbosity(config_params) >= 3:
+                print index_tag_corr_mat
             mean_index_tag_corrs.append(np.nanmean(one_index_tag_corr))
         else:
             # I believe appending a 'nan' is the most appropriate
@@ -315,7 +322,6 @@ def plot_control_index_tag_correlations(index_tag_corrs, index_tag_path):
 def main(config_file):
 
     # Read in the config params
-    # print 'parsing parameters...'
     config_params = cfp.parse(config_file)
     sample_table = get_sample_table(config_params)
 
