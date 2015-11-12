@@ -214,6 +214,10 @@ def cluster_zscore_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_stri
     f = get_clustered_zscore_matrix_filename(config_params, lane_id)
     record.save(f, rows_tree, cols_tree)
 
+    # return the filename so the cdt/atr/gtr files can be copied to a directory with all
+    # of the other clustergrams and eventually tarred/gzipped for distribution!
+    return f
+
 
 
 
