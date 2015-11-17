@@ -365,7 +365,7 @@ def main(config_file):
     dump_filtered_count_matrix(config_params, dataset)
 
 # call: python filter_final_count_matrix.py <config_file>
-if '__name__' == '__main__':
+if __name__ == '__main__':
     if len(sys.argv) != 2:
         print 'Usage: python filter_final_count_matrix.py <config_file>'
     else:

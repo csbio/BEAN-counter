@@ -94,7 +94,7 @@ def main(config_file):
     dump_dataset(dataset, combined_count_filename)
 
 # call: python merge_count_matrices.py <config_file>
-if '__name__' == '__main__':
+if __name__ == '__main__':
     if len(sys.argv) != 2:
         print 'Usage: python merge_count_matrices.py <config_file>'
     else:

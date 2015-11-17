@@ -360,7 +360,7 @@ def main(config_file):
     plot_control_index_tag_correlations(control_index_tag_correlations_sorted, index_tag_path)
 
 # call: python mtag_correlations.py <config_file>
-if '__name__' == '__main__':
+if __name__ == '__main__':
     if len(sys.argv) != 2:
         print 'Usage: python mtag_correlations.py <config_file>'
     else:

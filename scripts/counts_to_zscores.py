@@ -327,7 +327,7 @@ def main(config_file, lane_id):
         print "Done"
     
 # call: python counts_to_zscores.py <config_file> <lane_id>
-if '__name__' == '__main__':
+if __name__ == '__main__':
     if len(sys.argv) != 3:
         print 'Usage: python counts_to_zscores.py <config_file> <lane_id>'
     else:
