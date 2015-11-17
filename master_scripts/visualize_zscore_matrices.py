@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# This script converts all dumped count matrices into CDTs,
+# This script converts all dumped z-score matrices into CDTs,
 # which are visualized using Java Treeview. I anticipate
 # future versions will be smart and avoid re-clustering
 # datasets if the data themselves have not changed.
