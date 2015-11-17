@@ -110,8 +110,8 @@ def plot_one_pr_curve(comps_removed, precision_vectors, recall_vectors, ymax, ba
     ax.set_ylim([0, ymax])
     ax.set_ylabel('Precision')
     ax.set_xlabel('Recall')
-    lgd = ax.legend(bbox_to_anchor = (1.05, 1), loc = 2, title = "Number of components\nremoved (LDA)")
-    plt.title('Removing {}\nbatch effects'.format(batch_column))
+    lgd = ax.legend(bbox_to_anchor = (1.05, 1), loc = 2, title = "Number of components\nremoved")
+    plt.title('Precision-recall analysis of\n"{}" batch effects'.format(batch_column))
     plt.savefig(filename, bbox_extra_artists = ([lgd]), bbox_inches = 'tight')
 
 def plot_histograms(within_batch_corrs, between_batch_corrs, ncomps, batch_column, hist_folder):
@@ -136,8 +136,8 @@ def plot_histograms(within_batch_corrs, between_batch_corrs, ncomps, batch_colum
     ax.set_xlim([-1, 1])
     ax.set_xlabel('Average correlation within/between batch(es)')
     ax.set_ylabel('Density')
-    lgd = ax.legend(bbox_to_anchor = (1.05, 1), loc = 2, title = "Correlations")
-    plt.title('{} batch correlations,\n{} LDA components removed'.format(batch_column, ncomps))
+    lgd = ax.legend(bbox_to_anchor = (1.05, 1), loc = 2, title = "Correlation")
+    plt.title('{} batch correlations,\n{} components removed'.format(batch_column, ncomps))
     plt.savefig(filename, bbox_extra_artists = ([lgd]), bbox_inches = 'tight')
 
 def print_pr_values(precision, recall, threshold, ncomps, pr_folder):
@@ -210,11 +210,12 @@ def main(dataset_3d, sample_table, batch_column, output_folder, verbosity, num_t
         # Get the matrix with 'ncomps' components removed
         matrix = matrix_3d[ncomps]
         
-        # Create a small matrix and set of batch classes for faster testing!
-        small_batches_uniq = np.unique(batches)[0:num_test_batches]
-        small_cond_inds = np.array([i for i, batch in enumerate(batches) if batch in small_batches_uniq])
-        batches = batches[small_cond_inds]
-        matrix = matrix[:, small_cond_inds]
+        if num_test_batches > -1:
+            # Create a small matrix and set of batch classes for faster testing!
+            small_batches_uniq = np.unique(batches)[0:num_test_batches]
+            small_cond_inds = np.array([i for i, batch in enumerate(batches) if batch in small_batches_uniq])
+            batches = batches[small_cond_inds]
+            matrix = matrix[:, small_cond_inds]
 
         # Compute the correlation matrix here, since it is used for both the
         # PR curves AND the histograms!
@@ -306,7 +307,8 @@ if __name__ == '__main__':
     if args.num_test_batches is not None:
         assert args.num_test_batches.isdigit(), "--num_test_batches option must be an integer"
         num_test_batches = int(args.num_test_batches)
-
+    else:
+        num_test_batches = -1
 
     main(dataset, sample_table, batch_column, output_folder, verbosity, num_test_batches)
 
