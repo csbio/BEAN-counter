@@ -46,6 +46,25 @@ def a_is_row_in_b(a, b):
 
     return np.any(np.all(a == b, axis = 1))
 
+def filter_dataset_by_conditions(conditions, matrix, conds_to_keep):
+
+    inds_to_keep = np.array([i for i, val in enumerate(conditions) if a_is_row_in_b(val, conds_to_keep)])
+    # print inds_to_keep
+    filtered_conditions = conditions[inds_to_keep]
+    filtered_matrix = matrix[:, inds_to_keep]
+
+    return [filtered_conditions, filtered_matrix]
+
+def get_include_col_conditions(sample_table, include_col):
+
+    # Do some checks to make sure the columns are in the sample table
+    assert include_col in sample_table.columns, "Specified include column '{}' not in the sample table".format(include_col)
+    
+    bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False}
+    include_vals = [bool_dict[x] for x in sample_table[include_col]]
+    conditions = np.array(sample_table.loc[include_vals, ['screen_name', 'expt_id']])
+    return conditions
+
 def get_lda_pr_curve_filename(folder, ymax):
 
     return os.path.join(folder, 'PR_batch-effect_{:.1f}.pdf'.format(ymax))
@@ -67,6 +86,65 @@ def get_labels_from_conditions(conditions, sample_table, label_name):
     sample_table = sample_table.set_index(['screen_name', 'expt_id'])
     conditions_tuple = [tuple(x) for x in conditions]
     return np.array(sample_table[label_name].ix[conditions_tuple])
+
+def get_nonreplicating_conditions(sample_table, batch_col, nondup_col_list):
+
+    # Do some checks to make sure the columns are in the sample table
+    assert batch_col in sample_table.columns, "Specified batch column '{}' not in the sample table".format(batch_col)
+    for col in nondup_col_list:
+        assert col in sample_table.columns, "Specified column '{}' to prevent within-batch duplication is not in the sample table".format(col)
+
+    # Create an empty dictionary of dictionaries. The first layer of dictionaries is for the name of the
+    # property that should not be duplicated within the same batch (for example, the basic name of the
+    # condition, or the chemical ID of the drug, etc). For each of these non-duplicating properties, a
+    # dictionary is constructed with one key for each batch. Each of the values for each property --> tag
+    # combination is a set containing the actual property values that must not be duplicated. This dictionary
+    # is built up and then checked to see if any new property/tag combinations have already occurred.
+    nondup_dict = {}
+    for col in nondup_col_list:
+        nondup_dict[col] = {}
+        for tag in set(sample_table[batch_col]):
+            nondup_dict[col][tag] = set()
+
+    # Iterate over the rows of the sample table, build up the list of conditions
+    # that will be used to get the components for removing batch effects.
+    bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False}
+    inds = []
+    for i, row in sample_table.iterrows():
+        # First, if the row has been slated to not be included, then don't include! Move on to the next row
+        # print row
+        if not bool_dict[row['include?']]:
+            continue
+        # Accept all control conditions, because they should not show strong correlations with batch 
+        # identity unless there is a batch effect
+        if bool_dict[row['control?']]:
+            inds.append(i)
+        else:
+            accept = True
+            tag = row[batch_col]
+            for col in nondup_col_list:
+                if row[col] in nondup_dict[col][tag]:
+                    # If any property (for example, the condition name) has already occurred for a certain
+                    # tag, flag that condition as unacceptable to accept as a nonduplicating condition
+                    accept = False
+            if accept:
+                inds.append(i)
+                for col in nondup_col_list:
+                    nondup_dict[col][tag].add(row[col])
+
+    nonreplicating_conditions = np.array([row[['screen_name', 'expt_id']] for i, row in sample_table.iterrows() if i in inds])
+
+    return nonreplicating_conditions
+
+def filter_3d_dataset_by_conditions(conditions, matrix_3d, conds_to_keep):
+
+    inds_to_keep = np.array([i for i, val in enumerate(conditions) if a_is_row_in_b(val, conds_to_keep)])
+    #print inds_to_keep
+    #print len(inds_to_keep)
+    filtered_conditions = conditions[inds_to_keep]
+    filtered_matrix_3d = matrix_3d[:, :, inds_to_keep]
+
+    return [filtered_conditions, filtered_matrix_3d]
 
 def compute_PR_vectors(corr_mat, batches, verbosity):
 
@@ -181,20 +259,57 @@ def print_corrs(groups, corrs, n, string, ncomps, hist_folder):
     f.close()
     return None
 
-def main(dataset_3d, sample_table, batch_column, output_folder, verbosity, num_test_batches):
+def main(dataset_3d, sample_table, batch_column, nondup_col_list, include_column, output_folder, verbosity, num_test_batches):
 
     # Load in the entire 3-d stacked matrix and dimension names!
     components_removed, barcodes, conditions, matrix_3d = dataset
 
+    if verbosity >= 2:
+        print 'matrix dimensions should be: {}, {}, {}'.format(len(components_removed), len(barcodes), len(conditions))
+        print 'matrix dimensions are: {}'.format(matrix_3d.shape)
+
+    # If an include column was specified:
+    # include only conditions that were specified in the optional "include_column" argument
+    if include_column is not None:
+        batch_viz_include_cond = get_include_col_conditions(sample_table, include_column)
+        if verbosity >= 2:
+            print batch_viz_include_cond[0:10]
+            print conditions[0:10]
+        sample_table = filter_sample_table(sample_table, batch_viz_include_cond)
+        conditions, matrix_3d = filter_3d_dataset_by_conditions(conditions, matrix_3d, batch_viz_include_cond)
+    
+    if verbosity >= 2:
+        print 'matrix dimensions should be: {}, {}, {}'.format(len(components_removed), len(barcodes), len(conditions))
+        print 'matrix dimensions are: {}'.format(matrix_3d.shape)
+
+    # If columns were specified for values that should not be duplicated in the same batch...
+    if nondup_col_list != ['none']:
+        # Get the indices of the nonreplicating conditions
+        nonrep_cond_inds = get_nonreplicating_conditions(sample_table, batch_column, nondup_col_list)
+
+        # Filter the 3d matrix such that it only contains the nonreplicating conditions
+        conditions, matrix_3d = filter_3d_dataset_by_conditions(conditions, matrix_3d, nonrep_cond_inds)
+        if verbosity >= 2:
+            print conditions[0:10]
+
+    if verbosity >= 2:
+        print 'matrix dimensions should be: {}, {}, {}'.format(len(components_removed), len(barcodes), len(conditions))
+        print 'matrix dimensions are: {}'.format(matrix_3d.shape)
+    
     # Filter the sample table, so that no samples that have been eliminated
     # are used in further processing
     sample_table = filter_sample_table(sample_table, conditions)
    
     if verbosity >= 2:
-        print sample_table
+        print sample_table[0:10]
+        print sample_table.shape
 
     # Get a vector of the batches that lines up with the vectors of screen_name, expt_id, name, etc
     batches = get_labels_from_conditions(conditions, sample_table, batch_column)
+    if verbosity >= 2:
+        print len(conditions)
+        print len(batches)
+        print matrix_3d.shape
 
     # For each LDA matrix, get precision and recall!
     precisions = []
@@ -273,6 +388,8 @@ if __name__ == '__main__':
     parser.add_argument('dataset_file', help = 'The dataset on which to perform batch correction.')
     parser.add_argument('sample_table', help = 'The sample table corresponding to the dataset.')
     parser.add_argument('batch_column', help = 'The column from the sample table that defines the batches.')
+    parser.add_argument('nondup_columns', help = 'Comma delimited. The columns that contain condition identifiers that should not be duplicated within the same batch.')
+    parser.add_argument('-incl', '--include_column', help = 'Column in the sample table that specifies True/False whether or not the condition in that row should be included in the batch effect evaluation/visualization.')
     parser.add_argument('-v', '--verbosity', help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
     parser.add_argument('--num_test_batches', help = 'The number of unique batches to use. ONLY for testing purposes. To be used to reduce time and benchmark, not to generate accurate results')
 
@@ -299,6 +416,19 @@ if __name__ == '__main__':
 
     batch_column = args.batch_column
 
+    # If the user specifies "none", then no columns are used to prevent duplicates of
+    # certain values within a particular batch
+    if args.nondup_columns is 'none':
+        nondup_col_list = ['none']
+    else:
+        nondup_col_list = args.nondup_columns.split(',')
+
+    # Take care of the include column optional argument
+    if args.include_column is not None:
+        include_column = args.include_column
+    else:
+        include_column = None
+
     input_folder = os.path.dirname(dataset_file)
     output_folder = os.path.join(input_folder, '{}_effect_eval'.format(batch_column))
     if not os.path.isdir(output_folder):
@@ -310,5 +440,5 @@ if __name__ == '__main__':
     else:
         num_test_batches = -1
 
-    main(dataset, sample_table, batch_column, output_folder, verbosity, num_test_batches)
+    main(dataset, sample_table, batch_column, nondup_col_list, include_column, output_folder, verbosity, num_test_batches)
 
