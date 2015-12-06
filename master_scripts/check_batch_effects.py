@@ -247,7 +247,7 @@ def print_corrs(groups, corrs, n, string, ncomps, hist_folder):
     corr_folder = os.path.join(hist_folder, 'correlation_data')
     if not os.path.isdir(corr_folder):
         os.makedirs(corr_folder)
-    filename = os.path.join(corr_folder, '{}_correlations_{}-components-removed.txt'.format(string, ncomps))
+    filename = os.path.join(corr_folder, '{}_correlations_{}-components-removed.txt.gz'.format(string, ncomps))
 
     # Sort the correlations and the groups in descending order!
     # Sorting using the negative of corrs forces NaNs to stay
@@ -258,7 +258,7 @@ def print_corrs(groups, corrs, n, string, ncomps, hist_folder):
     groups_sorted = [tuple(x) for x in np.array(groups)[sort_inds]]
     n_sorted = n[sort_inds]
 
-    f = open(filename, 'wt')
+    f = gzip.open(filename, 'wt')
     f.write('batch_1\tbatch_2\tavg_correlation\tnum_non-NaN-correlations\n')
     
     for i, group in enumerate(groups_sorted):
