@@ -57,11 +57,19 @@ def filter_dataset_by_conditions(conditions, matrix, conds_to_keep):
 
 def get_include_col_conditions(sample_table, include_col):
 
+    # Allow a leading exclamation point to negate a column. Default is false
+    negate = False
+    if include_col.startswith('!'):
+        negate = True
+        include_col = include_col[1:]
+    
     # Do some checks to make sure the columns are in the sample table
     assert include_col in sample_table.columns, "Specified include column '{}' not in the sample table".format(include_col)
     
     bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False}
     include_vals = [bool_dict[x] for x in sample_table[include_col]]
+    if negate:
+        include_vals = np.invert(include_vals)
     conditions = np.array(sample_table.loc[include_vals, ['screen_name', 'expt_id']])
     return conditions
 
