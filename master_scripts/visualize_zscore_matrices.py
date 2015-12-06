@@ -84,7 +84,7 @@ if get_verbosity(config_params) >= 2:
     print filenames
 # Now, create a temporary folder to hold all of the clustergrams for tarring/gzipping
 # This temp folder name is also the name of the tarred archive. Cool, right?!
-tmp_dir = get_temp_clustergram_name(config_params, 'all-zscore-clustergrams')
+tmp_dir = get_temp_clustergram_name(config_params['output_folder'], 'all-zscore-clustergrams')
 if get_verbosity(config_params) >= 2:
     print tmp_dir
 # Since it's timestamped, directory should never exist with this exact name

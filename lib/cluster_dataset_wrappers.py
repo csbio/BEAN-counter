@@ -98,9 +98,8 @@ def get_clustered_zscore_matrix_filename(config_params, lane_id):
     lane_interactions_path = get_lane_interactions_path(config_params, lane_id)
     return os.path.join(lane_interactions_path, '{}_scaled_dev'.format(lane_id))
 
-def customize_strains(strains, config_params, fmt_string):
+def customize_strains(strains, barcode_table, fmt_string):
 
-    barcode_table = get_barcode_table(config_params)
     barcode_table = barcode_table.set_index(['Strain_ID', 'Barcode'], drop = False)
     barcode_table_cols = barcode_table.columns.values
     
@@ -123,9 +122,8 @@ def customize_strains(strains, config_params, fmt_string):
 
     return np.array(custom_strains)
 
-def customize_conditions(conditions, config_params, fmt_string):
+def customize_conditions(conditions, sample_table, fmt_string):
 
-    sample_table = get_sample_table(config_params)
     sample_table = sample_table.set_index(['screen_name', 'expt_id'], drop = False)
     sample_table_cols = sample_table.columns.values
     
@@ -204,8 +202,10 @@ def cluster_zscore_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_stri
         return None
     
     # Customize the strain and condition names for interpretable visualization!
-    custom_genes = customize_strains(genes, config_params, strain_fmt_string)
-    custom_conditions = customize_conditions(conditions, config_params, cond_fmt_string)
+    strain_table = get_barcode_table(config_params)
+    sample_table = get_sample_table(config_params)
+    custom_genes = customize_strains(genes, strain_table, strain_fmt_string)
+    custom_conditions = customize_conditions(conditions, sample_table, cond_fmt_string)
 
     dataset = [custom_genes, custom_conditions, matrix]
     
@@ -218,6 +218,23 @@ def cluster_zscore_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_stri
     # of the other clustergrams and eventually tarred/gzipped for distribution!
     return f
 
+def cluster_one_stacked_matrix(dataset, matrix_id, strain_table, sample_table, strain_fmt_string, cond_fmt_string, output_folder):
+
+    genes, conditions, matrix = dataset
+
+    custom_genes = customize_strains(genes, strain_table, strain_fmt_string)
+    custom_conditions = customize_conditions(conditions, sample_table, cond_fmt_string)
+
+    dataset = [custom_genes, custom_conditions, matrix]
+    
+    record, rows_tree, cols_tree = clus.cluster(dataset)
+
+    f = os.path.join(output_folder, matrix_id)
+    record.save(f, rows_tree, cols_tree)
+
+    # return the filename so the cdt/atr/gtr files can be copied to a directory with all
+    # of the other clustergrams and eventually tarred/gzipped for distribution!
+    return f
 
 
 
