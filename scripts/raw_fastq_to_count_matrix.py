@@ -154,11 +154,11 @@ def is_fastq_filename(filename):
     if ext_split_f[0] == filename:
         return False
     # Looks for .fastq.gz and .fastq.bz
-    elif ext_split_f[split_len - 2] == 'fastq':
-        if ext_split[split_len - 1] in ['gz', 'bz']:
+    elif ext_split_f[split_len - 2].lower() == 'fastq':
+        if ext_split_f[split_len - 1].lower() in ['gz', 'bz']:
             return True
     # Looks for only .fastq
-    elif ext_split_f[split_len - 1] == 'fastq':
+    elif ext_split_f[split_len - 1].lower() == 'fastq':
         return True
     else:
         return False
