@@ -139,6 +139,30 @@ def fastq_to_barseq(config_params, species_config_params, lane_id):
     return total_counts, common_primer_counts, barcodes_in_data, index_tags_in_data
 
 
+def is_fastq_filename(filename):
+    '''
+    Checks to see if the last extension is "fastq" or if the
+    second-to-last extension is "fastq" with an appropriate extension.
+    Designed to accommodate compressed files and exclude md5 checksums.
+    If files are doubly-compressed for some reason, this will not read
+    them.
+    '''
+
+    ext_split_f = filename.rsplit('.', 2)
+    split_len = len(ext_split_f)
+    # If there is no extension, ignore the file
+    if ext_split_f[0] == filename:
+        return False
+    # Looks for .fastq.gz and .fastq.bz
+    elif ext_split_f[split_len - 2] == 'fastq':
+        if ext_split[split_len - 1] in ['gz', 'bz']:
+            return True
+    # Looks for only .fastq
+    elif ext_split_f[split_len - 1] == 'fastq':
+        return True
+    else:
+        return False
+
 def read_fastq(config_params, species_config_params, folder, out_path, lane_id):
 
     common_primer_start = int(species_config_params['common_primer_start'])
@@ -156,7 +180,7 @@ def read_fastq(config_params, species_config_params, folder, out_path, lane_id):
 
     of = open(out_filename, 'wt')
 
-    fastq_filenames = [os.path.join(folder, x) for x in os.listdir(folder) if x.count('fastq') > 0]
+    fastq_filenames = [os.path.join(folder, x) for x in os.listdir(folder) if is_fastq_filename(x)]
 
     common_primer_count = 0
     barcodes = set()
