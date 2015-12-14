@@ -16,14 +16,13 @@ def get_verbosity(config_params):
 def get_temp_clustergram_name(output_folder, name):
 
     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    clustergram_dist_dir = get_clustergram_distribution_dir(output_folder)
-    return os.path.join(clustergram_dist_dir,'{}_{}'.format(timestamp, name))
+    return os.path.join(output_folder,'{}_{}'.format(timestamp, name))
 
-def get_distribution_dir(output_folder):
-
-    return os.path.join(output_folder, 'for_distribution')
-
-def get_clustergram_distribution_dir(output_folder):
-
-    return os.path.join(get_distribution_dir(output_folder), 'clustergrams')
+# def get_distribution_dir(output_folder):
+#
+#    return os.path.join(output_folder, 'for_distribution')
+#
+#def get_clustergram_distribution_dir(output_folder):
+#
+#    return os.path.join(get_distribution_dir(output_folder), 'clustergrams')
 
