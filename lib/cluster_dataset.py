@@ -13,7 +13,7 @@ import StringIO
 import sys
 import os
 
-def cluster(dataset):
+def cluster(dataset, new_matrix = None):
 
     genes, conditions, matrix = dataset
     print 'shape of original matrix:'
@@ -103,6 +103,12 @@ def cluster(dataset):
 
     # Add the NaNs back into the matrix, so it can be visualized properly
     matrix[nan_inds] = np.nan
+
+    # If a "new_matrix" was specified, that means that we wanted to use the original dataset to
+    # get the clustering but then actually use a different matrix for the data. So, at this point
+    # we set the variable "matrix" to be the values of "new_matrix"
+    if new_matrix is not None:
+        matrix = new_matrix
 
     # Create a giant text string so that the input data can be turned into a "record" object
     row1 = 'ORF\tNAME\tGWEIGHT\t' + '\t'.join(conditions)

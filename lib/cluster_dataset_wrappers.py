@@ -218,7 +218,7 @@ def cluster_zscore_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_stri
     # of the other clustergrams and eventually tarred/gzipped for distribution!
     return f
 
-def cluster_one_stacked_matrix(dataset, matrix_id, strain_table, sample_table, strain_fmt_string, cond_fmt_string, output_folder):
+def cluster_one_stacked_matrix(dataset, matrix_id, strain_table, sample_table, strain_fmt_string, cond_fmt_string, output_folder, new_matrix = None):
 
     genes, conditions, matrix = dataset
 
@@ -227,7 +227,7 @@ def cluster_one_stacked_matrix(dataset, matrix_id, strain_table, sample_table, s
 
     dataset = [custom_genes, custom_conditions, matrix]
     
-    record, rows_tree, cols_tree = clus.cluster(dataset)
+    record, rows_tree, cols_tree = clus.cluster(dataset, new_matrix)
 
     f = os.path.join(output_folder, matrix_id)
     record.save(f, rows_tree, cols_tree)
