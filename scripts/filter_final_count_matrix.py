@@ -170,8 +170,11 @@ def filter_dataset_for_barcode_specific_patterns(dataset, config_params):
     if get_verbosity(config_params) >= 2:
         print 'condition_ids_to_remove:'
         print cond_ids_to_remove
-   
-    to_remove_idx = np.array([a_is_row_in_b(tuple(x[1]), cond_ids_to_remove) for x in sample_table[['screen_name', 'expt_id']].iterrows()])
+  
+    if cond_ids_to_remove != []:
+        to_remove_idx = np.array([a_is_row_in_b(tuple(x[1]), cond_ids_to_remove) for x in sample_table[['screen_name', 'expt_id']].iterrows()])
+    else:
+        to_remove_idx = np.array([False for x in sample_table[['screen_name', 'expt_id']].iterrows()])
     to_remove_table = sample_table[to_remove_idx]
     to_keep_table = sample_table[~to_remove_idx]
 
