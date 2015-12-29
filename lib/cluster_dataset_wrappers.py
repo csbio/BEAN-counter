@@ -109,12 +109,14 @@ def customize_strains(strains, barcode_table, fmt_string):
         raise ColumnError('{} barcode table column names contain commas,\nwhich must be addressed before visualizing'.format(num_with_commas))
 
     custom_columns = fmt_string.split(',')
+    assert all([x in barcode_table.columns for x in custom_columns]), "Not all of the specified columns are in the provided barcode table"
     custom_barcode_table = barcode_table[custom_columns]
     strain_keys = [tuple(strain) for strain in strains]
     
     custom_strains = []
     for strain in strain_keys:
         # print strain
+        assert strain in custom_barcode_table.index, "Strain {} in the dataset not found in the barcode table. Make sure you have specified the correct barcode table!".format(strain)
         custom_strain = custom_barcode_table.ix[strain].values
         custom_strain_strings = [str(x) for x in custom_strain]
         custom_strain_final = '_'.join(custom_strain_strings)
@@ -133,11 +135,13 @@ def customize_conditions(conditions, sample_table, fmt_string):
         raise ColumnError('{} sample table column names contain commas,\nwhich must be addressed before visualizing'.format(num_with_commas))
 
     custom_columns = fmt_string.split(',')
+    assert all([x in sample_table.columns for x in custom_columns]), "Not all of the specified columns are in the provided sample table"
     custom_sample_table = sample_table[custom_columns]
     condition_keys = [tuple(cond) for cond in conditions]
     
     custom_conditions = []
     for cond in condition_keys:
+        assert cond in custom_sample_table.index, "Condition {} in the dataset not found in the sample table. Make sure you have specified the correct sample table!".format(cond)
         custom_cond = custom_sample_table.ix[cond].values
         custom_cond_strings = [str(x) for x in custom_cond]
         custom_cond_final = '_'.join(custom_cond_strings)
