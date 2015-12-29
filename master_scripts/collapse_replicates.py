@@ -262,15 +262,17 @@ def main(dataset, sample_table, collapse_col, cor_cutoff, output_folder, cols_to
     num_digits = len(str(max(cond_ints)))
     string_conds = ['collapsed-' + str(x).zfill(num_digits + 1) for x in cond_ints]
 
-    # Create an array of the new collapsed condition ids
-    collapsed_conditions = np.array(collapsed_sample_table[['screen_name', 'expt_id']])
-
     # Add the condition ids into the sample table
     collapsed_sample_table['expt_id'] = string_conds
+
+    # Create an array of the new collapsed condition ids
+    collapsed_conditions = np.array(collapsed_sample_table[['screen_name', 'expt_id']])
 
     if verbosity >= 2:
         print 'Collapsed sample table:'
         print collapsed_sample_table
+        print 'Collapsed conditions:'
+        print collapsed_conditions[0:10]
 
     # Write the new sample table out to file!
     table_filename = os.path.join(output_folder, 'collapsed_sample_table.txt')
