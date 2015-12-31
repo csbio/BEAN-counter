@@ -3,16 +3,16 @@
 ###### File/folder locations
 
 # Where to put the results!
-output_folder: /project/chadm/chemical_genomics_data/datasets/RIKEN_2014_rescreen/RIKEN+RIKEN_RESCREEN_new-pipeline/output
+output_folder: /path/to/your/screen/output
 
 
 # Sample table (maps index tags and sequence lanes to sample information)
-sample_table_file: /project/chadm/chemical_genomics_data/datasets/RIKEN_2014_rescreen/RIKEN+RIKEN_RESCREEN_new-pipeline/master_decode_v4.txt
+sample_table_file: /path/to/your/screen/sample_table.txt
 
 
 # Lane location table (maps the lane column in the sample table to the folder
 # containing the raw sequencing data for that lane)
-lane_location_file: /project/chadm/chemical_genomics_data/datasets/RIKEN_2014_rescreen/RIKEN+RIKEN_RESCREEN_new-pipeline/lane_locations.txt
+lane_location_file: /path/to/your/screen/lane_locations.txt
 
 
 # Species (required for parsing PCR products, interpreting barcodes,
@@ -25,7 +25,7 @@ species_ID: S_cerevisiae_minipool
 # the "per-lane" rounds of processing and are removed in the step that creates the final filtered
 # count matrix from all lanes. This is just a '\n'-delimited file of the barcode sequences to be
 # removed
-barcodes_to_remove_file: /project/chadm/chemical_genomics_data/datasets/RIKEN_2014_rescreen/RIKEN+RIKEN_RESCREEN_new-pipeline/remove_GTR1_AVT5.txt
+barcodes_to_remove_file: /path/to/your/screen/remove_some_strains.txt
 
 # Should conditions matching the "barcode-specific" pattern (positive interactions for barcodes
 # beginning with one particular base) be removed? (can apply to small or large screens)
@@ -68,12 +68,12 @@ sample_detection_limit: 20
 # Strain quality cutoff. For a strain to pass, the fraction of conditions with 
 # read counts >= "strain_pass_read_count" must be >= "strain_pass_fraction".
 strain_pass_read_count: 20
-strain_pass_fraction: 0.5
+strain_pass_fraction: 0.25
 
 # Condition quality cutoff. For a condition to pass, the fraction of conditions with 
 # read counts >= "condition_pass_read_count" must be >= "condition_pass_fraction".
 condition_pass_read_count: 20
-condition_pass_fraction: 0.5
+condition_pass_fraction: 0.25
 
 # Index tag correlation cutoff. If the mean correlation of all DMSO conditions with a particular index tag is
 # above "index_tag_correlation_cutoff", all conditions with that index tag are removed from the dataset
