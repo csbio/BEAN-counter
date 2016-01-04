@@ -10,3 +10,8 @@ Features
 - Easy to use for processing raw fastq data to matrices of z-scores
 - Modular post-processing steps are highly customizable and can be used in any order
 - Efficient numpy implementations
+
+Documentation
+-------------
+Details about the software and how to install and run it are here:
+https://sites.google.com/site/barseqcounterdocs/
