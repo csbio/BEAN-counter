@@ -43,7 +43,7 @@ parser.add_argument('strain_table', help = 'The strain barcode table used to int
 parser.add_argument('sample_table', help = 'The sample table corresponding to the dataset.')
 parser.add_argument('strain_columns', help = 'The columns from the barcode table to be included in the visualization.')
 parser.add_argument('condition_columns', help = 'The columns from the sample table to be included in the visualization.')
-parser.add_argument('--new_dataset', help = 'A stacked matrix object, saved to file, from which the data, but not the clustering, if the output will come. The dataset must have the same rows and columns, and in the same order, as the data in the "dataset" argument')
+parser.add_argument('--new_dataset', help = 'A stacked matrix object, saved to file, from which the data, but not the clustering, of the output will come. The dataset must have the same rows and columns, and in the same order, as the data in the "dataset" argument')
 parser.add_argument('-v', '--verbosity', help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
 args = parser.parse_args()
 
