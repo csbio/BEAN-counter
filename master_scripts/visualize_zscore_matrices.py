@@ -30,9 +30,9 @@ import argparse
 
 # Parse the command line arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('-str_cols', '--strain_columns', help = 'The columns from the barcode table to be included in the visualization')
-parser.add_argument('-cond_cols', '--condition_columns', help = 'The columns from the sample table to be included in the visualization')
 parser.add_argument('config_file', help = 'The config file used to analyze the dataset')
+parser.add_argument('strain_columns', help = 'The columns from the barcode table to be included in the visualization')
+parser.add_argument('condition_columns', help = 'The columns from the sample table to be included in the visualization')
 
 args = parser.parse_args()
 
