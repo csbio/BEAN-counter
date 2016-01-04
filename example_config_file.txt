@@ -18,13 +18,12 @@ lane_location_file: /path/to/your/screen/lane_locations.txt
 # Species (required for parsing PCR products, interpreting barcodes,
 # and downstream functional analyses)
 # Species must correspond to a species name in the species_config file
-
 species_ID: S_cerevisiae_minipool
 
 # File that specifies which barcodes to remove from a dataset. Strains with this barcode survive
 # the "per-lane" rounds of processing and are removed in the step that creates the final filtered
 # count matrix from all lanes. This is just a '\n'-delimited file of the barcode sequences to be
-# removed
+# removed. This can be left blank if no strains need to be removed.
 barcodes_to_remove_file: /path/to/your/screen/remove_some_strains.txt
 
 # Should conditions matching the "barcode-specific" pattern (positive interactions for barcodes
@@ -44,7 +43,7 @@ remove_correlated_index_tags: True
 # 1: "announcements," aka "generating z-score matrix for lane X" (default)
 # 2: inspection of objects
 # 3: deeper inspection of objects, very cryptic
-verbosity: 2
+verbosity: 1
 
 
 ##### ADVANCED OPTIONS
