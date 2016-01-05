@@ -49,5 +49,5 @@ index_tag_start: 0
 index_tag_length: 10
 genetic_barcode_start: 29
 genetic_barcode_length: 20
-gene_info_file: (possibly optional, not sure yet) filename within barseq_counter_vX.Y/data/gene_info
+gene_info_file: 
 ---
