@@ -53,7 +53,7 @@ genetic_barcode_length: 20
 gene_info_file: 
 ---
 
-species_ID: Z_mobilis_whole_genome_MORI
+species_ID: Z_mobilis_whole_genome
 gene_barcode_file: zymobarcodesUPb.txt
 common_primer_start: 10
 common_primer_length: 18
