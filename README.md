@@ -10,7 +10,6 @@ Features
 - Easy to use for processing raw fastq data to matrices of z-scores
 - Modular post-processing steps are highly customizable and can be used in any order
 - Efficient numpy implementations
-- 
 
 Installation Directions
 -------------
