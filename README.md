@@ -11,6 +11,13 @@ Features
 - Modular post-processing steps are highly customizable and can be used in any order
 - Efficient numpy implementations
 
+Installation Directions
+-------------
+
+How to Run
+--------------------
+barseq_counter {options}
+
 Documentation
 -------------
 Details about the software and how to install and run it are here:
