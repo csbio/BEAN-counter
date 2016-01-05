@@ -95,10 +95,17 @@ def filter_dataset_for_barcodes(dataset, config_params):
         return dataset, []
     if not os.path.exists(barcodes_to_remove_file):
         return dataset, []
-    with open(barcodes_to_remove_file, 'rt') as f:
-        # Throw away the header
-        f.readline()
-        gene_barcode_ids_to_remove = np.array([line.rstrip().split('\t')[::-1] for line in f])
+    # using pandas will allow the table to contain multiple fields of information,
+    # but only the Barcode and Strain_ID are needed.
+    remove_tab = pd.read_table(barcodes_to_remove_file)
+    if get_verbosity(config_params) >= 2:
+        print remove_tab
+    gene_barcode_ids_to_remove = np.array(remove_tab[['Strain_ID', 'Barcode']])
+    
+    #with open(barcodes_to_remove_file, 'rt') as f:
+    #    # Throw away the header
+    #    f.readline()
+    #    gene_barcode_ids_to_remove = np.array([line.rstrip().split('\t')[::-1] for line in f])
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
     if get_verbosity(config_params) >= 2:
