@@ -33,8 +33,6 @@ import counts_to_zscores
 import mtag_correlations
 import merge_count_matrices
 import filter_final_count_matrix
-import mtag_normalization
-import check_mtag_effect
 
 # Function definitions
 def get_all_lane_ids(sample_table):
