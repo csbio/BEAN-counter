@@ -8,6 +8,7 @@
 # gene_barcode_file: filename within barseq_counter_vX.Y/data/barcodes
 # common_primer_start:
 # common_primer_length:
+# common_primer_sequence:
 # index_tag_start:
 # index_tag_length:
 # genetic_barcode_start:
