@@ -39,3 +39,14 @@ genetic_barcode_start: 28
 genetic_barcode_length: 20
 gene_info_file:
 ---
+
+species_ID: E_coli_whole_genome_MORI
+gene_barcode_file: ecolibarcodes_filtered4bp.csv
+common_primer_start: 10
+common_primer_length: 18
+index_tag_start: 0
+index_tag_length: 10
+genetic_barcode_start: 29
+genetic_barcode_length: 20
+gene_info_file: (possibly optional, not sure yet) filename within barseq_counter_vX.Y/data/gene_info
+---
