@@ -11,6 +11,21 @@ import os, sys
 import gzip
 import cPickle
 
+barseq_path = os.getenv('BARSEQ_PATH')
+sys.path.append(os.path.join(barseq_path, 'scripts'))
+sys.path.append(os.path.join(barseq_path, 'lib'))
+
+import cluster_dataset_wrappers as clus_wrap
+
+def read_sample_table(tab_filename):
+
+    assert os.path.isfile(tab_filename), 'File {} does not exist'.format(tab_filename)
+    # Read everything in as a string, to prevent vexing
+    # number interpretation problems! Methods further down
+    # can coerce to different types.
+    tab = pd.read_table(tab_filename, dtype = 'S')
+    return tab
+
 def load_dataset(data_filename):
 
     f = gzip.open(data_filename, 'rb')
@@ -25,7 +40,7 @@ def dump_dataset(dataset, filename):
     cPickle.dump(dataset, f)
     f.close()
 
-def main(dataset, dataset_file, table, val_name, verbosity):
+def main(dataset, dataset_file, table, val_name, strain_table_f, strain_columns, sample_table_f, condition_columns, verbosity):
 
     strains, conditions, matrix = dataset
 
@@ -33,6 +48,11 @@ def main(dataset, dataset_file, table, val_name, verbosity):
     out_folder = full_fname.replace('.dump.gz', '')
     if not os.path.isdir(out_folder):
         os.makedirs(out_folder)
+
+    # Here is where the script determines what modifications to make to the row/columns labels
+    if strain_table_f is not None:
+        strain_table = read_sample_table(strain_table_f)
+        custom_strains = clus_wrap.customize_strains(strains, strain_table, strain_columns)
 
     # If the table boolean is not True, write out three fiies: matrix, rownames, and colnames
     if not table:
@@ -95,6 +115,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('dataset_file', help = 'The dataset to be reduced.')
     parser.add_argument('--table', action = 'store_true', help = 'Add this flag if the output should be in table form, instead of a matrix plus row and column label files. Right now, the matrix prints out values with higher precision, but it should not make a difference for future computations.')
+    parser.add_argument('--strain_table', help = 'The strain barcode table used to interpret the strain barcodes (is in the "data" folder by default).')
+    parser.add_argument('--sample_table', help = 'The sample table corresponding to the dataset.')
+    parser.add_argument('--strain_columns', help = 'The columns from the barcode table to be included in the visualization.')
+    parser.add_argument('--condition_columns', help = 'The columns from the sample table to be included in the visualization.')
     parser.add_argument('--value_name', help = 'Optional argument to specify a name for the column that stores the matrix values')
     parser.add_argument('-v', '--verbosity', help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
 
@@ -107,6 +131,21 @@ if __name__ == '__main__':
         verbosity = int(args.verbosity)
     else:
         verbosity = 1
+
+    # Handle the presence/absence of custom columns
+    if args.strain_table is None or args.strain_columns is None:
+        strain_table_f = None
+        strain_columns = None
+    else:
+        strain_table_f = args.strain_table
+        strain_columns = args.strain_columns
+
+    if args.sample_table is None or args.condition_columns is None:
+        sample_table_f = None
+        condition_columns = None
+    else:
+        sample_table_f = args.sample_table
+        condition_columns = args.condition_columns
 
     # Get the data ready to rumble!
     dataset_file = os.path.abspath(args.dataset_file)
