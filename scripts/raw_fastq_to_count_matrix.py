@@ -61,7 +61,10 @@ def get_lane_folder(lane_id, lane_location_tab):
 
 def get_lane_data_path(config_params, lane_id):
 
-    output_folder = config_params['output_folder']
+    if 'tmp_output_dir' in config_params:
+        output_folder = config_params['tmp_output_dir']
+    else:
+        output_folder = config_params['output_folder']
     return os.path.join(output_folder, 'intermediate', lane_id)
 
 def get_lane_reports_path(config_params, lane_id):
