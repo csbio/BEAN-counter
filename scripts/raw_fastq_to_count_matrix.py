@@ -59,13 +59,16 @@ def get_lane_folder(lane_id, lane_location_tab):
     lane_folder = lane_location_tab.loc[lane_id, 'location']
     return lane_folder
 
-def get_lane_data_path(config_params, lane_id):
+def get_lane_data_paths(config_params, lane_id):
 
     if 'tmp_output_dir' in config_params:
-        output_folder = config_params['tmp_output_dir']
+        return [os.path.join(config_params['tmp_output_dir'], 'intermediate', lane_id),
+                os.path.join(config_params['output_folder'], 'intermediate', lane_id)
+                ]
     else:
-        output_folder = config_params['output_folder']
-    return os.path.join(output_folder, 'intermediate', lane_id)
+        return [os.path.join(config_params['output_folder'], 'intermediate', lane_id),
+                os.path.join(config_params['output_folder'], 'intermediate', lane_id)
+                ]
 
 def get_lane_reports_path(config_params, lane_id):
 
@@ -74,7 +77,7 @@ def get_lane_reports_path(config_params, lane_id):
 
 def get_barseq_filename(config_params, lane_id):
 
-    path = get_lane_data_path(config_params, lane_id)
+    path = get_lane_data_paths(config_params, lane_id)[0]
     return os.path.join(path, '{0}_{1}'.format(lane_id, 'barseq.txt'))
 
 def remove_barseq_file(config_params, lane_id):
@@ -132,7 +135,7 @@ def fastq_to_barseq(config_params, species_config_params, lane_id):
     raw_folder = get_lane_folder(lane_id, lane_location_tab)
 
     # Set up the output folders for data and read stats
-    data_path = get_lane_data_path(config_params, lane_id)
+    data_path = get_lane_data_paths(config_params, lane_id)[0]
     reports_path = get_lane_reports_path(config_params, lane_id)
     cg_file.create_output_dir(data_path)
     cg_file.create_output_dir(reports_path)
@@ -349,7 +352,7 @@ def generate_reports(config_params, lane_id, gen_barcodes, index_tags, matrix, t
 
 def dump_count_matrix(config_params, lane_id, barcodes, conditions, matrix):
 
-    out_path = get_lane_data_path(config_params, lane_id)
+    out_path = get_lane_data_paths(config_params, lane_id)[1]
     out_filename = os.path.join(out_path, '{0}_{1}'.format(lane_id, 'barseq_matrix.dump.gz'))
 
     of = gzip.open(out_filename, 'wb')
