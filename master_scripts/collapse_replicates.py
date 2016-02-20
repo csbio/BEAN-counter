@@ -100,7 +100,7 @@ def collapse_one_group(group_name, matrix, name_to_col_index, name_to_sample_id,
 
     # Get the connected components in this matrix
     rep_graph = nx.from_numpy_matrix(group_sim_mat_bin)
-    conn_comps = np.array(list(nx.connected_components(rep_graph)))
+    conn_comps = np.array([list(x) for x in nx.connected_components(rep_graph)])
     conn_comp_sizes = [len(x) for x in conn_comps]
     
     # Iterate over the connected components and compute a mean
@@ -110,9 +110,10 @@ def collapse_one_group(group_name, matrix, name_to_col_index, name_to_sample_id,
     for i, comp in enumerate(conn_comps):
         if conn_comp_sizes[i] < 2:
             continue
-        comp_sim_mat = group_sim_mat[np.ix_(comp, comp)]
         if verbosity >= 2:
             print comp
+        comp_sim_mat = group_sim_mat[np.ix_(comp, comp)]
+        if verbosity >= 2:
             print comp_sim_mat
         comp_mean_sims.append(np.mean(comp_sim_mat[np.triu_indices_from(comp_sim_mat, k =1)]))
 
@@ -169,38 +170,38 @@ def collapse_one_group(group_name, matrix, name_to_col_index, name_to_sample_id,
     # Add in the average replicate correlation, just for fun!
     new_tab['mean_correlation'] = best_comp_sim
     
-    if cols_to_keep is not None:
-        for i, col in enumerate(cols_to_keep):
-            collapse = how_to_collapse[i]
-            if verbosity >= 2:
-                print col
-                print collapse
-            # if the option is 'uniq', then attempt to get one unique value. If not successful,
-            # just concatenate as before.
-            if collapse == 'uniq':
-                val_array = np.unique(group_tab[col])
-                if len(val_array) > 1:
-                    new_tab[col] = ';'.join(np.array(group_tab[col], dtype = np.str))
-                else:
-                    new_tab[col] = str(val_array[0])
-                col_order.append(col)
-            # if the option is mean, then compute mean and standard deviation
-            elif collapse == 'mean':
-                vals = np.array(group_tab[col], dtype = np.float)
-                mean = np.nanmean(vals)
-                stdev = np.nanstd(vals)
-                new_tab[col + '_mean'] = mean
-                new_tab[col + '_stdev'] = stdev
-                col_order.append(col + '_mean')
-                col_order.append(col + '_stdev')
-            # if the option given is 'concat' or any other not legitimate option,
-            # then just join them together with semicolons
-            elif collapse == 'concat':
+
+    for i, col in enumerate(cols_to_keep):
+        collapse = how_to_collapse[i]
+        if verbosity >= 2:
+            print col
+            print collapse
+        # if the option is 'uniq', then attempt to get one unique value. If not successful,
+        # just concatenate as before.
+        if collapse == 'uniq':
+            val_array = np.unique(group_tab[col])
+            if len(val_array) > 1:
                 new_tab[col] = ';'.join(np.array(group_tab[col], dtype = np.str))
-                col_order.append(col)
             else:
-                new_tab[col] = ';'.join(np.array(group_tab[col], dtype = np.str))
-                col_order.append(col)
+                new_tab[col] = str(val_array[0])
+            col_order.append(col)
+        # if the option is mean, then compute mean and standard deviation
+        elif collapse == 'mean':
+            vals = np.array(group_tab[col], dtype = np.float)
+            mean = np.nanmean(vals)
+            stdev = np.nanstd(vals)
+            new_tab[col + '_mean'] = mean
+            new_tab[col + '_stdev'] = stdev
+            col_order.append(col + '_mean')
+            col_order.append(col + '_stdev')
+        # if the option given is 'concat' or any other not legitimate option,
+        # then just join them together with semicolons
+        elif collapse == 'concat':
+            new_tab[col] = ';'.join(np.array(group_tab[col], dtype = np.str))
+            col_order.append(col)
+        else:
+            new_tab[col] = ';'.join(np.array(group_tab[col], dtype = np.str))
+            col_order.append(col)
     
     # Reorder the series!
     new_tab = new_tab.reindex(index = col_order)
@@ -235,6 +236,15 @@ def main(dataset, sample_table, collapse_col, cor_cutoff, output_folder, cols_to
     sample_table = sample_table.set_index(['screen_name', 'expt_id'])
     collapsed_profile_list = []
     sample_tab_row_list = []
+    
+    # Here I make sure that the column that is used to determine the groups of samples to
+    # collapse is retained in the exported sample table.
+    if cols_to_keep is None:
+        cols_to_keep = []
+        how_to_collapse = []
+    cols_to_keep.append(collapse_col)
+    how_to_collapse.append('uniq')
+    
     for group in unique_groups:
         if verbosity >= 2:
             print group
