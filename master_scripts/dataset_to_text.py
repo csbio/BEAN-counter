@@ -158,5 +158,4 @@ if __name__ == '__main__':
     table = args.table
     val_name = args.value_name
 
-    main(dataset, dataset_file, table, val_name, verbosity)
-
+    main(dataset, dataset_file, table, val_name, strain_table_f, strain_columns, sample_table_f, condition_columns, verbosity)

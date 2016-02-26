@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import scipy
 from scipy.stats import rankdata
+import scipy.stats as stats
 import sys, os, gzip
 import jellyfish as jf
 import matplotlib
@@ -80,6 +81,14 @@ def get_lda_pr_curve_filename(folder, ymax):
 def get_batch_effect_histogram_filename(folder, ncomps):
 
     return os.path.join(folder, 'Histogram_batch-effect_{}-components-removed.pdf'.format(ncomps))
+
+def get_batch_effect_histogram_ttest_filename(folder):
+
+    return os.path.join(folder, 't-stat_vs_components-removed.pdf')
+
+def get_batch_effect_histogram_pval_filename(folder):
+
+    return os.path.join(folder, 't-stats_p-vals_vs_components-removed.txt')
 
 def load_3d_dataset(data_filename):
 
@@ -200,7 +209,7 @@ def plot_one_pr_curve(comps_removed, precision_vectors, recall_vectors, ymax, ba
     plt.title('Precision-recall analysis of\n"{}" batch effects'.format(batch_column))
     plt.savefig(filename, bbox_extra_artists = ([lgd]), bbox_inches = 'tight')
 
-def plot_histograms(within_batch_corrs, between_batch_corrs, ncomps, batch_column, hist_folder):
+def plot_histograms(within_batch_corrs, between_batch_corrs, ncomps, batch_column, hist_folder, verbosity):
 
     filename = get_batch_effect_histogram_filename(hist_folder, ncomps)
 
@@ -222,9 +231,61 @@ def plot_histograms(within_batch_corrs, between_batch_corrs, ncomps, batch_colum
     ax.set_xlim([-1, 1])
     ax.set_xlabel('Average correlation within/between batch(es)')
     ax.set_ylabel('Density')
-    lgd = ax.legend(bbox_to_anchor = (1.05, 1), loc = 2, title = "Correlation")
+    lgd = ax.legend(bbox_to_anchor = (1.05, 1), loc = 2, title = "Correlation origin")
     plt.title('{} batch correlations,\n{} components removed'.format(batch_column, ncomps))
     plt.savefig(filename, bbox_extra_artists = ([lgd]), bbox_inches = 'tight')
+
+    # Here I compute the t-statistic for each distribution
+    # where the null hypothesis is that the mean is 0.
+    # Also, take the sample standard deviation, not the population
+    # standard deviation (ddof = 1).
+    if verbosity >= 2:
+        print 'within batch t-statistic calculation:'
+        print '{} / ({} / sqrt({}))'.format(mean_within_batch_cor, np.nanstd(within_batch_corrs, ddof = 1), np.size(within_batch_corrs))
+        print ''
+        print 'between batch t-statistic calculation:'
+        print '{} / ({} / sqrt({}))'.format(mean_between_batch_cor, np.nanstd(between_batch_corrs, ddof = 1), np.size(between_batch_corrs))
+
+    within_batch_t = mean_within_batch_cor / (np.nanstd(within_batch_corrs, ddof = 1) / np.sqrt(np.size(within_batch_corrs)))
+    between_batch_t = mean_between_batch_cor / (np.nanstd(between_batch_corrs, ddof = 1) / np.sqrt(np.size(between_batch_corrs)))
+
+    # Take the t-stats and convert to pvalues.
+    within_batch_p = stats.t.sf(np.abs(within_batch_t), np.size(within_batch_corrs) - 1) * 2
+    between_batch_p = stats.t.sf(np.abs(between_batch_t), np.size(between_batch_corrs) - 1) * 2
+
+    # Return t-statstics and p-values
+    return [np.array([[within_batch_t, between_batch_t]]), np.array([[within_batch_p, between_batch_p]])]
+
+def plot_t_stats(comps_removed, t_stats, batch_column, hist_folder):
+
+    # This function plots the change in t-statistic for both
+    # within- and between-batch correlations, as components
+    # (either LDA or SVD) are removed.
+    filename = get_batch_effect_histogram_ttest_filename(hist_folder) 
+   
+    colors = pt.color_cycle()
+    fig = plt.figure(figsize = (7, 7))
+    ax = fig.add_subplot(1,1,1)
+    color = colors.next()
+    ax.plot(comps_removed, t_stats[:, 0], color + '-', label = 'Within batch')
+    color = colors.next()
+    ax.plot(comps_removed, t_stats[:, 1], color + '-', label = 'Between batch')
+    ax.set_xlabel('Number of components removed')
+    ax.set_ylabel(r'$t$-statistic' '\n' r'($H_0: \bar \mu = 0$)')
+    lgd = ax.legend(bbox_to_anchor = (1.05, 1), loc = 2, title = 'Correlation origin')
+    plt.title(r'$t$-statistics of {}' '\nbatch correlation distributions'.format(batch_column))
+    plt.savefig(filename, bbox_extra_artists = ([lgd]), bbox_inches = 'tight')
+
+def write_p_vals(comps_removed, t_stats, p_vals, batch_column, hist_folder):
+
+    filename = get_batch_effect_histogram_pval_filename(hist_folder)
+
+    f = open(filename, 'wt')
+    f.write('# components removed\twithin-batch t-stat\twithin-batch p-value\tbetween-batch t-stat\tbetween-batch p-value\n')
+    for i, comp in enumerate(comps_removed):
+        f.write('{}\t{}\t{}\t{}\t{}\n'.format(comps_removed[i], t_stats[i, 0], p_vals[i, 0], t_stats[i, 1], p_vals[i, 1]))
+
+    f.close()
 
 def print_pr_values(precision, recall, threshold, ncomps, pr_folder):
 
@@ -322,6 +383,10 @@ def main(dataset_3d, sample_table, batch_column, nondup_col_list, include_column
     # For each LDA matrix, get precision and recall!
     precisions = []
     recalls = []
+
+    # Initialize empty data structures to hold the t-statistics and p-values
+    t_stats = np.zeros([0, 2])
+    p_vals = np.zeros([0, 2])
     
     # Use "range(2)" only when needed to test on a small number of removed components!
     # for ncomps in range(2):
@@ -380,11 +445,18 @@ def main(dataset_3d, sample_table, batch_column, nondup_col_list, include_column
         print_corrs(between_batch_groups, between_batch_corrs, between_batch_n, 'between-batch', ncomps, hist_folder)
         if verbosity >= 1:
             print "\t\tPlotting histograms"
-        plot_histograms(within_batch_corrs, between_batch_corrs, ncomps, batch_column, hist_folder)
-
+        between_within_t_stats, between_within_p_vals = plot_histograms(within_batch_corrs, between_batch_corrs, ncomps, batch_column, hist_folder, verbosity)
+        
+        t_stats = np.vstack([t_stats, between_within_t_stats])
+        p_vals = np.vstack([p_vals, between_within_p_vals])
 
     # Plot the precision and recall vectors!
     plot_pr_curves_diff_scales(components_removed, precisions, recalls, batch_column, pr_folder)
+
+    # Plot t-statistics for the histograms (and write out associated p-values)
+    # as they evolve over the course of component removal
+    plot_t_stats(components_removed, t_stats, batch_column, hist_folder)
+    write_p_vals(components_removed, t_stats, p_vals, batch_column, hist_folder)
 
 
 # If this is run from the command line (which is the intention, then run the rest of this script!
