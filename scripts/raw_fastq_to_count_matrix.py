@@ -134,9 +134,12 @@ def fastq_to_barseq(config_params, species_config_params, lane_id):
     # Get the raw data folder 
     raw_folder = get_lane_folder(lane_id, lane_location_tab)
 
-    # Set up the output folders for data and read stats
-    data_path = get_lane_data_paths(config_params, lane_id)[0]
+    # Set up the output folders for the temporary barseq file, the output count matrix,
+    # and the read statistics
+    tmp_data_path = get_lane_data_paths(config_params, lane_id)[0]
+    data_path = get_lane_data_paths(config_params, lane_id)[1]
     reports_path = get_lane_reports_path(config_params, lane_id)
+    cg_file.create_output_dir(tmp_data_path)
     cg_file.create_output_dir(data_path)
     cg_file.create_output_dir(reports_path)
 
