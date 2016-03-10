@@ -64,7 +64,7 @@ setenv BARSEQ_PATH /your/path/to/barseq_counter/
 To append a directory to your PATH variable, add this line to your ~/.bashrc or ~/.bash_profile (or equivalent for ~/.cshrc):
 
 ```
-export PATH=PATH:/your/path/to/barseq_counter/master_scripts
+export PATH=$PATH:/your/path/to/barseq_counter/master_scripts
 ```
 
 #####Windows
