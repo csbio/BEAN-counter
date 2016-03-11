@@ -56,8 +56,11 @@ def strain_match(a, b):
     b_inds = []
     for i, x in enumerate(a):
         if a_is_row_in_b(x, b):
+            b_match_ind = np.where(np.all(x == b, axis = 1))[0]
+            assert np.size(b_match_ind) == 1, "Strain {} somehow is matching multiple rows in the final strains array".format(x)
+            b_match_int = int(b_match_ind)
             a_inds.append(i)
-            b_inds.append(a.index(x))
+            b_inds.append(b_match_int)
 
     return [a_inds, b_inds]
 
@@ -127,6 +130,7 @@ def combine_datasets(datasets, all_strains):
             print end_cols[i]
             print dset[2].shape
             print old_strain_indices[i].shape
+            print np.max(new_strain_indices[i])
         final_matrix[new_strain_indices[i], start_cols[i]:end_cols[i]] = dset[2][old_strain_indices[i]]
 
     return [final_strains, final_conditions, final_matrix]
