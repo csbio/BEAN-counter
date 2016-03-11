@@ -45,6 +45,9 @@ args = parser.parse_args()
 start = args.start
 stop = args.stop
 
+print 'start: {}'.format(start)
+print 'stop: {}'.format(stop)
+
 assert stop >= start, 'specified "--stop" parameter {} is smaller than the specified "--start" parameter {}'.format(stop, start)
 
 # Function definitions
@@ -66,7 +69,7 @@ def get_sample_table(config_params):
 ###########################################
 
 # Get the config file, which is the only argument needed for the pipeline
-config_file = sys.argv[1]
+config_file = args.config_file
 config_params = cfp.parse(config_file)
 
 # Read in the sample table
@@ -84,10 +87,10 @@ lane_ids = get_all_lane_ids(sample_table)
 if start <= 1:
     for lane_id in lane_ids:
         print 'generating read count matrix for lane {}...'.format(lane_id)
-        start = time.time()
+        start_time = time.time()
         raw_fastq_to_count_matrix.main(config_file, lane_id)
-        end = time.time()
-        print 'time to process = {}'.format(time.strftime('%H:%M:%S', time.gmtime(end - start)))
+        end_time = time.time()
+        print 'time to process = {}'.format(time.strftime('%H:%M:%S', time.gmtime(end_time - start_time)))
 
 if stop == 1:
     sys.exit(0)
@@ -97,10 +100,10 @@ if stop == 1:
 if start <= 2:
     for lane_id in lane_ids:    
         print 'generating z-score matrix for lane {}...'.format(lane_id)
-        start = time.time()
+        start_time = time.time()
         counts_to_zscores.main(config_file, lane_id)
-        end = time.time()
-        print 'time to process = {}'.format(time.strftime('%H:%M:%S', time.gmtime(end - start)))
+        end_time = time.time()
+        print 'time to process = {}'.format(time.strftime('%H:%M:%S', time.gmtime(end_time - start_time)))
 
 if stop == 2:
     sys.exit(0)
