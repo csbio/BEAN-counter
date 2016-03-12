@@ -158,7 +158,10 @@ def collapse_one_group(group_name, matrix, name_to_col_index, name_to_sample_id,
     # First, create the new table row and add the screen name and an empty string for
     # the new ID of the collapsed replicate group.
     new_screen_name_array = np.unique(best_comp_conds[:, 0])
-    assert len(new_screen_name_array) < 2, 'Multiple screen names found in one replicate group;\nthis is not allowed'
+    # Originally, I had this check below to prevent replicates from being collapsed across screens...
+    # HOWEVER, this now seems silly and I am commenting this out. If the user wants to keep screens
+    # separate, he/she can add the screen name to the column used for determining the replicate groups!
+    # assert len(new_screen_name_array) < 2, 'Multiple screen names found in one replicate group;\nthis is not allowed'
     if len(new_screen_name_array) == 0:
         # Given the other checks I put in, this code should never be executed
         return None
@@ -233,6 +236,7 @@ def main(dataset, sample_table, collapse_col, cor_cutoff, output_folder, cols_to
         print len(group_to_ind)
 
     # Create containers for the new collapsed profiles and sample table rows
+    sample_table['individual_rep_ids'] = ['{}_{}'.format(x[1]['screen_name'], x[1]['expt_id']) for x in sample_table.iterrows()]
     sample_table = sample_table.set_index(['screen_name', 'expt_id'])
     collapsed_profile_list = []
     sample_tab_row_list = []
@@ -244,6 +248,9 @@ def main(dataset, sample_table, collapse_col, cor_cutoff, output_folder, cols_to
         how_to_collapse = []
     cols_to_keep.append(collapse_col)
     how_to_collapse.append('uniq')
+    # This allows automatic tracking of which replicates contributed to the collapsed profile
+    cols_to_keep.append('individual_rep_ids')
+    how_to_collapse.append('concat')
     
     for group in unique_groups:
         if verbosity >= 2:
@@ -258,6 +265,8 @@ def main(dataset, sample_table, collapse_col, cor_cutoff, output_folder, cols_to
     if verbosity >= 2:
         print collapsed_profile_list[0:3]
         print sample_tab_row_list[0:3]
+        print np.unique([len(x) for x in sample_tab_row_list])
+        #print pd.DataFrame
 
     # Combine profiles into matrix, rows into one table
     collapsed_matrix = np.vstack(collapsed_profile_list).T
