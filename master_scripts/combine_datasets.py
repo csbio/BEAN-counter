@@ -213,6 +213,7 @@ if __name__ == '__main__':
         print args.all_strains
 
     output_folder = args.output_folder
+    assert output_folder is not None, "User must specify a value for the --output_folder option"
     if not os.path.isdir(output_folder):
         os.makedirs(output_folder)
 
