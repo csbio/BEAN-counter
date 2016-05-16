@@ -54,7 +54,7 @@ gene_info_file:
 ---
 
 species_ID: S_cerevisiae_TS-essential
-gene_barcode_file: S-cerevisiae_TS-esssential.txt
+gene_barcode_file: S-cerevisiae_TS-essential.txt
 common_primer_start: 10
 common_primer_length: 19
 common_primer_sequence: GGACATTGCCTTCTAGTTG
