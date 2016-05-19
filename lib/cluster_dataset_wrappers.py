@@ -109,7 +109,7 @@ def customize_strains(strains, barcode_table, fmt_string):
         raise ColumnError('{} barcode table column names contain commas,\nwhich must be addressed before visualizing'.format(num_with_commas))
 
     custom_columns = fmt_string.split(',')
-    assert all([x in barcode_table.columns for x in custom_columns]), "Not all of the specified columns are in the provided barcode table"
+    assert all([x in barcode_table.columns for x in custom_columns]), "Not all of the specified columns are in the provided barcode table ({})".format(';'.join(list(set(custom_columns) - set(barcode_table.columns))))
     custom_barcode_table = barcode_table[custom_columns]
     strain_keys = [tuple(strain) for strain in strains]
     
