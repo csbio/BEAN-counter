@@ -1,3 +1,7 @@
+#################################################################
+######  Copyright: Regents of the University of Minnesota  ######
+#################################################################
+
 # Function to parse the config file (in the format "paramter: value")
 # Lines beginning with '#' are ignored, as are blank lines
 

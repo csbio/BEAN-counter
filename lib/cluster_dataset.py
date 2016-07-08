@@ -1,3 +1,7 @@
+#################################################################
+######  Copyright: Regents of the University of Minnesota  ######
+#################################################################
+
 import scipy
 from scipy.spatial.distance import pdist
 

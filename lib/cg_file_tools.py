@@ -1,3 +1,7 @@
+#################################################################
+######  Copyright: Regents of the University of Minnesota  ######
+#################################################################
+
 import os, sys
 
 # Random tools for manipulating files in the cg pipeline

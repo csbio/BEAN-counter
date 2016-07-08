@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+#################################################################
+######  Copyright: Regents of the University of Minnesota  ######
+#################################################################
+
 # This script takes in a chemical genetic interaction score dataset (matrix and strain/
 # condition ids) as well as a sample table containing information on each condition.
 # Then, it associates each condition with a "batch" as defined by the entires in the

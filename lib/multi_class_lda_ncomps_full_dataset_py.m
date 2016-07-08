@@ -1,3 +1,7 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%  Copyright: Regents of the University of Minnesota  %%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function [Xnorm, D, U, V] = multi_class_lda_ncomps_full_dataset_py(smallXfilename, fullXfilename, classesfilename, ncomps, outputfilename)
 
 smallX = load(smallXfilename);

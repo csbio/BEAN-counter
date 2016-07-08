@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+#################################################################
+######  Copyright: Regents of the University of Minnesota  ######
+#################################################################
+
 # This script reads in the combined count matrix and filters out all of the
 # conditions and strains that either do not meet specified quality measures
 # and/or are specifically slated for removal

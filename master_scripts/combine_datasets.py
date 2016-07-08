@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+#################################################################
+######  Copyright: Regents of the University of Minnesota  ######
+#################################################################
+
 # This script takes in mulitple datasets and their corresponding sample tables and
 # spits out a combined dataset and a combined sample table. The only option
 # for this script is whether or not strains present in only one of the

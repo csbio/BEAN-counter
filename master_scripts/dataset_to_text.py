@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+#################################################################
+######  Copyright: Regents of the University of Minnesota  ######
+#################################################################
+
 # This script takes in a dataset and a corresponding sample table with
 # a reduced number of rows. This script will reduce the dataset so that
 # it contains only the samples corresponding to the rows in the

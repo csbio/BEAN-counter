@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+#################################################################
+######  Copyright: Regents of the University of Minnesota  ######
+#################################################################
+
 # This script takes barseq sequencing data through the following steps:
 # 1) Counting barcodes and index tags (individual lanes)
 # 2) Calculating chemical-genetic interaction z-scores (individual lanes)

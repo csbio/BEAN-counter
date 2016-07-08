@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+#################################################################
+######  Copyright: Regents of the University of Minnesota  ######
+#################################################################
+
 # This script converts all z-score matrices from a dumped 3D
 # array into CDTs, which are visualized using Java Treeview.
 

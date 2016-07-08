@@ -1,3 +1,7 @@
+#################################################################
+######  Copyright: Regents of the University of Minnesota  ######
+#################################################################
+
 # Here I wrap the core dataset clustering function with functions
 # that send specific datasets to it and define specific output
 # locations for the cluster files.

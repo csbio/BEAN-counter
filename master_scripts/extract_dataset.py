@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+#################################################################
+######  Copyright: Regents of the University of Minnesota  ######
+#################################################################
+
 # This brief script takes in a 3D dataset (stacked matrices) and exports,
 # as a similar format, one of the stacked matrices, with its row and
 # column labels.

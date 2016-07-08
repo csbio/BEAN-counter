@@ -1,3 +1,7 @@
+#################################################################
+######  Copyright: Regents of the University of Minnesota  ######
+#################################################################
+
 # Some tools to help me plot using matplotlib!
 import itertools as it
 

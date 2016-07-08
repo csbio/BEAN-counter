@@ -1,3 +1,7 @@
+#################################################################
+######  Copyright: Regents of the University of Minnesota  ######
+#################################################################
+
 # This library contains functions that are used across
 # the barseq_counter pipeline.
 
