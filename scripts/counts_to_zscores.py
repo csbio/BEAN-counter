@@ -1,10 +1,16 @@
 #!/usr/bin/env python
+
+#################################################################
+######  Copyright: Regents of the University of Minnesota  ######
+#################################################################
+
 # This script will read in a count matrix and, given a sample table that
 # indicates which samples are controls and which should be excluded,
 # generates chemical genetic interaction z-scores.
 import pandas as pd
 import numpy as np
 import scipy
+from scipy.stats import rankdata
 import sys, os, gzip
 import jellyfish as jf
 import matplotlib
@@ -20,6 +26,7 @@ import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 from cg_common_functions import *
+from cluster_dataset_wrappers import customize_strains, customize_conditions
 
 sys.path.append(os.path.join(barseq_path, 'lib/python2.7/site-packages')) 
 from mlabwrap import mlab
@@ -34,6 +41,25 @@ def get_sample_table(config_params):
     # can coerce to different types.
     tab = pd.read_table(filename, dtype = 'S')
     return tab
+
+def get_barcode_table(config_params):
+
+    species_config_params = get_species_config_params(config_params)
+
+    barseq_path = os.getenv('BARSEQ_PATH')
+    filename = species_config_params['gene_barcode_file']
+    full_path = os.path.join(barseq_path, 'data/barcodes', filename)
+
+    tab = pd.read_table(full_path, dtype = 'S')
+    return tab
+
+def get_species_config_params(config_params):
+    barseq_path = os.getenv('BARSEQ_PATH')
+    species_config_file = os.path.join(barseq_path, 'data/species_config_file.txt')
+    all_species_params = cfp.parse_species_config(species_config_file)
+    species_id = config_params['species_ID']
+    species_params = all_species_params[species_id]
+    return species_params
 
 def get_lane_data_path(config_params, lane_id):
 
@@ -284,6 +310,122 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
 
     return scaled_dev_dataset
 
+def generate_scatterplots(config_params, outfolder, mean_control_profile, raw_dataset, lowess_dataset, deviation_dataset, scaled_dev_dataset):
+
+    scatter_outfolder = os.path.join(outfolder, 'scatterplots')
+    if not os.path.isdir(scatter_outfolder):
+        os.makedirs(scatter_outfolder)
+        
+    if config_params['scatter_label_scheme'] != '0':
+        assert config_params['scatter_label_scheme'].isdigit(), '"scatter_label_scheme" must be an integer!'
+        try:
+            float(config_params['scatter_label_cutoff'])
+        except ValueError:
+            assert False, "'scatter_label_cutoff' must be a float!"
+
+    # Load in sample table
+    sample_table = get_sample_table(config_params)
+
+    # Load in barcode table
+    barcode_table = get_barcode_table(config_params)
+
+    # Get formatted condition names
+    condition_ids = raw_dataset[1]
+    if config_params['scatter_condition_columns'] == '':
+        condition_fmt_string = 'screen_name,expt_id'
+    else:
+        condition_fmt_string = config_params['scatter_condition_columns']
+    condition_ids_final = customize_conditions(condition_ids, sample_table, condition_fmt_string)
+
+    # If specified, get formatted strain names
+    # If the strain labeling scheme is 0, then all the labels are blank!
+    
+    if config_params['scatter_label_scheme'] == '0':
+        pass
+        # strain_ids_final = ['' for i in range(raw_dataset[0].shape[0])]
+    elif config_params['scatter_label_scheme'] in ['1', '2']:
+        strain_ids = raw_dataset[0]
+        strain_fmt_string = config_params['scatter_strain_columns']
+        assert strain_fmt_string != '', 'scatter_strain_columns must be specified if scatter_label_scheme is not "0"'
+        strain_ids_custom = customize_strains(strain_ids, barcode_table, strain_fmt_string)
+    else:
+        assert False, '"scatter_label_scheme" must be one of [0, 1, 2]!'
+    
+
+    # Loop over the columns of the datasets and make plots!
+    for i in range(raw_dataset[2].shape[1]):
+
+        # Extract the profiles to work with
+        raw_prof = np.log(raw_dataset[2][:, i].squeeze())
+        lowess_prof = lowess_dataset[2][:, i].squeeze()
+        deviation_prof = deviation_dataset[2][:, i].squeeze()
+        scaled_dev_prof = scaled_dev_dataset[2][:, i].squeeze()
+
+        if get_verbosity(config_params) >= 2:
+            print raw_prof
+            print lowess_prof
+            print deviation_prof
+            print scaled_dev_prof
+
+        # If labeling is to occur, get which strains to label from the final profile
+        if config_params['scatter_label_scheme'] == '1':
+            strains_to_label_inds = np.abs(scaled_dev_prof) > float(config_params['scatter_label_cutoff'])
+            strain_ids_final = strain_ids_custom.copy()
+            strain_ids_final[np.invert(strains_to_label_inds)] = ''
+        elif config_params['scatter_label_scheme'] == '2':
+            strains_to_label_inds = rankdata(-np.abs(scaled_dev_prof), method = 'min') <= float(config_params['scatter_label_cutoff'])
+            strain_ids_final = strain_ids_custom.copy()
+            strain_ids_final[np.invert(strains_to_label_inds)] = ''
+        #strains_to_label = scaled_dev_dataset[0][strains_to_label_inds, :]
+
+        # Set up and draw the 2x2 plot!
+        f, axarr = plt.subplots(2, 2, sharex = True)
+        
+        # also create a big plot so x axis label is common
+        #ax = f.add_subplot(111)
+
+        # Turn off axis lines and ticks of the big subplot
+        #ax.spines['top'].set_color('none')
+        #ax.spines['bottom'].set_color('none')
+        #ax.spines['left'].set_color('none')
+        #ax.spines['right'].set_color('none')
+        #ax.tick_params(labelcolor='w', top='off', bottom='off', left='off', right='off')
+
+        # Draw scatterplots
+        axarr[0, 0].scatter(mean_control_profile, raw_prof)
+        axarr[0, 1].scatter(mean_control_profile, lowess_prof)
+        axarr[1, 0].scatter(mean_control_profile, deviation_prof)
+        axarr[1, 1].scatter(mean_control_profile, scaled_dev_prof)
+
+        # Add point labels
+        #if config_params['scatter_label_scheme'] == '0':
+        #    for j, lab in enumerate(strain_ids_final):
+        #        axarr[0, 0].annotate(lab, xy = (mean_control_profile[j], raw_prof[j]))
+        #    for j, lab in enumerate(strain_ids_final):
+        #        axarr[0, 1].annotate(lab, xy = (mean_control_profile[j], lowess_prof[j]))
+        #    for j, lab in enumerate(strain_ids_final):
+        #        axarr[1, 0].annotate(lab, xy = (mean_control_profile[j], deviation_prof[j]))
+        #    for j, lab in enumerate(strain_ids_final):
+        #        axarr[1, 1].annotate(lab, xy = (mean_control_profile[j], scaled_dev_prof[j]))
+
+        # Add common x label
+        #ax.set_xlabel('mean control profile (log counts)')
+
+        # Add title!
+        #ax.set_title(condition_ids_final[i])
+
+        # Add individual y labels
+        axarr[0, 0].set_ylabel('Read counts')
+        axarr[0, 1].set_ylabel('Lowess-normalized read counts')
+        axarr[1, 0].set_ylabel('Deviation from normalized counts')
+        axarr[1, 1].set_ylabel('z-score')
+
+        outfile = os.path.join(scatter_outfolder, '{}.pdf'.format(condition_ids_final[i]))
+
+        plt.savefig(outfile, bbox_inches = 'tight')
+        plt.close()
+
+
 
 def main(config_file, lane_id):
     
@@ -301,6 +443,10 @@ def main(config_file, lane_id):
 
     # Filter out samples flagged as "do not include" (include? == True)
     filtered_dataset = filter_dataset_for_include(dataset, sample_table, config_params)
+
+    # I think here is the best spot to split the dataset so that different
+    # controls can be used for different samples.
+    ### split dataset stuff!!!
 
     # Get list of control samples (control? = True)
     control_condition_ids = get_control_condition_ids(dataset, sample_table)
@@ -325,7 +471,12 @@ def main(config_file, lane_id):
         print "Column means: "
         print np.nanmean(scaled_dev_dataset[2], axis = 0)
         print "Done"
-    
+    if 'generate_scatterplots' in config_params:
+	if config_params['generate_scatterplots'] == 'Y' and lane_id == 'all_lanes_filtered':
+            if get_verbosity(config_params) >= 1:
+                print "Generating scatterplots"
+            generate_scatterplots(config_params, outfolder, mean_control_profile, filtered_dataset, normalized_dataset, deviation_dataset, scaled_dev_dataset)
+
 # call: python counts_to_zscores.py <config_file> <lane_id>
 if __name__ == '__main__':
     if len(sys.argv) != 3:
