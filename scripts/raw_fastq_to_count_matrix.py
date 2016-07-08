@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+#################################################################
+######  Copyright: Regents of the University of Minnesota  ######
+#################################################################
+
 # This script takes in the barseq_counter main configuration and species configuration files
 # and a sequencing lane identifier. It exports 1) reports on the total number
 # of reads, the number of reads matching the common primer, and the number of reads that
@@ -196,8 +201,7 @@ def read_fastq(config_params, species_config_params, folder, out_path, lane_id):
     barcodes = set()
     index_tags = set()
     for filename in fastq_filenames:
-        compressed_file_opener = cfo.get_compressed_file(filename)
-        f = compressed_file_opener.open()
+        f = cfo.get_compressed_file_handle(filename)
         for line_count, line in enumerate(f):
             if get_verbosity(config_params) >= 3:
                 print line_count, line
