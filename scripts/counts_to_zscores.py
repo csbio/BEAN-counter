@@ -165,7 +165,7 @@ def normalizeUsingAllControlsAndSave(config_params, outfolder, dataset, control_
     barcode_gene_ids, condition_ids, matrix = dataset
     
     # Make sure the counts are floats for all normalization procedures
-    matrix = matrix.astype(np.float)
+    matrix = matrix.astype(np.float).copy()
 
     # Get the detection limits
     sample_detection_limit, control_detection_limit = get_detection_limits(config_params)
@@ -217,6 +217,7 @@ def normalizeUsingAllControlsAndSave(config_params, outfolder, dataset, control_
 
 def deviations_globalmean(config_params, outfolder, lowess_dataset, mean_control_profile, lane_id):
     barcode_gene_ids, condition_ids, matrix = lowess_dataset
+    matrix = matrix.copy()
     
     # control_matrix_gene_barcode_ids, control_matrix_condition_ids, control_matrix = get_control_dataset(lowess_dataset, control_condition_ids)
     
@@ -310,6 +311,160 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
 
     return scaled_dev_dataset
 
+def add_one_label(axes, label, x, y, final_y):
+    
+    if final_y < 0:
+        axes.annotate(label, xy = (x, y), horizontalalignment = 'left', verticalalignment = 'top', size = 4)
+    else:
+        axes.annotate(label, xy = (x, y), horizontalalignment = 'right', verticalalignment = 'bottom', size = 4)
+
+    return None
+
+def make_individual_plots(mean_prof, prof_1, prof_2, prof_3, prof_4, strain_labels, condition_label, config_params, outfolder):
+
+    # Set up and draw the 2x2 plot!
+    fig1, fig2, fig3, fig4 = plt.figure(0), plt.figure(1), plt.figure(2), plt.figure(3)
+    ax1, ax2, ax3, ax4 = [fig1.add_subplot(111),
+                          fig2.add_subplot(111),
+                          fig3.add_subplot(111),
+                          fig4.add_subplot(111)
+                          ]
+    
+    # Draw scatterplots
+    ax1.scatter(mean_prof, prof_1, s = 1, marker = '.')
+    ax2.scatter(mean_prof, prof_2, s = 1, marker = '.')
+    ax3.scatter(mean_prof, prof_3, s = 1, marker = '.')
+    ax4.scatter(mean_prof, prof_4, s = 1, marker = '.')
+
+
+    # Add point labels
+    if config_params['scatter_label_scheme'] != '0':
+        for j, lab in enumerate(strain_labels):
+            #print 'trying to annotate {}'.format(lab)
+            if lab != '':
+                print lab
+                add_one_label(ax1, lab, mean_prof[j], prof_1[j], prof_4[j])
+                add_one_label(ax2, lab, mean_prof[j], prof_2[j], prof_4[j])
+                add_one_label(ax3, lab, mean_prof[j], prof_3[j], prof_4[j])
+                add_one_label(ax4, lab, mean_prof[j], prof_4[j], prof_4[j])
+
+    # Add common x label
+    ax1.set_xlabel('Mean control profile (log counts)')
+    ax2.set_xlabel('Mean control profile (log counts)')
+    ax3.set_xlabel('Mean control profile (log counts)')
+    ax4.set_xlabel('Mean control profile (log counts)')
+    
+    # Add title!
+    ax1.set_title(condition_label)
+    ax2.set_title(condition_label)
+    ax3.set_title(condition_label)
+    ax4.set_title(condition_label)
+
+    # Add individual y labels
+    ax1.set_ylabel('Read counts')
+    ax2.set_ylabel('Lowess-normalized\nread counts')
+    ax3.set_ylabel('Deviation from\nnormalized counts')
+    ax4.set_ylabel('z-score')
+
+    # Align y-axis labels
+    #label_x = -0.2
+    #ax1.yaxis.set_label_coords(label_x, 0.5)
+    #ax2.yaxis.set_label_coords(label_x, 0.5)
+    #ax3.yaxis.set_label_coords(label_x, 0.5)
+    #ax4.yaxis.set_label_coords(label_x, 0.5)
+
+    outfolder_1 = os.path.join(outfolder, '1_raw')
+    outfolder_2 = os.path.join(outfolder, '2_lowess-normalized')
+    outfolder_3 = os.path.join(outfolder, '3_deviation')
+    outfolder_4 = os.path.join(outfolder, '4_scaled-deviation')
+    
+    for folder in [outfolder_1, outfolder_2, outfolder_3, outfolder_4]:
+        if not os.path.isdir(folder):
+            os.makedirs(folder)
+    
+    outfile_1 = os.path.join(outfolder_1, '{}_raw.pdf'.format(condition_label))
+    outfile_2 = os.path.join(outfolder_2, '{}_lowess-normalized.pdf'.format(condition_label))
+    outfile_3 = os.path.join(outfolder_3, '{}_deviation.pdf'.format(condition_label))
+    outfile_4 = os.path.join(outfolder_4, '{}_scaled-deviation.pdf'.format(condition_label))
+
+    # plt.savefig(outfile, bbox_inches = 'tight')
+    #fig1.savefig(outfile_1, bbox_inches = 'tight')
+    #fig2.savefig(outfile_2, bbox_inches = 'tight')
+    #fig3.savefig(outfile_3, bbox_inches = 'tight')
+    #fig4.savefig(outfile_4, bbox_inches = 'tight')
+    fig1.savefig(outfile_1)
+    fig2.savefig(outfile_2)
+    fig3.savefig(outfile_3)
+    fig4.savefig(outfile_4)
+
+    plt.close('all')
+
+def make_2x2_plot(mean_prof, prof_1, prof_2, prof_3, prof_4, strain_labels, condition_label, config_params, outfolder):
+
+    # Set up and draw the 2x2 plot!
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax1, ax2, ax3, ax4 = [fig.add_subplot(221),
+                          fig.add_subplot(222),
+                          fig.add_subplot(223),
+                          fig.add_subplot(224)
+                          ]
+    
+    fig.subplots_adjust(left=0.2, wspace=0.6)
+
+    # Turn off axis lines and ticks of the big subplot
+    ax.spines['top'].set_color('none')
+    ax.spines['bottom'].set_color('none')
+    ax.spines['left'].set_color('none')
+    ax.spines['right'].set_color('none')
+    ax.tick_params(labelcolor='w', top='off', bottom='off', left='off', right='off')
+
+    # Draw scatterplots
+    ax1.scatter(mean_prof, prof_1, s = 1, marker = '.')
+    ax2.scatter(mean_prof, prof_2, s = 1, marker = '.')
+    ax3.scatter(mean_prof, prof_3, s = 1, marker = '.')
+    ax4.scatter(mean_prof, prof_4, s = 1, marker = '.')
+
+
+    # Add point labels
+    if config_params['scatter_label_scheme'] != '0':
+        for j, lab in enumerate(strain_labels):
+            #print 'trying to annotate {}'.format(lab)
+            if lab != '':
+                print lab
+                add_one_label(ax1, lab, mean_prof[j], prof_1[j], prof_4[j])
+                add_one_label(ax2, lab, mean_prof[j], prof_2[j], prof_4[j])
+                add_one_label(ax3, lab, mean_prof[j], prof_3[j], prof_4[j])
+                add_one_label(ax4, lab, mean_prof[j], prof_4[j], prof_4[j])
+
+    # Add common x label
+    ax.set_xlabel('Mean control profile (log counts)')
+
+    # Add title!
+    ax.set_title(condition_label, y = 1.08)
+
+    # Add individual y labels
+    ax1.set_ylabel('Read counts')
+    ax2.set_ylabel('Lowess-normalized\nread counts')
+    ax3.set_ylabel('Deviation from\nnormalized counts')
+    ax4.set_ylabel('z-score')
+
+    # Align y-axis labels
+    label_x = -0.2
+    ax1.yaxis.set_label_coords(label_x, 0.5)
+    ax2.yaxis.set_label_coords(label_x, 0.5)
+    ax3.yaxis.set_label_coords(label_x, 0.5)
+    ax4.yaxis.set_label_coords(label_x, 0.5)
+
+    combined_outfolder = os.path.join(outfolder, 'combined')
+    if not os.path.isdir(combined_outfolder):
+        os.makedirs(combined_outfolder)
+    outfile = os.path.join(combined_outfolder, '{}_combined.pdf'.format(condition_label))
+
+    # plt.savefig(outfile, bbox_inches = 'tight')
+    plt.savefig(outfile)
+    plt.close()
+
 def generate_scatterplots(config_params, outfolder, mean_control_profile, raw_dataset, lowess_dataset, deviation_dataset, scaled_dev_dataset):
 
     scatter_outfolder = os.path.join(outfolder, 'scatterplots')
@@ -350,7 +505,6 @@ def generate_scatterplots(config_params, outfolder, mean_control_profile, raw_da
         strain_ids_custom = customize_strains(strain_ids, barcode_table, strain_fmt_string)
     else:
         assert False, '"scatter_label_scheme" must be one of [0, 1, 2]!'
-    
 
     # Loop over the columns of the datasets and make plots!
     for i in range(raw_dataset[2].shape[1]):
@@ -370,60 +524,29 @@ def generate_scatterplots(config_params, outfolder, mean_control_profile, raw_da
         # If labeling is to occur, get which strains to label from the final profile
         if config_params['scatter_label_scheme'] == '1':
             strains_to_label_inds = np.abs(scaled_dev_prof) > float(config_params['scatter_label_cutoff'])
+            if get_verbosity(config_params) >= 2:
+                print np.sum(strains_to_label_inds)
             strain_ids_final = strain_ids_custom.copy()
             strain_ids_final[np.invert(strains_to_label_inds)] = ''
+            if get_verbosity(config_params) >= 2:
+                print strain_ids_final[strains_to_label_inds]
         elif config_params['scatter_label_scheme'] == '2':
             strains_to_label_inds = rankdata(-np.abs(scaled_dev_prof), method = 'min') <= float(config_params['scatter_label_cutoff'])
+            if get_verbosity(config_params) >= 2:
+                print np.sum(strains_to_label_inds)
             strain_ids_final = strain_ids_custom.copy()
             strain_ids_final[np.invert(strains_to_label_inds)] = ''
+            if get_verbosity(config_params) >= 2:
+                print strain_ids_final[strains_to_label_inds]
         #strains_to_label = scaled_dev_dataset[0][strains_to_label_inds, :]
 
-        # Set up and draw the 2x2 plot!
-        f, axarr = plt.subplots(2, 2, sharex = True)
+        # Functions to plot both individual versions of the data processing
+        # plots and a combined version!
+        make_individual_plots(mean_control_profile, raw_prof, lowess_prof, deviation_prof, scaled_dev_prof,
+                              strain_ids_final, condition_ids_final[i], config_params, scatter_outfolder)
         
-        # also create a big plot so x axis label is common
-        #ax = f.add_subplot(111)
-
-        # Turn off axis lines and ticks of the big subplot
-        #ax.spines['top'].set_color('none')
-        #ax.spines['bottom'].set_color('none')
-        #ax.spines['left'].set_color('none')
-        #ax.spines['right'].set_color('none')
-        #ax.tick_params(labelcolor='w', top='off', bottom='off', left='off', right='off')
-
-        # Draw scatterplots
-        axarr[0, 0].scatter(mean_control_profile, raw_prof)
-        axarr[0, 1].scatter(mean_control_profile, lowess_prof)
-        axarr[1, 0].scatter(mean_control_profile, deviation_prof)
-        axarr[1, 1].scatter(mean_control_profile, scaled_dev_prof)
-
-        # Add point labels
-        #if config_params['scatter_label_scheme'] == '0':
-        #    for j, lab in enumerate(strain_ids_final):
-        #        axarr[0, 0].annotate(lab, xy = (mean_control_profile[j], raw_prof[j]))
-        #    for j, lab in enumerate(strain_ids_final):
-        #        axarr[0, 1].annotate(lab, xy = (mean_control_profile[j], lowess_prof[j]))
-        #    for j, lab in enumerate(strain_ids_final):
-        #        axarr[1, 0].annotate(lab, xy = (mean_control_profile[j], deviation_prof[j]))
-        #    for j, lab in enumerate(strain_ids_final):
-        #        axarr[1, 1].annotate(lab, xy = (mean_control_profile[j], scaled_dev_prof[j]))
-
-        # Add common x label
-        #ax.set_xlabel('mean control profile (log counts)')
-
-        # Add title!
-        #ax.set_title(condition_ids_final[i])
-
-        # Add individual y labels
-        axarr[0, 0].set_ylabel('Read counts')
-        axarr[0, 1].set_ylabel('Lowess-normalized read counts')
-        axarr[1, 0].set_ylabel('Deviation from normalized counts')
-        axarr[1, 1].set_ylabel('z-score')
-
-        outfile = os.path.join(scatter_outfolder, '{}.pdf'.format(condition_ids_final[i]))
-
-        plt.savefig(outfile, bbox_inches = 'tight')
-        plt.close()
+        make_2x2_plot(mean_control_profile, raw_prof, lowess_prof, deviation_prof, scaled_dev_prof,
+                      strain_ids_final, condition_ids_final[i], config_params, scatter_outfolder)
 
 
 
