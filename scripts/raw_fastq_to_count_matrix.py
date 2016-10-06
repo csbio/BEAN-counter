@@ -106,7 +106,7 @@ def get_barcode_to_gene(species_config_params):
     for i in range(len(barcodes)):
         barcode = barcodes[i]
         strain_id = strain_ids[i]
-        assert not barcode_2_strain.has_key(barcode), 'Duplicate barcodes detected - please review the barcode to strain mapping'
+        assert not barcode_2_strain.has_key(barcode), 'Duplicate barcodes detected - please review the barcode to strain mapping, found here: %s\nThe first offending barcode is: %s' % (full_path, barcode)
         barcode_2_strain[barcode] = (strain_id, barcode)
 
     return barcode_2_strain
