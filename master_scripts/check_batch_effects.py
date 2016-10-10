@@ -276,8 +276,10 @@ def plot_histograms(within_batch_corrs, between_batch_corrs, ncomps, batch_colum
 
     hist_bins = np.linspace(-1, 1, 41)
     bin_centers = 0.5 * (hist_bins[1:] + hist_bins[:-1])
-    y_within_batch, bins = np.histogram(within_batch_corrs, bins = hist_bins, density = True)
-    y_between_batch, bins = np.histogram(between_batch_corrs, bins = hist_bins, density = True)
+    # Due to a change in numpy, I must add "range=(bins.min(),bins.max())"
+    # https://github.com/numpy/numpy/issues/7503
+    y_within_batch, bins = np.histogram(within_batch_corrs, bins = hist_bins, range=(hist_bins.min(), hist_bins.max()), density = True)
+    y_between_batch, bins = np.histogram(between_batch_corrs, bins = hist_bins, range=(hist_bins.min(), hist_bins.max()), density = True)
 
     mean_within_batch_cor = np.nanmean(within_batch_corrs)
     mean_between_batch_cor = np.nanmean(between_batch_corrs)
