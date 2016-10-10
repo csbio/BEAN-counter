@@ -536,7 +536,13 @@ def main(dataset_3d, sample_table, batch_column, nondup_col_list, include_column
         # positive pairs tend to share the same batch
         if verbosity >= 1:
             print "\tCalculating precision and recall"
-        precision, recall, threshold, aupr = compute_PR_vectors(corr_matrix, batches, verbosity)
+        precision, recall, threshold_pr, aupr = compute_PR_vectors(corr_matrix, batches, verbosity)
+        # Since there are still some bugs appearing here, add in
+        # a verbose option.
+        if verbosity >= 2:
+            print "\t\tshape of recall vector: {}".format(recall.shape)
+            print "\t\tshape of precision vector: {}".format(precision.shape)
+            print "\t\tshape of threshold vector: {}".format(threshold_pr.shape)
 
         # Generate ROC curves based on the same values used to generate
         # the PR curves. I am particularly interested in the AUC values
@@ -544,11 +550,15 @@ def main(dataset_3d, sample_table, batch_column, nondup_col_list, include_column
         # components
         if verbosity >= 1:
             print '\tCalculating true and false positive rates for ROC'
-        fpr, tpr, threshold, auc = compute_ROC_vectors(corr_matrix, batches, verbosity)
+        fpr, tpr, threshold_roc, auc = compute_ROC_vectors(corr_matrix, batches, verbosity)
+        if verbosity >= 2:
+            print "\t\tshape of FPR vector: {}".format(fpr.shape)
+            print "\t\tshape of TPR vector: {}".format(tpr.shape)
+            print "\t\tshape of threshold vector: {}".format(threshold_roc.shape)
 
         # Dump the PR and ROC values out to files for reference
-        print_pr_values(precision, recall, threshold, ncomps, pr_folder)
-        print_roc_values(fpr, tpr, threshold, ncomps, pr_folder)
+        print_pr_values(precision, recall, threshold_pr, ncomps, pr_folder)
+        print_roc_values(fpr, tpr, threshold_roc, ncomps, pr_folder)
 
         # Dump the PR values into lists so I can plot everything together!
         precisions.append(precision)
