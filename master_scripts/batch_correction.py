@@ -252,13 +252,25 @@ def main(dataset, sample_table, batch_column, nondup_col_list, max_comps, output
     # The user defines which columns of the sample table to use, such that
     # no two conditions with the same batch have the same value in
     # any of the other specified columns
-    nonreplicating_conditions = get_nonreplicating_conditions(sample_table, batch_column, nondup_col_list)
-    if verbosity >= 2:
-        print nonreplicating_conditions
-        print nonreplicating_conditions.shape
+    if nondup_col_list != ['none']:
+        # Get the indices of the nonreplicating conditions
+        nonrep_cond_inds = get_nonreplicating_conditions(sample_table, batch_column, nondup_col_list)
+
+        # Filter the 3d matrix such that it only contains the nonreplicating conditions
+        filtered_conditions, filtered_matrix = filter_3d_dataset_by_conditions(conditions, matrix, nonrep_cond_inds)
+        if verbosity >= 2:
+            print conditions[0:10]
+    else:
+        filtered_conditions = conditions
+        filtered_matrix = matrix
+    
+    #nonreplicating_conditions = get_nonreplicating_conditions(sample_table, batch_column, nondup_col_list)
+    #if verbosity >= 2:
+    #    print nonreplicating_conditions
+    #    print nonreplicating_conditions.shape
 
     # Filter the dataset to include only the nonreplicating conditions
-    filtered_conditions, filtered_matrix = filter_dataset_by_conditions(conditions, matrix, nonreplicating_conditions)
+    #filtered_conditions, filtered_matrix = filter_dataset_by_conditions(conditions, matrix, nonreplicating_conditions)
 
     # Create a list to capture all of the LDA-batch-corrected matrices
     all_mats = []
@@ -306,7 +318,13 @@ if __name__ == '__main__':
     assert os.path.isfile(dataset_file), "Dataset file does not exist."
     dataset = load_dataset(args.dataset_file)
 
-    nondup_col_list = args.nondup_columns.split(',')
+    #nondup_col_list = args.nondup_columns.split(',')
+    # If the user specifies "none", then no columns are used to prevent duplicates of
+    # certain values within a particular batch
+    if args.nondup_columns is 'none':
+        nondup_col_list = ['none']
+    else:
+        nondup_col_list = args.nondup_columns.split(',')
 
     assert os.path.isfile(args.sample_table), "Sample table file does not exist."
     sample_table = read_sample_table(args.sample_table)
