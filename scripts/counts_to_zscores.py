@@ -141,8 +141,12 @@ def get_control_dataset(dataset, control_condition_ids):
     
     control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, control_condition_ids)])
     
-    control_condition_ids = condition_ids[control_condition_indices]
-    control_matrix = matrix[:, control_condition_indices]
+    if control_condition_indices.size == 0:
+        control_condition_ids = condition_ids
+        control_matrix = matrix
+    else:
+        control_condition_ids = condition_ids[control_condition_indices]
+        control_matrix = matrix[:, control_condition_indices]
 
     return [barcode_gene_ids, control_condition_ids, control_matrix]
 
