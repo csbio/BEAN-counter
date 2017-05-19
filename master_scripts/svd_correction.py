@@ -188,6 +188,19 @@ def svd_correction(matrix, filtered_matrix, n, verbosity):
     SVD components removed
     '''
 
+    # This is somewhat of a hack, since the pipeline should not be generating
+    # NAs in the first place. But since it has (and since someone might
+    # bring data into the pipeline with NAs), here is a fix to ignore
+    # problems caused by NAs.
+    filtered_matrix_nan_idx = np.isnan(filtered_matrix)
+    full_matrix_nan_idx = np.isnan(matrix)
+
+    # Set the nans in the full and filtered matrices to zero
+    filtered_matrix = filtered_matrix.copy()
+    filtered_matrix[filtered_matrix_nan_idx] = 0.0
+    matrix = matrix.copy()
+    matrix[full_matrix_nan_idx] = 0.0
+
     # Get the SVD of the filtered matrix
     U, s, V = np.linalg.svd(filtered_matrix, full_matrices = False)
 
@@ -224,7 +237,10 @@ def svd_correction(matrix, filtered_matrix, n, verbosity):
             print 'Removing {} components...'.format(i)
         components_removed.append(i)
         multipliers = sign_multipliers[0:i]
-        corrected_mats.append(remove_n_components(matrix, U, i, multipliers, verbosity))
+        corrected_mat = remove_n_components(matrix, U, i, multipliers, verbosity)
+        # Add nans back in at their original positions
+        corrected_mat[full_matrix_nan_idx] = np.nan
+        corrected_mats.append(corrected_mat)
         removed_component_matrices.append(get_n_plus_oneth_component(matrix, U, i, sign_multipliers[i], verbosity))
 
     return [np.array(components_removed), np.array(corrected_mats), np.array(removed_component_matrices)]
