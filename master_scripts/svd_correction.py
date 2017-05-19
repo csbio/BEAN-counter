@@ -195,14 +195,30 @@ def svd_correction(matrix, filtered_matrix, n, verbosity):
     filtered_matrix_nan_idx = np.isnan(filtered_matrix)
     full_matrix_nan_idx = np.isnan(matrix)
 
+    if verbosity >= 3:
+        print 'Number of nans in filtered matrix:', np.sum(filtered_matrix_nan_idx)
+        print 'Unique (row, column) nan locations in filtered matrix:', (np.unique(np.where(filtered_matrix_nan_idx)[0]), np.unique(np.where(filtered_matrix_nan_idx)[1]))
+        print 'Number of nans in full matrix:', np.sum(full_matrix_nan_idx)
+        print 'Unique (row, column) nan locations in full matrix:', (np.unique(np.where(full_matrix_nan_idx)[0]), np.unique(np.where(full_matrix_nan_idx)[1]))
+
     # Set the nans in the full and filtered matrices to zero
     filtered_matrix = filtered_matrix.copy()
     filtered_matrix[filtered_matrix_nan_idx] = 0.0
     matrix = matrix.copy()
     matrix[full_matrix_nan_idx] = 0.0
 
+    if verbosity >= 3:
+        print 'Number of nans in filtered matrix, after setting nans to zero:', np.sum(np.isnan(filtered_matrix))
+        print 'Number of nans in full matrix, after setting nans to zero:', np.sum(np.isnan(matrix))
+
     # Get the SVD of the filtered matrix
     U, s, V = np.linalg.svd(filtered_matrix, full_matrices = False)
+    if verbosity >= 3:
+        print 'Number of nans in U matrix:', np.sum(np.isnan(U))
+        print 'Unique (row, column) nan locations in U matrix:', (np.unique(np.where(np.isnan(U))[0]), np.unique(np.where(np.isnan(U))[1]))
+        print 's vector:', s
+        print 'Number of nans in V matrix:', np.sum(np.isnan(V))
+        print 'Unique (row, column) nan locations in V matrix:', (np.unique(np.where(np.isnan(V))[0]), np.unique(np.where(np.isnan(V))[1]))
 
     # Loop through the individual components to remove and ensure
     # that the singular vectors have the right sign. (there is no
@@ -237,7 +253,12 @@ def svd_correction(matrix, filtered_matrix, n, verbosity):
             print 'Removing {} components...'.format(i)
         components_removed.append(i)
         multipliers = sign_multipliers[0:i]
+        if verbosity >= 3:
+            print 'Number of nans in full matrix immediately before component removal:', np.sum(np.isnan(matrix))
         corrected_mat = remove_n_components(matrix, U, i, multipliers, verbosity)
+        if verbosity >= 3:
+            print 'Number of nans in component-removed matrix (before adding nans back in):', np.sum(np.isnan(corrected_mat))
+            print 'Unique (row, column) nan locations in component-removed matrix:', (np.unique(np.where(np.isnan(corrected_mat))[0]), np.unique(np.where(np.isnan(corrected_mat))[1]))
         # Add nans back in at their original positions
         corrected_mat[full_matrix_nan_idx] = np.nan
         corrected_mats.append(corrected_mat)
@@ -286,7 +307,7 @@ def get_one_component_via_proj(U, mat, n, verbosity):
 def remove_n_components(mat, U, n, mults, verbosity):
 
     if n == 0:
-        return mat
+        return mat.copy()
     else:
         components_n = U[:, 0:n]
         components_n_cols = np.reshape(components_n, (-1, n))
@@ -300,6 +321,10 @@ def remove_n_components(mat, U, n, mults, verbosity):
         if verbosity >= 2:
             print components_n_cols
             print components_n_cols.shape
+    
+        if verbosity >= 3:
+            print 'Number of nans in n+1th component vector:', np.sum(np.isnan(components_n_cols))
+            print 'Number of nans in matrix:', np.sum(np.isnan(mat))
         
         contribution = np.dot(components_n_cols.T, mat)
         contribution_rows = np.reshape(contribution, (n, -1))
@@ -327,6 +352,10 @@ def get_n_plus_oneth_component(mat, U, n, mults, verbosity):
     if verbosity >= 2:
         print components_n_cols
         print components_n_cols.shape
+
+    if verbosity >= 3:
+        print 'Number of nans in n+1th component vector:', np.sum(np.isnan(components_n_cols))
+        print 'Number of nans in matrix:', np.sum(np.isnan(mat))
     
     contribution = np.dot(components_n_cols.T, mat)
     contribution_rows = np.reshape(contribution, (1, -1))
