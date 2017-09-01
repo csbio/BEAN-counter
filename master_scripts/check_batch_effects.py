@@ -285,8 +285,22 @@ def plot_one_pr_curve(comps_removed, precision_vectors, recall_vectors, auprc_li
     fig = plt.figure(figsize = (7, 7))
     ax = fig.add_subplot(1,1,1)
     for i, ncomps in enumerate(comps_removed):
+        # Since sklearn sets the first precision at recall=0 to 1,
+        # I remove this value and any subsequent values at recall=0
+        # so that plotting only starts with the precision obtained
+        # at the threshold of the first true positive observation
+        # (in case multiple true positives have the same associated
+        # score).
+        recall_vec = recall_vectors[i]
+        precision_vec = precision_vectors[i]
+        first_nonzero_recall_ind = np.nanmin(np.where(recall_vec > 0)[0])
+        first_nonzero_recall_val = recall_vec[first_nonzero_recall_ind]
+        last_first_nonzero_recall_ind = np.nanmax(np.where(recall_vec == first_nonzero_recall_val)[0])
+        recall_vec = recall_vec[last_first_nonzero_recall_ind:]
+        precision_vec = precision_vec[last_first_nonzero_recall_ind:]
+        # On to plotting
         style = colors_lines.next()
-        ax.plot(recall_vectors[i], precision_vectors[i], style, label = '{} (normalized AUPRC = {:.3f})'.format(ncomps, auprc_list[i]))
+        ax.plot(recall_vec, precision_vec, style, label = '{} (normalized AUPRC = {:.3f})'.format(ncomps, auprc_list[i]))
     ax.set_xscale('log')
     ax.set_ylim([0, ymax])
     ax.set_ylabel('Precision')
