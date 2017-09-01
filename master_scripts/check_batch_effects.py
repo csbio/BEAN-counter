@@ -88,9 +88,12 @@ def get_lda_roc_curve_filename(folder):
 
     return os.path.join(folder, 'ROC_batch-effect.pdf')
 
-def get_batch_effect_histogram_filename(folder, ncomps):
+def get_batch_effect_histogram_filename(folder, ncomps, total_comp):
 
-    return os.path.join(folder, 'Histogram_batch-effect_{}-components-removed.pdf'.format(ncomps))
+    if total_comp > 1:
+        return os.path.join(folder, 'Histogram_batch-effect_{}-components-removed.pdf'.format(ncomps))
+    else:
+        return os.path.join(folder, 'Histogram_batch-effect.pdf'.format(ncomps))
 
 def get_batch_effect_histogram_ttest_filename(folder):
 
@@ -246,31 +249,36 @@ def compute_ROC_vectors(corr_mat, batches, verbosity):
     # with the highest recalls first
     return fpr, tpr, thresholds, roc_auc
 
-def plot_pr_curves_diff_scales(comps_removed, precision_vectors, recall_vectors, auc_list, batch_column, pr_folder):
+def plot_pr_curves_diff_scales(comps_removed, precision_vectors, recall_vectors, auprc_list, batch_column, total_comp, pr_folder):
 
     ymax_list = [1, 0.1]
     filenames = [get_lda_pr_curve_filename(pr_folder, y) for y in ymax_list]
 
     for i, ymax in enumerate(ymax_list):
-        plot_one_pr_curve(comps_removed, precision_vectors, recall_vectors, auc_list, ymax, batch_column, filenames[i])
+        plot_one_pr_curve(comps_removed, precision_vectors, recall_vectors, auprc_list, ymax, batch_column, total_comp, filenames[i])
 
-def plot_one_pr_curve(comps_removed, precision_vectors, recall_vectors, auc_list, ymax, batch_column, filename):
+def plot_one_pr_curve(comps_removed, precision_vectors, recall_vectors, auprc_list, ymax, batch_column, total_comp, filename):
 
     colors_lines = pt.get_style_combos(['lines', 'colors'])
     fig = plt.figure(figsize = (7, 7))
     ax = fig.add_subplot(1,1,1)
     for i, ncomps in enumerate(comps_removed):
         style = colors_lines.next()
-        ax.plot(recall_vectors[i], precision_vectors[i], style, label = '{} (normalized AUC = {:.3f})'.format(ncomps, auc_list[i]))
+        ax.plot(recall_vectors[i], precision_vectors[i], style, label = '{} (normalized AUPRC = {:.3f})'.format(ncomps, auprc_list[i]))
     ax.set_xscale('log')
     ax.set_ylim([0, ymax])
     ax.set_ylabel('Precision')
     ax.set_xlabel('Recall')
-    lgd = ax.legend(bbox_to_anchor = (1.05, 1), loc = 2, title = "Number of components\nremoved")
     plt.title('Precision-recall analysis of\n"{}" batch effects'.format(batch_column))
-    plt.savefig(filename, bbox_extra_artists = ([lgd]), bbox_inches = 'tight')
+    if total_comp > 1:
+        plt.title('Precision-recall analysis of\n"{}" batch effects'.format(batch_column))
+        lgd = ax.legend(bbox_to_anchor = (1.05, 1), loc = 2, title = "Number of components\nremoved")
+        plt.savefig(filename, bbox_extra_artists = ([lgd]), bbox_inches = 'tight')
+    else:
+        plt.title('Precision-recall analysis of "{}"\nbatch effects (normalized AUPRC = {:.3f})'.format(batch_column, auprc_list[i]))
+        plt.savefig(filename)
 
-def plot_roc_curves(comps_removed, fpr_vecs, tpr_vecs, auc_list, batch_column, pr_folder):
+def plot_roc_curves(comps_removed, fpr_vecs, tpr_vecs, auc_list, batch_column, total_comp, pr_folder):
 
     filename = get_lda_roc_curve_filename(pr_folder)
 
@@ -281,15 +289,19 @@ def plot_roc_curves(comps_removed, fpr_vecs, tpr_vecs, auc_list, batch_column, p
         style = colors_lines.next()
         ax.plot(fpr_vecs[i], tpr_vecs[i], style, label = '{} (AUC = {:.3f})'.format(ncomps, auc_list[i]))
     ax.set_ylim([0, 1])
-    ax.set_xlabel('False Positive Rate (Specificity)')
+    ax.set_xlabel('False Positive Rate (1 - Specificity)')
     ax.set_ylabel('True Positive Rate (Sensitivity)')
-    lgd = ax.legend(bbox_to_anchor = (1.05, 1), loc = 2, title = "Number of components\nremoved")
-    plt.title('ROC analysis of\n"{}" batch effects'.format(batch_column))
-    plt.savefig(filename, bbox_extra_artists = ([lgd]), bbox_inches = 'tight')
+    if total_comp > 1:
+        plt.title('ROC analysis of\n"{}" batch effects'.format(batch_column))
+        lgd = ax.legend(bbox_to_anchor = (1.05, 1), loc = 2, title = "Number of components\nremoved")
+        plt.savefig(filename, bbox_extra_artists = ([lgd]), bbox_inches = 'tight')
+    else:
+        plt.title('ROC analysis of "{}"\nbatch effects (AUC = {:.3f})'.format(batch_column, auc_list[i]))
+        plt.savefig(filename)
 
-def plot_histograms(within_batch_corrs, between_batch_corrs, ncomps, batch_column, hist_folder, verbosity):
+def plot_histograms(within_batch_corrs, between_batch_corrs, ncomps, batch_column, hist_folder, total_comp, verbosity):
 
-    filename = get_batch_effect_histogram_filename(hist_folder, ncomps)
+    filename = get_batch_effect_histogram_filename(hist_folder, ncomps, total_comp)
 
     hist_bins = np.linspace(-1, 1, 41)
     bin_centers = 0.5 * (hist_bins[1:] + hist_bins[:-1])
@@ -311,8 +323,11 @@ def plot_histograms(within_batch_corrs, between_batch_corrs, ncomps, batch_colum
     ax.set_xlim([-1, 1])
     ax.set_xlabel('Average correlation within/between batch(es)')
     ax.set_ylabel('Density')
+    if total_comp > 1:
+        plt.title('"{}" batch correlations,\n{} components removed'.format(batch_column, ncomps))
+    else:
+        plt.title('"{}" batch correlations'.format(batch_column, ncomps))
     lgd = ax.legend(bbox_to_anchor = (1.05, 1), loc = 2, title = "Correlation origin")
-    plt.title('{} batch correlations,\n{} components removed'.format(batch_column, ncomps))
     plt.savefig(filename, bbox_extra_artists = ([lgd]), bbox_inches = 'tight')
 
     # Here I compute the t-statistic for each distribution
@@ -402,12 +417,15 @@ def write_p_vals(comps_removed, t_stats, p_vals, batch_column, hist_folder):
 
     f.close()
 
-def print_pr_values(precision, recall, threshold, ncomps, pr_folder):
+def print_pr_values(precision, recall, threshold, ncomps, total_comp, pr_folder):
 
     pr_data_folder = os.path.join(pr_folder, 'PR_data')
     if not os.path.isdir(pr_data_folder):
         os.makedirs(pr_data_folder)
-    filename = os.path.join(pr_data_folder, 'PR_{}-components-removed.txt.gz'.format(ncomps))
+    if total_comp > 1:
+        filename = os.path.join(pr_data_folder, 'PR_{}-components-removed.txt.gz'.format(ncomps))
+    else:
+        filename = os.path.join(pr_data_folder, 'PR.txt.gz')
 
     # Make sure sure threshold vector is same length as recall and precision vectors
     threshold = np.append(threshold, np.nan)
@@ -418,12 +436,15 @@ def print_pr_values(precision, recall, threshold, ncomps, pr_folder):
         f.write('{}\t{}\t{}\n'.format(rec, precision[i], threshold[i]))
     f.close()
 
-def print_roc_values(fpr, tpr, threshold, ncomps, pr_folder):
+def print_roc_values(fpr, tpr, threshold, ncomps, total_comp, pr_folder):
 
     roc_data_folder = os.path.join(pr_folder, 'ROC_data')
     if not os.path.isdir(roc_data_folder):
         os.makedirs(roc_data_folder)
-    filename = os.path.join(roc_data_folder, 'ROC_{}-components-removed.txt.gz'.format(ncomps))
+    if total_comp > 1:
+        filename = os.path.join(roc_data_folder, 'ROC_{}-components-removed.txt.gz'.format(ncomps))
+    else:
+        filename = os.path.join(roc_data_folder, 'ROC.txt.gz')
 
     f = gzip.open(filename, 'wb')
     f.write('TPR\tFPR\tThreshold\n')
@@ -431,12 +452,15 @@ def print_roc_values(fpr, tpr, threshold, ncomps, pr_folder):
         f.write('{}\t{}\t{}\n'.format(tp, fpr[i], threshold[i]))
     f.close()
 
-def print_corrs(groups, corrs, n, string, ncomps, hist_folder):
+def print_corrs(groups, corrs, n, string, ncomps, total_comp, hist_folder):
 
     corr_folder = os.path.join(hist_folder, 'correlation_data')
     if not os.path.isdir(corr_folder):
         os.makedirs(corr_folder)
-    filename = os.path.join(corr_folder, '{}_correlations_{}-components-removed.txt.gz'.format(string, ncomps))
+    if total_comp > 1:
+        filename = os.path.join(corr_folder, '{}_correlations_{}-components-removed.txt.gz'.format(string, ncomps))
+    else:
+        filename = os.path.join(corr_folder, '{}_correlations.txt.gz'.format(string))
 
     # Sort the correlations and the groups in descending order!
     # Sorting using the negative of corrs forces NaNs to stay
@@ -460,6 +484,7 @@ def main(dataset_3d, sample_table, batch_column, nondup_col_list, include_column
 
     # Load in the entire 3-d stacked matrix and dimension names!
     components_removed, barcodes, conditions, matrix_3d = dataset
+    total_comp = len(components_removed)
 
     if verbosity >= 2:
         print 'matrix dimensions should be: {}, {}, {}'.format(len(components_removed), len(barcodes), len(conditions))
@@ -578,8 +603,8 @@ def main(dataset_3d, sample_table, batch_column, nondup_col_list, include_column
             print "\t\tshape of threshold vector: {}".format(threshold_roc.shape)
 
         # Dump the PR and ROC values out to files for reference
-        print_pr_values(precision, recall, threshold_pr, ncomps, pr_folder)
-        print_roc_values(fpr, tpr, threshold_roc, ncomps, pr_folder)
+        print_pr_values(precision, recall, threshold_pr, ncomps, total_comp, pr_folder)
+        print_roc_values(fpr, tpr, threshold_roc, ncomps, total_comp, pr_folder)
 
         # Dump the PR values into lists so I can plot everything together!
         precisions.append(precision)
@@ -604,12 +629,12 @@ def main(dataset_3d, sample_table, batch_column, nondup_col_list, include_column
         hist_folder = os.path.join(output_folder, 'histograms')
         if not os.path.isdir(hist_folder):
             os.makedirs(hist_folder)
-        print_corrs(within_batch_groups, within_batch_corrs, within_batch_n, 'within-batch', ncomps, hist_folder)
-        print_corrs(between_batch_groups, between_batch_corrs, between_batch_n, 'between-batch', ncomps, hist_folder)
+        print_corrs(within_batch_groups, within_batch_corrs, within_batch_n, 'within-batch', ncomps, total_comp, hist_folder)
+        print_corrs(between_batch_groups, between_batch_corrs, between_batch_n, 'between-batch', ncomps, total_comp, hist_folder)
         if verbosity >= 1:
             print "\t\tPlotting histograms"
         #between_within_t_stats, between_within_p_vals = plot_histograms(within_batch_corrs, between_batch_corrs, ncomps, batch_column, hist_folder, verbosity)
-        plot_histograms(within_batch_corrs, between_batch_corrs, ncomps, batch_column, hist_folder, verbosity)
+        plot_histograms(within_batch_corrs, between_batch_corrs, ncomps, batch_column, hist_folder, total_comp, verbosity)
         #AUC_values.append(MW_AUC_val)
         #MW_pvals.append(MW_pval)
         #t_stats = np.vstack([t_stats, between_within_t_stats])
@@ -618,8 +643,8 @@ def main(dataset_3d, sample_table, batch_column, nondup_col_list, include_column
     #MW_pvals = np.array(MW_pvals)
 
     # Plot the precision and recall vectors!
-    plot_pr_curves_diff_scales(components_removed, precisions, recalls, auprs, batch_column, pr_folder)
-    plot_roc_curves(components_removed, fprs, tprs, aucs, batch_column, pr_folder)
+    plot_pr_curves_diff_scales(components_removed, precisions, recalls, auprs, batch_column, total_comp, pr_folder)
+    plot_roc_curves(components_removed, fprs, tprs, aucs, batch_column, total_comp, pr_folder)
 
     # Plot t-statistics for the histograms (and write out associated p-values)
     # as they evolve over the course of component removal
