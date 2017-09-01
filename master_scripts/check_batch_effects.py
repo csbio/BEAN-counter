@@ -116,6 +116,23 @@ def load_3d_dataset(data_filename):
     f.close()
     return dataset
 
+def load_2d_or_3d_dataset(data_filename):
+
+    f = gzip.open(data_filename, 'rb')
+    dataset_raw = cPickle.load(f)
+    dataset = [np.array(x) if (i+1) < len(dataset_raw) else x for i,x in enumerate(dataset_raw)]
+    f.close()
+    # If it's a 2D dataset, add a "0 components removed" array as the first element
+    # and add another dimension to the data matrix to turn it into a 3d array. This
+    # makes it compatible with all remaining code.
+    if len(dataset) == 3:
+        new_mat_dims = (1, dataset[2].shape[0], dataset[2].shape[1])
+        dataset[2] = dataset[2].reshape(new_mat_dims)
+        dataset.insert(0, np.array([0]))
+    #print len(dataset_raw)
+    #print len(dataset)
+    return dataset
+
 def get_labels_from_conditions(conditions, sample_table, label_name):
 
     sample_table = sample_table.set_index(['screen_name', 'expt_id'])
@@ -532,6 +549,8 @@ def main(dataset_3d, sample_table, batch_column, nondup_col_list, include_column
         if verbosity >= 1:
             print "\tComputing correlation matrix"
         corr_matrix = np.corrcoef(matrix, rowvar = 0)
+        if verbosity >= 3:
+            print "Number of NaNs in correlation matrix: {}".format(np.sum(np.isnan(corr_matrix)))
         
         # Compute the precision and recall, based on ranking Pearson
         # correlation coefficients of the profiles and asking if the
@@ -577,10 +596,10 @@ def main(dataset_3d, sample_table, batch_column, nondup_col_list, include_column
         if verbosity >= 1:
             print "\tCalculating batch correlations"
             print "\t\tWithin batch"
-        within_batch_groups, within_batch_corrs, within_batch_n = cf.get_group_correlations(corr_matrix, batches, within_group = True)
+        within_batch_groups, within_batch_corrs, within_batch_n = cf.get_group_correlations(corr_matrix, batches, within_group = True, verbosity = verbosity)
         if verbosity >= 1:
             print "\t\tBetween batches"
-        between_batch_groups, between_batch_corrs, between_batch_n = cf.get_group_correlations(corr_matrix, batches, within_group = False)
+        between_batch_groups, between_batch_corrs, between_batch_n = cf.get_group_correlations(corr_matrix, batches, within_group = False, verbosity = verbosity)
        
         hist_folder = os.path.join(output_folder, 'histograms')
         if not os.path.isdir(hist_folder):
@@ -614,10 +633,10 @@ if __name__ == '__main__':
     # Get arguments
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('dataset_file', help = 'The dataset on which to perform batch correction.')
+    parser.add_argument('dataset_file', help = 'The dataset on which to evaluate batch effects. Can be either a 2D matrix dataset or a 3D stacked matrix dataset (the latter being the immediate output of batch correction).')
     parser.add_argument('sample_table', help = 'The sample table corresponding to the dataset.')
     parser.add_argument('batch_column', help = 'The column from the sample table that defines the batches.')
-    parser.add_argument('nondup_columns', help = 'Comma delimited. The columns that contain condition identifiers that should not be duplicated within the same batch.')
+    parser.add_argument('nondup_columns', help = 'Comma delimited. The columns that contain condition attributes that should not be duplicated within the same batch.')
     parser.add_argument('-incl', '--include_column', help = 'Column in the sample table that specifies True/False whether or not the condition in that row should be included in the batch effect evaluation/visualization.')
     parser.add_argument('-v', '--verbosity', help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
     parser.add_argument('--num_test_batches', help = 'The number of unique batches to use. ONLY for testing purposes. To be used to reduce time and benchmark, not to generate accurate results')
@@ -635,7 +654,7 @@ if __name__ == '__main__':
     # Get the data ready to rumble!
     dataset_file = os.path.abspath(args.dataset_file)
     assert os.path.isfile(dataset_file), "Dataset file does not exist."
-    dataset = load_3d_dataset(args.dataset_file)
+    dataset = load_2d_or_3d_dataset(args.dataset_file)
 
     if verbosity >= 2:
         print dataset
