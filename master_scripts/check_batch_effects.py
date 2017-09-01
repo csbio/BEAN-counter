@@ -217,7 +217,29 @@ def compute_PR_vectors(corr_mat, batches, verbosity):
     if verbosity >= 1:
         print '\t\tnumber of NaN correlations: {}'.format(np.sum(np.isnan(corr_vec)))
     
-    precision, recall, thresholds = precision_recall_curve(y_true = batches_match, probas_pred = corr_vec)
+    # Due to some differences between how sklearn calculates PR vs. the way we
+    # like to do it, there will be some changes/hacks in order to still use
+    # the sklearn PR function.
+    # Since sklearn stops calculating precison once it reaches the final true positive
+    # value (at recall of 1, probably because it does the calculation starting at a
+    # recall of 1 whereas we go from the other direction) we do not have access to the
+    # background precision (the very end of the PR curve) unless we do a little hack.
+    # So we add a true positive at the lowest possible correlation value and then
+    # remove the extra precision and recall values associated with it after the PR
+    # calculation
+    batches_match_extra = np.append(batches_match, True)
+    corr_vec_extra = np.append(corr_vec, np.nanmin(corr_vec) - 0.001)
+
+    precision, recall, thresholds = precision_recall_curve(y_true = batches_match_extra, probas_pred = corr_vec_extra)
+
+    # And here we remove the extra values
+    precision = precision[1:]
+    recall = recall[1:]
+    thresholds = thresholds[1:]
+
+    # And rescale the recall values for an accurate AUC calculation
+    recall = (recall * (num_true_positives + 1)) / num_true_positives
+
     # This calculates the "normalized" AUC, since the recall values have not been multiplied by the
     # number of true positives yet.
     norm_AUPR = auc(recall, precision)
