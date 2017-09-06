@@ -192,9 +192,9 @@ def cluster_count_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_strin
 
     dataset = [custom_genes, custom_conditions, logged_matrix]
 
-    record, rows_tree, cols_tree = clus.cluster(dataset)
-
     f = get_clustered_count_matrix_filename(config_params, lane_id)
+    record, rows_tree, cols_tree = clus.cluster(dataset, file_base = f)
+
     record.save(f, rows_tree, cols_tree)
 
 
@@ -217,9 +217,9 @@ def cluster_zscore_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_stri
 
     dataset = [custom_genes, custom_conditions, matrix]
     
-    record, rows_tree, cols_tree = clus.cluster(dataset)
-
     f = get_clustered_zscore_matrix_filename(config_params, lane_id)
+    record, rows_tree, cols_tree = clus.cluster(dataset, file_base = f)
+
     record.save(f, rows_tree, cols_tree)
 
     # return the filename so the cdt/atr/gtr files can be copied to a directory with all
@@ -235,9 +235,9 @@ def cluster_one_stacked_matrix(dataset, matrix_id, strain_table, sample_table, s
 
     dataset = [custom_genes, custom_conditions, matrix]
     
-    record, rows_tree, cols_tree = clus.cluster(dataset, new_matrix)
-
     f = os.path.join(output_folder, matrix_id)
+    
+    record, rows_tree, cols_tree = clus.cluster(dataset, file_base = f, new_matrix = new_matrix)
     record.save(f, rows_tree, cols_tree)
 
     # return the filename so the cdt/atr/gtr files can be copied to a directory with all
