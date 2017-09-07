@@ -49,7 +49,7 @@ parser.add_argument('sample_table', help = 'The sample table corresponding to th
 parser.add_argument('strain_columns', help = 'The columns from the barcode table to be included in the visualization.')
 parser.add_argument('condition_columns', help = 'The columns from the sample table to be included in the visualization.')
 parser.add_argument('--new_dataset', help = 'A stacked matrix object, saved to file, from which the data, but not the clustering, of the output will come. The dataset must have the same rows and columns, and in the same order, as the data in the "dataset" argument')
-parser.add_argument('-v', '--verbosity', help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
+parser.add_argument('-v', '--verbosity', type = int, help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
 args = parser.parse_args()
 
 # Load in dataset
@@ -91,7 +91,7 @@ for i in num_components:
         new_matrix = new_dataset[3][i]
     else:
         new_matrix = None
-    filename_noext = clus_wrap.cluster_one_stacked_matrix(single_matrix_dataset, matrix_id, strain_table, sample_table, args.strain_columns, args.condition_columns, output_folder, new_matrix)
+    filename_noext = clus_wrap.cluster_one_stacked_matrix(single_matrix_dataset, matrix_id, strain_table, sample_table, args.strain_columns, args.condition_columns, output_folder, new_matrix, args.verbosity)
     filenames_noext.append(filename_noext)
 
 ###### Ultimate goal: combine all CDTs into one big tarred/gzipped folder, for distribution!

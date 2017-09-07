@@ -49,7 +49,7 @@ parser.add_argument('sample_table', help = 'The sample table corresponding to th
 parser.add_argument('strain_columns', help = 'The columns from the barcode table to be included in the visualization.')
 parser.add_argument('condition_columns', help = 'The columns from the sample table to be included in the visualization.')
 parser.add_argument('--new_dataset', help = 'A dataset object (strains, conditions, matrix), saved to file, from which the data, but not the clustering, of the output will come. The dataset must have the same rows and columns, and in the same order, as the data in the "dataset" argument')
-parser.add_argument('-v', '--verbosity', help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
+parser.add_argument('-v', '--verbosity', type = int, help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
 args = parser.parse_args()
 
 # Load in dataset
@@ -84,7 +84,7 @@ if new_dataset is not None:
     new_matrix = new_dataset[2]
 else:
     new_matrix = None
-clus_wrap.cluster_one_stacked_matrix(dataset, args.clustergram_name, strain_table, sample_table, args.strain_columns, args.condition_columns, output_folder, new_matrix)
+clus_wrap.cluster_one_stacked_matrix(dataset, args.clustergram_name, strain_table, sample_table, args.strain_columns, args.condition_columns, output_folder, new_matrix, args.verbosity)
 
 ## Extract one matrix from the stack of matrices at a time, cluster, and
 ## export to files! Retain the filenames so they can be tarred/gzipped
