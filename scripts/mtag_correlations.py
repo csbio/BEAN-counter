@@ -21,18 +21,18 @@ sys.path.append('./lib')
 import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
-from cg_common_functions import *
+from cg_common_functions import get_verbosity, get_sample_table
 
 
-def get_sample_table(config_params):
-
-    filename = config_params['sample_table_file']
-
-    # Read everything in as a string, to prevent vexing
-    # number interpretation problems! Methods further down
-    # can coerce to different types.
-    tab = pd.read_table(filename, dtype = 'S')
-    return tab
+#def get_sample_table(config_params):
+#
+#    filename = config_params['sample_table_file']
+#
+#    # Read everything in as a string, to prevent vexing
+#    # number interpretation problems! Methods further down
+#    # can coerce to different types.
+#    tab = pd.read_table(filename, dtype = 'S')
+#    return tab
 
 def get_lane_interactions_path(config_params, lane_id):
 

@@ -29,7 +29,7 @@ import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 import cluster_dataset_wrappers as clus_wrap
-from cg_common_functions import *
+from cg_common_functions import get_verbosity, get_sample_table
 
 import argparse
 
@@ -45,15 +45,15 @@ args = parser.parse_args()
 def get_all_lane_ids(sample_table):
     return np.unique(np.array(sample_table['lane']))
 
-def get_sample_table(config_params):
-
-    filename = config_params['sample_table_file']
-
-    # Read everything in as a string, to prevent vexing
-    # number interpretation problems! Methods further down
-    # can coerce to different types.
-    tab = pd.read_table(filename, dtype = 'S')
-    return tab
+#def get_sample_table(config_params):
+#
+#    filename = config_params['sample_table_file']
+#
+#    # Read everything in as a string, to prevent vexing
+#    # number interpretation problems! Methods further down
+#    # can coerce to different types.
+#    tab = pd.read_table(filename, dtype = 'S')
+#    return tab
 
 ###########################################
 #######  Here is the main script  #########
