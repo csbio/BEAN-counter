@@ -27,18 +27,18 @@ import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 import cluster_dataset_wrappers as clus_wrap
-from cg_common_functions import *
+from cg_common_functions import get_temp_clustergram_name, read_sample_table
 
 import argparse
 
-def read_sample_table(tab_filename):
-
-    assert os.path.isfile(tab_filename), 'File {} does not exist'.format(tab_filename)
-    # Read everything in as a string, to prevent vexing
-    # number interpretation problems! Methods further down
-    # can coerce to different types.
-    tab = pd.read_table(tab_filename, dtype = 'S')
-    return tab
+#def read_sample_table(tab_filename):
+#
+#    assert os.path.isfile(tab_filename), 'File {} does not exist'.format(tab_filename)
+#    # Read everything in as a string, to prevent vexing
+#    # number interpretation problems! Methods further down
+#    # can coerce to different types.
+#    tab = pd.read_table(tab_filename, dtype = 'S')
+#    return tab
 
 # Parse the command line arguments
 parser = argparse.ArgumentParser()
