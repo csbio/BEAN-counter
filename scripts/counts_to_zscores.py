@@ -557,7 +557,7 @@ def generate_scatterplots(config_params, outfolder, mean_control_profile, raw_da
 def main(config_file, lane_id):
     
     # Read in the config params
-    config_params = cfp.parse(config_file)
+    config_params = parse_yaml(config_file)
     sample_table = get_sample_table(config_params)
 
     # Get the interactions output folder
