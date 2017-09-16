@@ -26,7 +26,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
-from cg_common_functions import *
+from cg_common_functions import get_verbosity, get_sample_table
 
 def get_species_config_params(config_params):
     barseq_path = os.getenv('BARSEQ_PATH')
@@ -36,15 +36,15 @@ def get_species_config_params(config_params):
     species_params = all_species_params[species_id]
     return species_params
 
-def get_sample_table(config_params):
-
-    filename = config_params['sample_table_file']
-    
-    # Read everything in as a string, to prevent vexing
-    # number interpretation problems! Methods further down
-    # can coerce to different types.
-    tab = pd.read_table(filename, dtype = 'S')
-    return tab
+#def get_sample_table(config_params):
+#
+#    filename = config_params['sample_table_file']
+#    
+#    # Read everything in as a string, to prevent vexing
+#    # number interpretation problems! Methods further down
+#    # can coerce to different types.
+#    tab = pd.read_table(filename, dtype = 'S')
+#    return tab
 
 # def get_barcode_table(config_params):
 # 

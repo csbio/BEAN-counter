@@ -32,16 +32,16 @@ import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 import correlation_functions as cf
-from cg_common_functions import *
+from cg_common_functions import read_sample_table
 import plotting_tools as pt
 
-def read_sample_table(tab_filename):
-
-    # Read everything in as a string, to prevent vexing
-    # number interpretation problems! Methods further down
-    # can coerce to different types.
-    tab = pd.read_table(tab_filename, dtype = 'S')
-    return tab
+#def read_sample_table(tab_filename):
+#
+#    # Read everything in as a string, to prevent vexing
+#    # number interpretation problems! Methods further down
+#    # can coerce to different types.
+#    tab = pd.read_table(tab_filename, dtype = 'S')
+#    return tab
 
 def filter_sample_table(sample_table, final_conditions):
 

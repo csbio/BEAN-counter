@@ -13,17 +13,17 @@ import cPickle
 
 import config_file_parser as cfp
 import cluster_dataset as clus
-from cg_common_functions import *
+from cg_common_functions import get_verbosity, get_sample_table
 
-def get_sample_table(config_params):
-
-    filename = config_params['sample_table_file']
-
-    # Read everything in as a string, to prevent vexing
-    # number interpretation problems! Methods further down
-    # can coerce to different types.
-    tab = pd.read_table(filename, dtype = 'S')
-    return tab
+#def get_sample_table(config_params):
+#
+#    filename = config_params['sample_table_file']
+#
+#    # Read everything in as a string, to prevent vexing
+#    # number interpretation problems! Methods further down
+#    # can coerce to different types.
+#    tab = pd.read_table(filename, dtype = 'S')
+#    return tab
     
 def get_barcode_table(config_params):
 
