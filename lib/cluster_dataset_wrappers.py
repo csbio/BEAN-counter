@@ -12,9 +12,8 @@ import gzip
 import cPickle
 
 import config_file_parser as cfp
-
 import cluster_dataset as clus
-
+from cg_common_functions import *
 
 def get_sample_table(config_params):
 
@@ -102,7 +101,7 @@ def get_clustered_zscore_matrix_filename(config_params, lane_id):
     lane_interactions_path = get_lane_interactions_path(config_params, lane_id)
     return os.path.join(lane_interactions_path, '{}_scaled_dev'.format(lane_id))
 
-def customize_strains(strains, barcode_table, fmt_string):
+def customize_strains(strains, barcode_table, fmt_string, verbosity = 1):
 
     barcode_table = barcode_table.set_index(['Strain_ID', 'Barcode'], drop = False)
     barcode_table_cols = barcode_table.columns.values
@@ -124,11 +123,17 @@ def customize_strains(strains, barcode_table, fmt_string):
         custom_strain = custom_barcode_table.ix[strain].values
         custom_strain_strings = [str(x) for x in custom_strain]
         custom_strain_final = '_'.join(custom_strain_strings)
+        if verbosity >= 3:
+            #print strain
+            #print custom_barcode_table.ix[strain]
+            print custom_strain
+            #print custom_strain_strings
+            print custom_strain_final
         custom_strains.append(custom_strain_final)
 
     return np.array(custom_strains)
 
-def customize_conditions(conditions, sample_table, fmt_string):
+def customize_conditions(conditions, sample_table, fmt_string, verbosity = 1):
 
     sample_table = sample_table.set_index(['screen_name', 'expt_id'], drop = False)
     sample_table_cols = sample_table.columns.values
@@ -149,6 +154,12 @@ def customize_conditions(conditions, sample_table, fmt_string):
         custom_cond = custom_sample_table.ix[cond].values
         custom_cond_strings = [str(x) for x in custom_cond]
         custom_cond_final = '_'.join(custom_cond_strings)
+        if verbosity >= 3:
+            #print cond
+            #print custom_sample_table.ix[cond]
+            print custom_cond
+            #print custom_cond_strings
+            print custom_cond_final
         custom_conditions.append(custom_cond_final)
 
     return np.array(custom_conditions)
@@ -187,14 +198,14 @@ def cluster_count_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_strin
     logged_matrix = np.log2(thresholded_matrix)
 
     # Customize the strain and condition names for interpretable visualization!
-    custom_genes = customize_strains(genes, config_params, strain_fmt_string)
-    custom_conditions = customize_conditions(conditions, config_params, cond_fmt_string)
+    custom_genes = customize_strains(genes, config_params, strain_fmt_string, verbosity = get_verbosity(config_params))
+    custom_conditions = customize_conditions(conditions, config_params, cond_fmt_string, verbosity = get_verbosity(config_params))
 
     dataset = [custom_genes, custom_conditions, logged_matrix]
 
-    record, rows_tree, cols_tree = clus.cluster(dataset)
-
     f = get_clustered_count_matrix_filename(config_params, lane_id)
+    record, rows_tree, cols_tree = clus.cluster(dataset, file_base = f)
+
     record.save(f, rows_tree, cols_tree)
 
 
@@ -212,32 +223,32 @@ def cluster_zscore_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_stri
     # Customize the strain and condition names for interpretable visualization!
     strain_table = get_barcode_table(config_params)
     sample_table = get_sample_table(config_params)
-    custom_genes = customize_strains(genes, strain_table, strain_fmt_string)
-    custom_conditions = customize_conditions(conditions, sample_table, cond_fmt_string)
+    custom_genes = customize_strains(genes, strain_table, strain_fmt_string, verbosity = get_verbosity(config_params))
+    custom_conditions = customize_conditions(conditions, sample_table, cond_fmt_string, verbosity = get_verbosity(config_params))
 
     dataset = [custom_genes, custom_conditions, matrix]
     
-    record, rows_tree, cols_tree = clus.cluster(dataset)
-
     f = get_clustered_zscore_matrix_filename(config_params, lane_id)
+    record, rows_tree, cols_tree = clus.cluster(dataset, file_base = f)
+
     record.save(f, rows_tree, cols_tree)
 
     # return the filename so the cdt/atr/gtr files can be copied to a directory with all
     # of the other clustergrams and eventually tarred/gzipped for distribution!
     return f
 
-def cluster_one_stacked_matrix(dataset, matrix_id, strain_table, sample_table, strain_fmt_string, cond_fmt_string, output_folder, new_matrix = None):
+def cluster_one_stacked_matrix(dataset, matrix_id, strain_table, sample_table, strain_fmt_string, cond_fmt_string, output_folder, new_matrix = None, verbosity = 1):
 
     genes, conditions, matrix = dataset
 
-    custom_genes = customize_strains(genes, strain_table, strain_fmt_string)
-    custom_conditions = customize_conditions(conditions, sample_table, cond_fmt_string)
+    custom_genes = customize_strains(genes, strain_table, strain_fmt_string, verbosity = verbosity)
+    custom_conditions = customize_conditions(conditions, sample_table, cond_fmt_string, verbosity = verbosity)
 
     dataset = [custom_genes, custom_conditions, matrix]
     
-    record, rows_tree, cols_tree = clus.cluster(dataset, new_matrix)
-
     f = os.path.join(output_folder, matrix_id)
+    
+    record, rows_tree, cols_tree = clus.cluster(dataset, file_base = f, new_matrix = new_matrix)
     record.save(f, rows_tree, cols_tree)
 
     # return the filename so the cdt/atr/gtr files can be copied to a directory with all

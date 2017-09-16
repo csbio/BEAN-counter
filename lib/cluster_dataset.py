@@ -17,7 +17,7 @@ import StringIO
 import sys
 import os
 
-def cluster(dataset, new_matrix = None):
+def cluster(dataset, file_base, new_matrix = None):
 
     genes, conditions, matrix = dataset
     print 'shape of original matrix:'
@@ -126,6 +126,12 @@ def cluster(dataset, new_matrix = None):
     rows_rest_intermed = ['\t'.join(x) for x in rows_rest]
     rows_rest_final = '\n'.join(rows_rest_intermed)
     final_string = '%s\n%s\n%s' % (row1, row2, rows_rest_final)
+
+    # Write out final string as pcl file, mostly for diagnostic purposes
+    pcl_filename = '{}.pcl'.format(file_base)
+    of = open(pcl_filename, 'wt')
+    of.write(final_string)
+    of.close()
 
     # Read in as a "record" object
     handle = StringIO.StringIO(final_string)
