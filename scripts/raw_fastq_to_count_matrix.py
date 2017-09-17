@@ -19,6 +19,7 @@ import matplotlib
 matplotlib.use('Agg') # Force matplotlib to not use any Xwindows backend.
 import matplotlib.pyplot as plt
 import cPickle
+import itertools as it
 
 barseq_path = os.getenv('BARSEQ_PATH')
 sys.path.append(os.path.join(barseq_path, 'lib'))
@@ -26,16 +27,16 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
-from cg_common_functions import get_verbosity, get_sample_table
+from cg_common_functions import get_verbosity, get_sample_table, get_screen_config_params, read_barcode_table
 
-def get_species_config_params(config_params):
-    barseq_path = os.getenv('BARSEQ_PATH')
-    species_config_file = os.path.join(barseq_path, 'data/species_config_file.txt')
-    all_species_params = cfp.parse_species_config(species_config_file)
-    species_id = config_params['species_ID']
-    species_params = all_species_params[species_id]
-    return species_params
-
+#def get_species_config_params(config_params):
+#    barseq_path = os.getenv('BARSEQ_PATH')
+#    species_config_file = os.path.join(barseq_path, 'data/species_config_file.txt')
+#    all_species_params = cfp.parse_species_config(species_config_file)
+#    species_id = config_params['species_ID']
+#    species_params = all_species_params[species_id]
+#    return species_params
+#
 #def get_sample_table(config_params):
 #
 #    filename = config_params['sample_table_file']
@@ -91,49 +92,85 @@ def remove_barseq_file(config_params, lane_id):
     os.remove(fname)
     return None
 
-def get_barcode_to_gene(species_config_params):
-    barseq_path = os.getenv('BARSEQ_PATH')
+def get_barcode_to_gene(screen_config_params):
+    # Need to update for paired-end configuration
+    #barseq_path = os.getenv('BARSEQ_PATH')
     
-    filename = species_config_params['gene_barcode_file']
-    full_path = os.path.join(barseq_path, 'data/barcodes', filename)
+    filename = screen_config_params['gene_barcode_file']
+    #full_path = os.path.join(barseq_path, 'data', 'barcodes', filename)
+    barcode_tab = read_barcode_table(filename)
 
-    barcode_tab = pd.read_table(full_path, dtype = 'S')
+    # Get all possible common primer/index tag/barcode parameters, then determine
+    # how to proceed.
+    read_1_params = get_seq_params(screen_config_params, 'read_1')
+    read_2_params = get_seq_params(screen_config_params, 'read_2')
+    read_type_dict = determine_read_type(read_1_params, read_2_params)
 
-    barcode_2_strain = {}
+    # Which barcode columns are required?
+    barcode_cols = [screen_config_params[x]['genetic_barcode']['barcode_file_column'] for x in read_type_dict['barcode']]
+    assert all([x in barcode_tab.columns for x in barcode_cols]), 'Not all specified barcode columns are in the barcode table.\nRequired columns: {}\nBarcode table: {}'.format(barcode_cols, filename)
 
-    barcodes = barcode_tab['Barcode']
-    strain_ids = barcode_tab['Strain_ID']
-    for i in range(len(barcodes)):
-        barcode = barcodes[i]
-        strain_id = strain_ids[i]
-        assert not barcode_2_strain.has_key(barcode), 'Duplicate barcodes detected - please review the barcode to strain mapping, found here: %s\nThe first offending barcode is: %s' % (full_path, barcode)
-        barcode_2_strain[barcode] = (strain_id, barcode)
+    # Check for duplicates in the barcodes
+    num_dup_barcodes = sum(barcode_tab[barcode_cols].duplicated())
+    assert num_dup_barcodes == 0, '{} duplicate barcodes detected. Please review the barcode to strain mapping, found here: {}'.format(num_dup_barcodes, filename)
 
-    return barcode_2_strain
+    # If there is only one read containing the barcode, add a dummy
+    # column of empty strings for the other read.
+    if len(read_type_dict['barcode']) == 1:
+        barcode_tab['dummy_barcode'] = ['' for i in range(barcode_tab.shape[0])]
+        if read_type_dict['barcode'] == ['read_1']:
+            barcode_cols.append('dummy_barcode')
+        else:
+            barcode_cols.insert(0, 'dummy_barcode')
+
+    # Convert the table to a dictionary from barcode(s) to strain_id
+    # Note: the key is always a length-2 tuple. If there is only one
+    # barcode, the entry for the other barcode is just empty strings.
+    barcode_to_strain = barcode_tab.set_index(barcode_cols)['Strain_ID'].to_dict()
+
+    return barcode_to_strain
 
 def get_index_tag_to_condition(config_params, lane_id):
 
     sample_table = get_sample_table(config_params)
     sample_table = sample_table.set_index('lane')
-
     sample_table_lane = sample_table.loc[lane_id]
 
-    index_tags = list(sample_table_lane['index_tag'])
-    screen_names = list(sample_table_lane['screen_name'])
-    expt_ids = list(sample_table_lane['expt_id'])
+    # Get all possible common primer/index tag/barcode parameters, then determine
+    # how to proceed.
+    screen_config_params = get_screen_config_params(config_params)
+    read_1_params = get_seq_params(screen_config_params, 'read_1')
+    read_2_params = get_seq_params(screen_config_params, 'read_2')
+    read_type_dict = determine_read_type(read_1_params, read_2_params)
 
-    index_tag_to_condition = {}
+    # Which index tag columns are required?
+    index_tag_cols = [screen_config_params[x]['index_tag']['sample_table_column'] for x in ['read_1', 'read_2'] if x in screen_config_params]
+    index_tag_reads = [x for x in ['read_1', 'read_2'] if x in screen_config_params]
+    assert all([x in sample_table_lane.columns for x in index_tag_cols]), 'Not all specified index_tag columns are in the sample table.\nRequired columns: {}\nSample table: {}'.format(index_tag_cols, config_params['sample_table_file'])
 
-    for i in range(len(index_tags)):
-        index_tag = index_tags[i]
-        screen_name = screen_names[i]
-        expt_id = expt_ids[i]
-        
-        index_tag_to_condition[index_tag] = (screen_name, expt_id)
+    # Check for duplicates in the index tags
+    num_dup_index_tags = sum(sample_table_lane[index_tag_cols].duplicated())
+    assert num_dup_index_tags == 0, '{} duplicate index tags within lane "{}" detected. Please review the sample table, found here: {}'.format(num_dup_index_tags, lane_id, config_params['sample_table_file'])
+
+    # If this is a single read experiment, add a dummy column of
+    # empty strings for the other read's empty index tag.
+    if len(index_tag_cols) == 1:
+        sample_table_lane['dummy_index_tag'] = ['' for i in range(sample_table_lane.shape[0])]
+        if index_tag_reads == ['read_1']:
+            index_tag_cols.append('dummy_index_tag')
+        else:
+            index_tag_cols.insert(0, 'dummy_index_tag')
+    
+    # Convert the table to a dictionary from index tag(s) to screen_name
+    # and expt_id.
+    # Note: the key is always a length-2 tuple. If there is only one
+    # index tag, the entry for the other index tag is just empty strings.
+    sample_table_lane['screen_name_and_expt_id'] = [tuple(x[1]) for x in sample_table_lane[['screen_name', 'expt_id']].iterrows()]
+    index_tag_to_condition = sample_table_lane.set_index(index_tag_cols)['screen_name_and_expt_id'].to_dict()
 
     return index_tag_to_condition
-
-def fastq_to_barseq(config_params, species_config_params, lane_id):
+    
+def fastq_to_barseq(config_params, screen_config_params, lane_id):
 
     lane_location_tab = get_lane_location_table(config_params)
     
@@ -149,7 +186,7 @@ def fastq_to_barseq(config_params, species_config_params, lane_id):
     cg_file.create_output_dir(data_path)
     cg_file.create_output_dir(reports_path)
 
-    total_counts, common_primer_counts, barcodes_in_data, index_tags_in_data = read_fastq(config_params, species_config_params, raw_folder, data_path, lane_id)
+    total_counts, common_primer_counts, barcode_1_in_data, index_tag_1_in_data, barcode_2_in_data, index_tag_2_in_data, read_type_dict, parsed_lengths = read_fastq(config_params, screen_config_params, raw_folder, data_path, lane_id)
 
     return total_counts, common_primer_counts, barcodes_in_data, index_tags_in_data
 
@@ -178,54 +215,151 @@ def is_fastq_filename(filename):
     else:
         return False
 
-def read_fastq(config_params, species_config_params, folder, out_path, lane_id):
+def get_seq_params(screen_config_params, read):
+    try:
+        common_primer_start = int(screen_config_params[read]['common_primer']['start'])
+        common_primer_seq = screen_config_params[read]['common_primer']['sequence']
+        common_primer_end = common_primer_start + len(common_primer_seq)
+    except (KeyError, TypeError):
+        common_primer_start = -1
+        common_primer_seq = ''
+        common_primer_end = -1
+    try:
+        index_tag_start = int(screen_config_params[read]['index_tag']['start'])
+        index_tag_end = index_tag_start + int(screen_config_params[read]['index_tag']['length'])
+    except (KeyError, TypeError):
+        index_tag_start = -1
+        index_tag_end = -1
+    try:
+        barcode_start = int(screen_config_params[read]['genetic_barcode']['start'])
+        barcode_end = barcode_start + int(screen_config_params[read]['genetic_barcode']['length'])
+    except (KeyError, TypeError):
+        barcode_start = -1
+        barcode_end = -1
 
-    common_primer_start = int(species_config_params['common_primer_start'])
-    common_primer_end = common_primer_start + int(species_config_params['common_primer_length'])
-    common_primer_seq = species_config_params['common_primer_sequence']
+    return [common_primer_start, common_primer_seq, common_primer_end, index_tag_start, index_tag_end, barcode_start, barcode_end]
+
+def determine_read_type(read_1_params, read_2_params):
+    base_case = [-1, '', -1, -1, -1, -1, -1]
+    required_read_1_present = all([x is not base_case[i] for i,x in enumerate(read_1_params) if i in range(5)])
+    required_read_2_present = all([x is not base_case[i] for i,x in enumerate(read_2_params) if i in range(5)])
+    barcode_read_1_present = all([x is not base_case[i] for i,x in enumerate(read_1_params) if i in [5, 6]])
+    barcode_read_2_present = all([x is not base_case[i] for i,x in enumerate(read_2_params) if i in [5, 6]])
+    #print required_read_1_present, barcode_read_1_present, required_read_2_present, barcode_read_2_present
+    if required_read_1_present and barcode_read_1_present and not required_read_2_present and not barcode_read_2_present:
+        return {'type': 'single', 'barcode': ['read_1']}
+    elif not required_read_1_present and not barcode_read_1_present and required_read_2_present and barcode_read_2_present:
+        return {'type': 'single', 'barcode': ['read_2']}
+    elif required_read_1_present and barcode_read_1_present and required_read_2_present and not barcode_read_2_present:
+        return {'type': 'paired', 'barcode': ['read_1']}
+    elif required_read_1_present and not barcode_read_1_present and required_read_2_present and barcode_read_2_present:
+        return {'type': 'paired', 'barcode': ['read_2']}
+    elif required_read_1_present and barcode_read_1_present and required_read_2_present and barcode_read_2_present:
+        return {'type': 'paired', 'barcode': ['read_1', 'read_2']}
+        pass # paired end, both barcode
+    assert False, 'Required "read_1" and/or "read_2" parameters were not supplied. Please check the "screen_config_file"'
+
+def get_fastq_filename_list(folder, read_type, barcode_reads):
+    if read_type == 'single' and barcode_reads == ['read_1']:
+        filenames = [[os.path.join(folder, x), None] for x in os.listdir(folder) if is_fastq_filename(x)]
+        filenames.sort()
+    elif read_type == 'single' and barcode_reads == ['read_2']:
+        filenames = [[None, os.path.join(folder, x)] for x in os.listdir(folder) if is_fastq_filename(x)]
+        filenames.sort()
+    else:
+        base_filenames = [x for x in os.listdir(folder) if is_fastq_filename(x)]
+        # Sorting ensures the files are in "R1", "R2" order
+        base_filenames.sort()
+        # While sorting the filenames would be enough to pair them up, it is
+        # not particularly robust to missing files and such. So we perform a
+        # more explicit approach here.
+        no_r1_r2_filenames = [x.replace('_R1', '_R0').replace('_R2', '_R0') for x in base_filenames]
+        no_r1_r2_filenames_dict = {}
+        for i, no_r1_r2_filename in enumerate(no_r1_r2_filenames):
+            if no_r1_r2_filename in no_r1_r2_filenames_dict:
+                no_r1_r2_filenames_dict[no_r1_r2_filename].append(base_filenames[i])
+            else:
+                no_r1_r2_filenames_dict[no_r1_r2_filename] = [base_filenames[i]]
+        assert len(base_filenames) == 2 * len(no_r1_r2_filenames_dict), 'Did not detect an equal number of "R1" and "R2" files in this raw data directory:\n{}'.format(folder)
+        filenames = [[os.path.join(folder, y) for y in x] for x in no_r1_r2_filenames_dict.values()]
+
+    return filenames
+
+
+def read_fastq(config_params, screen_config_params, folder, out_path, lane_id):
+
+    # Get all possible common primer/index tag/barcode parameters, then determine
+    # how to proceed.
+    read_1_params = get_seq_params(screen_config_params, 'read_1')
+    read_2_params = get_seq_params(screen_config_params, 'read_2')
+
+    read_type_dict = determine_read_type(read_1_params, read_2_params)
+
     common_primer_tolerance = int(config_params['common_primer_tolerance'])
-    index_tag_start = int(species_config_params['index_tag_start'])
-    index_tag_end = index_tag_start + int(species_config_params['index_tag_length'])
-    barcode_start = int(species_config_params['genetic_barcode_start'])
-    barcode_end = barcode_start + int(species_config_params['genetic_barcode_length'])
-
+    
     out_filename = get_barseq_filename(config_params, lane_id)
     # print out_filename
     # print common_primer_tolerance
 
     of = open(out_filename, 'wt')
 
-    fastq_filenames = [os.path.join(folder, x) for x in os.listdir(folder) if is_fastq_filename(x)]
+    # Need a function to return pairs of filenames, for which a None object
+    # is one of the filenames if this is a single read run
+    #fastq_filenames = [os.path.join(folder, x) for x in os.listdir(folder) if is_fastq_filename(x)]
+    fastq_filenames = get_fastq_filename_list(folder, read_type_dict['type'], read_type_dict['barcode'])
 
     common_primer_count = 0
-    barcodes = set()
-    index_tags = set()
-    for filename in fastq_filenames:
-        f = cfo.get_compressed_file_handle(filename)
-        for line_count, line in enumerate(f):
+    index_tags_1 = set()
+    index_tags_2 = set()
+    barcodes_1 = set()
+    barcodes_2 = set()
+    for filename_pair in fastq_filenames:
+        handles = [cfo.get_compressed_file_handle(x) if x is not None else it.cycle('\n') for x in filename_pair]
+        line_count = 0
+        while True:
+        #for line_count, line in enumerate(f):
+            try:
+                line_1 = handles[0].next()
+                line_2 = handles[1].next()
+            except StopIteration:
+                break
+            line_count += 1
             if get_verbosity(config_params) >= 3:
-                print line_count, line
+                print line_count, line_1, line_2
             if line_count % 4 == 1:
-                string = line.strip()
-                common_primer = string[common_primer_start:common_primer_end]
-                common_primer_dist = jf.hamming_distance(common_primer, common_primer_seq)
+                #string = line.strip()
+                common_primer_1 = line_1[read_1_params[0]:read_1_params[2]]
+                common_primer_dist_1 = jf.hamming_distance(common_primer_1, read_1_params[1])
+                common_primer_2 = line_2[read_2_params[0]:read_2_params[2]]
+                common_primer_dist_2 = jf.hamming_distance(common_primer_2, read_2_params[1])
                 if get_verbosity(config_params) >= 3:
-                    print common_primer_dist
-                if common_primer_dist <= common_primer_tolerance:
+                    print common_primer_dist_1
+                    print common_primer_dist_2
+                if common_primer_dist_1 <= common_primer_tolerance and common_primer_dist_2 <= common_primer_tolerance:
                     common_primer_count += 1
-                    index_tag = string[index_tag_start:index_tag_end]
-                    barcode = string[barcode_start:barcode_end]
-                    index_tags.update(set([index_tag]))
-                    barcodes.update(set([barcode]))
+                    index_tag_1 = line_1[read_1_params[3]:read_1_params[4]]
+                    barcode_1 = line_1[read_1_params[5]:read_1_params[6]]
+                    index_tag_2 = line_2[read_2_params[3]:read_2_params[4]]
+                    barcode_2 = line_2[read_2_params[5]:read_2_params[6]]
+                    index_tags_1.update([index_tag_1])
+                    barcodes_1.update([barcode_1])
+                    index_tags_2.update([index_tag_2])
+                    barcodes_2.update([barcode_2])
                     # print "index_tag, barcode : {}, {}".format(index_tag, barcode)
-                    of.write('{0}\t{1}\n'.format(index_tag, barcode))
-        f.close()
+                    of.write('{0}\t{1}\t[2]\t[3]\n'.format(index_tag_1, barcode_1, index_tag_2, barcode_2))
+                
+        for h in handles:
+            if hasattr(h, 'read'):
+                h.close()
 
     total_counts = (line_count + 1)/ 4
 
     of.close()
 
-    return total_counts, common_primer_count, barcodes, index_tags
+    parsed_lengths = [read_1_params[4] - read_1_params[3], read_1_params[6] - read_1_params[5],
+            read_2_params[4] - read_2_params[3], read_2_params[6] - read_2_params[5]]
+
+    return total_counts, common_primer_count, barcodes_1, index_tags_1, barcodes_2, index_tags_2, read_type_dict, parsed_lengths
 
 def correct_barcode_map(config_params, barcodes_in_data, barcode_to_gene):
 
@@ -376,17 +510,17 @@ def main(config_file, lane_id):
     config_params = cfp.parse(config_file)
     species_config_params = get_species_config_params(config_params)
 
-    # Loop over the raw fastq files, write out the "index_tag\tbarcode" file,
-    # and return all encountered index tags and barcodes
-    if get_verbosity(config_params) >= 1:
-        print 'parsing fastq file(s)...'
-    total_counts, common_primer_counts, barcodes_in_data, index_tags_in_data = fastq_to_barseq(config_params, species_config_params, lane_id)
-
     # Get maps of barcode to barcode_gene (keeps the strains unique/traceable), and index tag to condition
     if get_verbosity(config_params) >= 1:
         print 'creating mappings from barcodes and index tags...'
     barcode_to_gene = get_barcode_to_gene(species_config_params)
     index_tag_to_condition = get_index_tag_to_condition(config_params, lane_id)
+
+    # Loop over the raw fastq files, write out the "index_tag\tbarcode" file,
+    # and return all encountered index tags and barcodes
+    if get_verbosity(config_params) >= 1:
+        print 'parsing fastq file(s)...'
+    total_counts, common_primer_counts, barcodes_in_data, index_tags_in_data = fastq_to_barseq(config_params, species_config_params, lane_id)
 
     if get_verbosity(config_params) >= 1:
         print 'barcode to gene map: {}'.format(barcode_to_gene.items()[0:5])

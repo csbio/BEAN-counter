@@ -3,22 +3,22 @@
 ###### File/folder locations
 
 # Where to put the results!
-output folder:
+output_folder:
 
 # Sample table
 # Maps index tags and sequence lanes to sample information
-sample table file:
+sample_table_file:
 
 # Lane location table
 # Maps the lane column in the sample table to the folder
 # containing the raw sequencing data for that lane
-lane location file:
+lane_location_file:
 
 # Screen configuration file
 # Contains the information on the structure of the sequenced
 # PCR product(s), which is required for correctly parsing
 # the sequencing data. Also points to the barcode file.
-screen config file:
+screen_config_file:
 
 
 ###### Automatic removal of conditions

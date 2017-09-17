@@ -22,44 +22,15 @@ import cPickle
 barseq_path = os.getenv('BARSEQ_PATH')
 sys.path.append(os.path.join(barseq_path, 'lib'))
 
-import config_file_parser as cfp
+#import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
-from cg_common_functions import get_verbosity, get_sample_table
+from cg_common_functions import get_verbosity, get_barcode_table, get_sample_table
 from cluster_dataset_wrappers import customize_strains, customize_conditions
 
 sys.path.append(os.path.join(barseq_path, 'lib/python2.7/site-packages')) 
 from mlabwrap import mlab
 
-
-#def get_sample_table(config_params):
-#
-#    filename = config_params['sample_table_file']
-#
-#    # Read everything in as a string, to prevent vexing
-#    # number interpretation problems! Methods further down
-#    # can coerce to different types.
-#    tab = pd.read_table(filename, dtype = 'S')
-#    return tab
-
-def get_barcode_table(config_params):
-
-    species_config_params = get_species_config_params(config_params)
-
-    barseq_path = os.getenv('BARSEQ_PATH')
-    filename = species_config_params['gene_barcode_file']
-    full_path = os.path.join(barseq_path, 'data/barcodes', filename)
-
-    tab = pd.read_table(full_path, dtype = 'S')
-    return tab
-
-def get_species_config_params(config_params):
-    barseq_path = os.getenv('BARSEQ_PATH')
-    species_config_file = os.path.join(barseq_path, 'data/species_config_file.txt')
-    all_species_params = cfp.parse_species_config(species_config_file)
-    species_id = config_params['species_ID']
-    species_params = all_species_params[species_id]
-    return species_params
 
 def get_lane_data_path(config_params, lane_id):
 
