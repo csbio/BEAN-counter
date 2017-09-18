@@ -8,6 +8,7 @@
 import os
 import pandas as pd
 from datetime import datetime
+import ruamel_yaml as yaml
 
 def get_verbosity(config_params):
  
@@ -57,7 +58,7 @@ def read_barcode_table(tab_filename, required_columns = ['Strain_ID']):
     # This will happen at some point, but not ready for prime time yet
     # until I get the strain identifier thing worked out (aka not
     # dependent on barcodes anymore).
-    assert not any(tab['Strain_ID'].duplicated()), 'Duplicated values were found for within the "Strain_ID" column of the barcoe table. Please ensure that all of these values are unique. The barcode table is here: {}'.format(tab_filename)
+    assert not any(tab['Strain_ID'].duplicated()), 'Duplicated values were found for within the "Strain_ID" column of the barcode table. Please ensure that all of these values are unique. The barcode table is here: {}'.format(tab_filename)
     return tab
 
 def get_temp_clustergram_name(output_folder, name):

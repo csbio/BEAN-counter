@@ -43,28 +43,28 @@ def parse(filename):
 
     return params
 
-def parse_yaml(filename):
+#def parse_yaml(filename):
+#
+#    with open(filename, 'rt') as f:
+#        try:
+#            params = yaml.load(f)
+#        except yaml.YAMLError as e:
+#            assert False, 'yaml screen config file did not load properly.\nThe file is: {}\nOriginal error:\n{}'.format(filename, e)
+#
+#    return params
 
-    with open(filename, 'rt') as f:
-        try:
-            params = yaml.load(f)
-        except yaml.YAMLError as e:
-            assert False, 'yaml screen config file did not load properly.\nThe file is: {}\nOriginal error:\n{}'.format(filename, e)
-
-    return params
-
-def get_screen_config_params(config_params):
-    
-    if 'screen_config'
-    config_params[
-    parse_yaml()
-
-    barseq_path = os.getenv('BARSEQ_PATH')
-    species_config_file = os.path.join(barseq_path, 'data/species_config_file.txt')
-    all_species_params = cfp.parse_species_config(species_config_file)
-    species_id = config_params['species_ID']
-    species_params = all_species_params[species_id]
-    return species_params
+#def get_screen_config_params(config_params):
+#    
+#    if 'screen_config'
+#    config_params[
+#    parse_yaml()
+#
+#    barseq_path = os.getenv('BARSEQ_PATH')
+#    species_config_file = os.path.join(barseq_path, 'data/species_config_file.txt')
+#    all_species_params = cfp.parse_species_config(species_config_file)
+#    species_id = config_params['species_ID']
+#    species_params = all_species_params[species_id]
+#    return species_params
 
 #def parse_species_config(filename):
 #
