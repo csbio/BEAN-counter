@@ -10,14 +10,15 @@ import pandas as pd
 from datetime import datetime
 import ruamel_yaml as yaml
 
+bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False, 'T': True, 'F': False, '1': True, '0': False}
+
 def get_verbosity(config_params):
  
     v = config_params['verbosity']
-    if v.isdigit():
-        v = int(v)
+    if isinstance(v, int):
+        return v
     else:
-        v = 0
-    return v
+        return 0
 
 def parse_yaml(filename):
 
@@ -49,7 +50,7 @@ def read_screen_config_params(filename):
 
 def get_barcode_table(config_params):
     screen_config_params = get_screen_config_params(config_params)
-    tab = read_barcode_table(screen_config_params['gene_barcode_file'])
+    tab = read_barcode_table(screen_config_params['gene_barcode_file'], required_columns = ['Strain_ID', 'include?'])
     return tab
 
 def read_barcode_table(tab_filename, required_columns = ['Strain_ID']):

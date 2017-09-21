@@ -27,7 +27,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
-from cg_common_functions import get_verbosity, get_sample_table, get_screen_config_params, read_barcode_table
+from cg_common_functions import get_verbosity, get_sample_table, get_screen_config_params, read_barcode_table, parse_yaml
 
 #def get_species_config_params(config_params):
 #    barseq_path = os.getenv('BARSEQ_PATH')
@@ -352,8 +352,17 @@ def read_fastq(config_params, screen_config_params, folder, out_path, lane_id):
 
     of.close()
 
-    parsed_coords = [read_1_params[3], read_1_params[4], read_1_params[5] + 1, read_1_params[6] + 1,
-            read_2_params[3] + 2, read_2_params[4] + 2, read_2_params[5] + 3, read_2_params[6] + 3]
+    parsed_lengths = [read_1_params[4] - read_1_params[3], read_1_params[6] - read_1_params[5],
+            read_2_params[4] - read_2_params[3], read_2_params[6] - read_2_params[5]]
+
+    shifts = range(4)
+    parsed_coords = []
+    for i, length in enumerate(parsed_lengths):
+        if i == 0:
+            parsed_coords.append(0)
+        else:
+            parsed_coords.append(parsed_coords[-1] + 1)
+        parsed_coords.append(parsed_coords[-1] + parsed_lengths[i])
 
     return total_counts, common_primer_count, barcodes, index_tags, read_type_dict, parsed_coords
 
@@ -418,12 +427,15 @@ def get_barseq_matrix(config_params, lane_id, parsed_coords, barcode_to_gene, ba
     for line in f:
         index_tag = (line[parsed_coords[0]:parsed_coords[1]], line[parsed_coords[4]:parsed_coords[5]])
         barcode = (line[parsed_coords[2]:parsed_coords[3]], line[parsed_coords[6]:parsed_coords[7]])
+        #print index_tag
+        #print barcode
         
         try:
             # Since each barcode is now a 2-tuple, must correct each one
             # individually (might be a bit slower, but much less complex
             # than building a dictionary of every possible 2-tuple variation.
             barcode_fixed = (barcode_correcting_map[0][barcode[0]], barcode_correcting_map[1][barcode[1]])
+            #print barcode_fixed
             row = bc_ind[barcode_fixed]
             col = tag_ind[index_tag]
         except KeyError:
@@ -512,7 +524,7 @@ def dump_count_matrix(config_params, lane_id, barcodes, conditions, matrix):
 
 def main(config_file, lane_id):
 
-    config_params = cfp.parse(config_file)
+    config_params = parse_yaml(config_file)
     screen_config_params = get_screen_config_params(config_params)
 
     # Get maps of barcode to barcode_gene (keeps the strains unique/traceable), and index tag to condition
