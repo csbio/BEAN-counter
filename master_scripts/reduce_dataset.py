@@ -16,6 +16,9 @@ import os, sys
 import gzip
 import cPickle
 
+# Import this from cg_common_functions when the overhaul is ready
+bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False}
+
 def read_sample_table(tab_filename):
 
     # Read everything in as a string, to prevent vexing
@@ -48,6 +51,15 @@ def filter_sample_table(sample_table, final_conditions):
 
     return sample_table.iloc[rows_to_keep]
 
+def filter_sample_table_on_column(sample_table, column, invert):
+
+    keep_bool = [bool_dict[x] for x in sample_table[column]]
+    if invert:
+        keep_bool = np.invert(keep_bool)
+
+    # Return subsetted sample table
+    return sample_table[keep_bool]
+
 def filter_matrix(sample_table, matrix_conditions, matrix):
 
     reduced_conditions = np.array([tuple(row[['screen_name', 'expt_id']]) for i,row in sample_table.iterrows()])
@@ -63,12 +75,16 @@ def a_is_row_in_b(a, b):
     return np.any(np.all(a == b, axis = 1))
 
 
-def main(dataset, sample_table, output_folder, verbosity):
+def main(dataset, sample_table, output_folder, col, inv, verbosity):
 
     strains, conditions, matrix = dataset
 
     # First, filter the sample table to make sure it doesn't have extra conditions
     sample_table = filter_sample_table(sample_table, conditions)
+
+    # Then, reduce the sample table based on the column (if specified)
+    if col is not None:
+        sample_table = filter_sample_table_on_column(sample_table, col, inv)
 
     # Then, reduce the matrix and condition array
     reduced_conditions, reduced_matrix = filter_matrix(sample_table, conditions, matrix)
@@ -92,7 +108,9 @@ if __name__ == '__main__':
     parser.add_argument('dataset_file', help = 'The dataset to be reduced.')
     parser.add_argument('sample_table', help = 'The sample table that contains fewer conditions than are present in the dataset.')
     parser.add_argument('output_folder', help = 'The folder to which the resulting reduced matrix and sample table are written')    
-    parser.add_argument('-v', '--verbosity', help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
+    parser.add_argument('--column', help = 'As an alternative to using a slimmed-down sample table to reduce the dataset, only retain conditions for which the value in this sample table column is True')
+    parser.add_argument('--invert', action = 'store_true', help = 'If --column is specified, invert the True/False values')    
+    parser.add_argument('-v', '--verbosity', default = 0, help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
 
     args = parser.parse_args()
 
@@ -119,9 +137,12 @@ if __name__ == '__main__':
         print sample_table
         print dataset
 
+    if args.column is not None:
+        assert args.column in sample_table.columns, 'Specified --column {} is not a column name in the sample table.'.format(args.column)
+
     output_folder = args.output_folder
     if not os.path.isdir(output_folder):
         os.makedirs(output_folder)
 
-    main(dataset, sample_table, output_folder, verbosity)
+    main(dataset, sample_table, output_folder, args.column, args.invert, verbosity)
 
