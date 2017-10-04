@@ -443,6 +443,24 @@ def get_barseq_matrix(config_params, lane_id, parsed_coords, barcode_to_gene, ba
         
         matrix[row, col] += 1
 
+    # Here is where I implement the "dumb filter," as Justin called it,
+    # to automatically remove any strains or conditions that have zero
+    # counts. Raamesh's version originally did this, and I removed it
+    # for some reason.
+    nonzero_count_barcodes = np.sum(matrix, axis = 1) > 0
+    nonzero_count_tags = np.sum(matrix, axis = 0) > 0
+
+    if get_verbosity(config_params) >= 1:
+        print "number of barcodes with zero counts: {}".format(sum(np.invert(nonzero_count_barcodes)))
+        print "number of index tags with zero counts: {}".format(sum(np.invert(nonzero_count_tags)))
+
+    matrix = matrix[np.ix_(nonzero_count_barcodes, nonzero_count_tags)]
+    barcodes = [x for i,x in enumerate(barcodes) if nonzero_count_barcodes[i]]
+    index_tags = [x for i,x in enumerate(index_tags) if nonzero_count_tags[i]]
+
+    assert len(barcodes) == matrix.shape[0], "number of barcodes does not match number of rows in matrix after zero-count filtering."
+    assert len(index_tags) == matrix.shape[1], "number of index tags does not match number of columns in matrix after zero-count filtering."
+
     f.close()
 
     return barcodes, index_tags, matrix
@@ -475,7 +493,7 @@ def write_distribution(labels, counts, output_folder, lane_id, file_string, xlab
         of.write('{0}\t{1}\n'.format(labels[i], counts[i]))
     of.close()
 
-def write_summary(total_counts, common_primer_counts, total_index_barcode_counts, matrix_shape, output_folder, lane_id):
+def write_summary(total_counts, common_primer_counts, total_index_barcode_counts, matrix_shape, orig_matrix_shape, output_folder, lane_id):
 
     filename = os.path.join(output_folder, '{0}_summary.txt'.format(lane_id))
 
@@ -488,18 +506,20 @@ def write_summary(total_counts, common_primer_counts, total_index_barcode_counts
     of.write('Number of reads with common primer: {0} ({1:.2f} %)\n'.format(common_primer_counts, common_primer_vs_total_percent))
     of.write('Number of reads that match index tags and genetic barcodes: {0} ({1:.2f} % of total counts, {2:.2f} % of common primer counts)\n'.format(total_index_barcode_counts, tag_barcode_match_vs_total_percent, tag_barcode_match_vs_common_primer_percent))
 
-    # Write matrix size
-    of.write('Size of the data: {0} barcodes (gene mutants) x {1} index tags (conditions)'.format(*matrix_shape))
+    # Write original and final matrix sizes
+    of.write('Original size of the data: {0} barcodes (gene mutants) x {1} index tags (conditions)\n'.format(*orig_matrix_shape))
+    of.write('Final size of the data (zero-count barcodes/tags removed): {0} barcodes (gene mutants) x {1} index tags (conditions)\n'.format(*matrix_shape))
 
     of.close()
 
-def generate_reports(config_params, lane_id, gen_barcodes, index_tags, matrix, total_counts, common_primer_counts):
+def generate_reports(config_params, lane_id, gen_barcodes, index_tags, matrix, orig_barcode_map, orig_index_tag_map, total_counts, common_primer_counts):
 
     output_folder = get_lane_reports_path(config_params, lane_id)
 
     gen_barcode_counts = matrix.sum(axis = 1)
     index_tag_counts = matrix.sum(axis = 0)
     total_index_barcode_counts = matrix.sum()
+    orig_matrix_shape = (len(orig_barcode_map), len(orig_index_tag_map))
 
     index_tags_sorted, index_tag_counts_sorted = get_sorted_counts(index_tags, index_tag_counts)
     gen_barcodes_sorted, gen_barcode_counts_sorted = get_sorted_counts(gen_barcodes, gen_barcode_counts)
@@ -507,7 +527,7 @@ def generate_reports(config_params, lane_id, gen_barcodes, index_tags, matrix, t
     write_distribution(index_tags_sorted, index_tag_counts_sorted, output_folder, lane_id, 'index_tag', 'Index tags (sorted)')
     write_distribution(gen_barcodes_sorted, gen_barcode_counts_sorted, output_folder, lane_id, 'barcode', 'Genetic barcodes (sorted)')
 
-    write_summary(total_counts, common_primer_counts, total_index_barcode_counts, matrix.shape, output_folder, lane_id)
+    write_summary(total_counts, common_primer_counts, total_index_barcode_counts, matrix.shape, orig_matrix_shape, output_folder, lane_id)
 
 def dump_count_matrix(config_params, lane_id, barcodes, conditions, matrix):
 
@@ -567,7 +587,7 @@ def main(config_file, lane_id):
     # Generate reports for index tags and barcodes
     if get_verbosity(config_params) >= 1:
         print 'generating reports...'
-    generate_reports(config_params, lane_id, corrected_barcodes, index_tags, matrix, total_counts, common_primer_counts)
+    generate_reports(config_params, lane_id, corrected_barcodes, index_tags, matrix, barcode_to_gene, index_tag_to_condition, total_counts, common_primer_counts)
 
     # Convert the barcodes to their condition names and unique gene/barcode names
     barcode_gene_ids = np.array([barcode_to_gene[bc] for bc in corrected_barcodes])

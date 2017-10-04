@@ -59,6 +59,8 @@ def combine_zscore_matrices(config_params):
     
     zscore_matrix_list = []
     condition_id_list = []
+    gene_barcode_id_list = []
+    all_gene_barcode_ids = set()
 
     for lane_id in all_lane_ids:
         if get_verbosity(config_params) >= 2:
@@ -68,17 +70,36 @@ def combine_zscore_matrices(config_params):
         f = gzip.open(lane_interactions_filename)
 
         gene_barcode_ids, condition_ids, zscore_matrix = cPickle.load(f)
+        # print "number of nonzero barcodes: {}".format(len(gene_barcode_ids))
         f.close()
         zscore_matrix_list.append(zscore_matrix)
         condition_id_list.append(condition_ids)
+        gene_barcode_id_list.append(gene_barcode_ids)
+        all_gene_barcode_ids.update(gene_barcode_ids) 
 
-    all_zscore_matrix = np.hstack(zscore_matrix_list)
+    # Because these matrices may not share all of the same rows
+    # in the same order, here I must align the rows of the
+    # matrices and add missing rows if needed. Using NaNs to
+    # fill the rows in some matrices that didn't have any counts
+    # because they are handled later in this script.
+    all_gene_barcode_ids = list(all_gene_barcode_ids)
+    all_gene_barcode_indices = {x:i for i,x in enumerate(all_gene_barcode_ids)}
+    aligned_zscore_matrix_list = []
+    for i in range(len(zscore_matrix_list)):
+        aligned_zscore_matrix_list.append(np.empty((len(all_gene_barcode_ids), len(condition_id_list[i]))))
+        aligned_zscore_matrix_list[i][:] = np.nan
+        orig_barcodes = gene_barcode_id_list[i]
+        for j, barcode in enumerate(orig_barcodes):
+            aligned_zscore_matrix_list[i][all_gene_barcode_indices[barcode], :] = zscore_matrix_list[i][j, :]
+
+    all_zscore_matrix = np.hstack(aligned_zscore_matrix_list)
     all_condition_ids = np.vstack(condition_id_list)
 
-    # Note: for all matrices, the gene_barcode_ids, should be the same. When generating the count matrix,
-    # I do not let any gene_barcode_ids disappear, even if they have no counts whatsoever. This should
-    # simplify initial processing steps, and the filtering does not need to happen until later.
-    return gene_barcode_ids, all_condition_ids, all_zscore_matrix
+    # print all_zscore_matrix.shape
+    assert len(all_gene_barcode_ids) == all_zscore_matrix.shape[0], "Number of barcodes does not match the number of rows in the matrix"
+    assert len(condition_ids) == all_zscore_matrix.shape[1], "Number of conditions does not match the number of columns in the matrix"
+
+    return all_gene_barcode_ids, all_condition_ids, all_zscore_matrix
 
 def generate_barcode_specific_template_profiles(gene_barcode_ids):
     
