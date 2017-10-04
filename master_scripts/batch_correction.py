@@ -31,16 +31,17 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
+from cg_common_functions import read_sample_table
 
 sys.path.append(os.path.join(barseq_path, 'lib/python2.7/site-packages'))
 
-def read_sample_table(tab_filename):
-
-    # Read everything in as a string, to prevent vexing
-    # number interpretation problems! Methods further down
-    # can coerce to different types.
-    tab = pd.read_table(tab_filename, dtype = 'S')
-    return tab
+#def read_sample_table(tab_filename):
+#
+#    # Read everything in as a string, to prevent vexing
+#    # number interpretation problems! Methods further down
+#    # can coerce to different types.
+#    tab = pd.read_table(tab_filename, dtype = 'S')
+#    return tab
 
 def load_dataset(data_filename):
 

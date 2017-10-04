@@ -24,13 +24,17 @@ import os, sys
 import gzip
 import cPickle
 
-def read_sample_table(tab_filename):
+barseq_path = os.getenv('BARSEQ_PATH')
+sys.path.append(os.path.join(barseq_path, 'lib'))
+from cg_common_functions import read_sample_table
 
-    # Read everything in as a string, to prevent vexing
-    # number interpretation problems! Methods further down
-    # can coerce to different types.
-    tab = pd.read_table(tab_filename, dtype = 'S')
-    return tab
+#def read_sample_table(tab_filename):
+#
+#    # Read everything in as a string, to prevent vexing
+#    # number interpretation problems! Methods further down
+#    # can coerce to different types.
+#    tab = pd.read_table(tab_filename, dtype = 'S')
+#    return tab
 
 def load_dataset(data_filename):
 

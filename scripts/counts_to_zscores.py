@@ -22,44 +22,15 @@ import cPickle
 barseq_path = os.getenv('BARSEQ_PATH')
 sys.path.append(os.path.join(barseq_path, 'lib'))
 
-import config_file_parser as cfp
+#import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
-from cg_common_functions import *
+from cg_common_functions import get_verbosity, get_barcode_table, get_sample_table, parse_yaml, bool_dict
 from cluster_dataset_wrappers import customize_strains, customize_conditions
 
 sys.path.append(os.path.join(barseq_path, 'lib/python2.7/site-packages')) 
 from mlabwrap import mlab
 
-
-def get_sample_table(config_params):
-
-    filename = config_params['sample_table_file']
-
-    # Read everything in as a string, to prevent vexing
-    # number interpretation problems! Methods further down
-    # can coerce to different types.
-    tab = pd.read_table(filename, dtype = 'S')
-    return tab
-
-def get_barcode_table(config_params):
-
-    species_config_params = get_species_config_params(config_params)
-
-    barseq_path = os.getenv('BARSEQ_PATH')
-    filename = species_config_params['gene_barcode_file']
-    full_path = os.path.join(barseq_path, 'data/barcodes', filename)
-
-    tab = pd.read_table(full_path, dtype = 'S')
-    return tab
-
-def get_species_config_params(config_params):
-    barseq_path = os.getenv('BARSEQ_PATH')
-    species_config_file = os.path.join(barseq_path, 'data/species_config_file.txt')
-    all_species_params = cfp.parse_species_config(species_config_file)
-    species_id = config_params['species_ID']
-    species_params = all_species_params[species_id]
-    return species_params
 
 def get_lane_data_path(config_params, lane_id):
 
@@ -101,7 +72,6 @@ def filter_dataset_for_include(dataset, sample_table, config_params):
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
 
-    bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False}
     include_bool_ind = np.array([bool_dict[x] for x in sample_table['include?']])
     include_table = sample_table[include_bool_ind]
     include_screen_names = include_table['screen_name']
@@ -123,7 +93,6 @@ def get_control_condition_ids(dataset, sample_table):
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
    
-    bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False}
     control_bool_ind = np.array([bool_dict[x] for x in sample_table['control?']])
     control_table = sample_table[control_bool_ind]
     control_screen_names = control_table['screen_name']
@@ -557,7 +526,7 @@ def generate_scatterplots(config_params, outfolder, mean_control_profile, raw_da
 def main(config_file, lane_id):
     
     # Read in the config params
-    config_params = cfp.parse(config_file)
+    config_params = parse_yaml(config_file)
     sample_table = get_sample_table(config_params)
 
     # Get the interactions output folder

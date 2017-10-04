@@ -13,36 +13,8 @@ import cPickle
 
 import config_file_parser as cfp
 import cluster_dataset as clus
-from cg_common_functions import *
+from cg_common_functions import get_verbosity, get_sample_table, get_barcode_table
 
-def get_sample_table(config_params):
-
-    filename = config_params['sample_table_file']
-
-    # Read everything in as a string, to prevent vexing
-    # number interpretation problems! Methods further down
-    # can coerce to different types.
-    tab = pd.read_table(filename, dtype = 'S')
-    return tab
-    
-def get_barcode_table(config_params):
-
-    species_config_params = get_species_config_params(config_params)
-    
-    barseq_path = os.getenv('BARSEQ_PATH')
-    filename = species_config_params['gene_barcode_file']
-    full_path = os.path.join(barseq_path, 'data/barcodes', filename)
-
-    tab = pd.read_table(full_path, dtype = 'S')
-    return tab
-
-def get_species_config_params(config_params):
-    barseq_path = os.getenv('BARSEQ_PATH')
-    species_config_file = os.path.join(barseq_path, 'data/species_config_file.txt')
-    all_species_params = cfp.parse_species_config(species_config_file)
-    species_id = config_params['species_ID']
-    species_params = all_species_params[species_id]
-    return species_params
 
 def get_lane_data_path(config_params, lane_id):
 
@@ -103,7 +75,7 @@ def get_clustered_zscore_matrix_filename(config_params, lane_id):
 
 def customize_strains(strains, barcode_table, fmt_string, verbosity = 1):
 
-    barcode_table = barcode_table.set_index(['Strain_ID', 'Barcode'], drop = False)
+    barcode_table = barcode_table.set_index('Strain_ID', drop = False)
     barcode_table_cols = barcode_table.columns.values
     
     cols_with_commas = [',' in x for x in barcode_table_cols]
@@ -114,7 +86,8 @@ def customize_strains(strains, barcode_table, fmt_string, verbosity = 1):
     custom_columns = fmt_string.split(',')
     assert all([x in barcode_table.columns for x in custom_columns]), "Not all of the specified columns are in the provided barcode table ({})".format(';'.join(list(set(custom_columns) - set(barcode_table.columns))))
     custom_barcode_table = barcode_table[custom_columns]
-    strain_keys = [tuple(strain) for strain in strains]
+    #strain_keys = [tuple(strain) for strain in strains]
+    strain_keys = strains[:]
     
     custom_strains = []
     for strain in strain_keys:

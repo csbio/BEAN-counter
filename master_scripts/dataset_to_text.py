@@ -21,15 +21,16 @@ sys.path.append(os.path.join(barseq_path, 'scripts'))
 sys.path.append(os.path.join(barseq_path, 'lib'))
 
 import cluster_dataset_wrappers as clus_wrap
+from cg_common_functions import read_sample_table
 
-def read_sample_table(tab_filename):
-
-    assert os.path.isfile(tab_filename), 'File {} does not exist'.format(tab_filename)
-    # Read everything in as a string, to prevent vexing
-    # number interpretation problems! Methods further down
-    # can coerce to different types.
-    tab = pd.read_table(tab_filename, dtype = 'S')
-    return tab
+#def read_sample_table(tab_filename):
+#
+#    assert os.path.isfile(tab_filename), 'File {} does not exist'.format(tab_filename)
+#    # Read everything in as a string, to prevent vexing
+#    # number interpretation problems! Methods further down
+#    # can coerce to different types.
+#    tab = pd.read_table(tab_filename, dtype = 'S')
+#    return tab
 
 def load_dataset(data_filename):
 
