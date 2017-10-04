@@ -18,7 +18,7 @@ import cPickle
 
 barseq_path = os.getenv('BARSEQ_PATH')
 sys.path.append(os.path.join(barseq_path, 'lib'))
-from cg_common_functions import read_sample_table
+from cg_common_functions import read_sample_table, bool_dict
 
 #def read_sample_table(tab_filename):
 #
@@ -111,30 +111,22 @@ if __name__ == '__main__':
     parser.add_argument('output_folder', help = 'The folder to which the resulting reduced matrix and sample table are written')    
     parser.add_argument('--column', help = 'As an alternative to using a slimmed-down sample table to reduce the dataset, only retain conditions for which the value in this sample table column is True')
     parser.add_argument('--invert', action = 'store_true', help = 'If --column is specified, invert the True/False values')    
-    parser.add_argument('-v', '--verbosity', default = 0, help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
+    parser.add_argument('-v', '--verbosity', default = 1, help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
 
     args = parser.parse_args()
-
-    # Take care of verbosity right away
-    if args.verbosity is None:
-        verbosity = 1
-    elif args.verbosity.isdigit():
-        verbosity = int(args.verbosity)
-    else:
-        verbosity = 1
 
     # Get the data ready to rumble!
     dataset_file = os.path.abspath(args.dataset_file)
     assert os.path.isfile(dataset_file), "Dataset file does not exist."
     dataset = load_dataset(args.dataset_file)
 
-    if verbosity >= 2:
+    if args.verbosity >= 2:
         print dataset
 
     assert os.path.isfile(args.sample_table), "Sample table file does not exist."
     sample_table = read_sample_table(args.sample_table)
 
-    if verbosity >= 2:
+    if args.verbosity >= 2:
         print sample_table
         print dataset
 
@@ -145,5 +137,5 @@ if __name__ == '__main__':
     if not os.path.isdir(output_folder):
         os.makedirs(output_folder)
 
-    main(dataset, sample_table, output_folder, args.column, args.invert, verbosity)
+    main(dataset, sample_table, output_folder, args.column, args.invert, args.verbosity)
 

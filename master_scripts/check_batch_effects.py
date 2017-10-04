@@ -619,25 +619,17 @@ if __name__ == '__main__':
     parser.add_argument('batch_column', help = 'The column from the sample table that defines the batches.')
     parser.add_argument('nondup_columns', help = 'Comma delimited. The columns that contain condition identifiers that should not be duplicated within the same batch.')
     parser.add_argument('-incl', '--include_column', help = 'Column in the sample table that specifies True/False whether or not the condition in that row should be included in the batch effect evaluation/visualization.')
-    parser.add_argument('-v', '--verbosity', help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
-    parser.add_argument('--num_test_batches', help = 'The number of unique batches to use. ONLY for testing purposes. To be used to reduce time and benchmark, not to generate accurate results')
+    parser.add_argument('-v', '--verbosity', type = int, default = 1, help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
+    parser.add_argument('--num_test_batches', type = int, default = -1, help = 'The number of unique batches to use. ONLY for testing purposes. To be used to reduce time and benchmark, not to generate accurate results')
 
     args = parser.parse_args()
     
-    # Take care of verbosity right away
-    if args.verbosity is None:
-        verbosity = 1
-    elif args.verbosity.isdigit():
-        verbosity = int(args.verbosity)
-    else:
-        verbosity = 1
-
     # Get the data ready to rumble!
     dataset_file = os.path.abspath(args.dataset_file)
     assert os.path.isfile(dataset_file), "Dataset file does not exist."
     dataset = load_3d_dataset(args.dataset_file)
 
-    if verbosity >= 2:
+    if args.verbosity >= 2:
         print dataset
 
     assert os.path.isfile(args.sample_table), "Sample table file does not exist."
@@ -663,11 +655,5 @@ if __name__ == '__main__':
     if not os.path.isdir(output_folder):
         os.makedirs(output_folder)
 
-    if args.num_test_batches is not None:
-        assert args.num_test_batches.isdigit(), "--num_test_batches option must be an integer"
-        num_test_batches = int(args.num_test_batches)
-    else:
-        num_test_batches = -1
-
-    main(dataset, sample_table, batch_column, nondup_col_list, include_column, output_folder, verbosity, num_test_batches)
+    main(dataset, sample_table, batch_column, nondup_col_list, include_column, output_folder, args.verbosity, args.num_test_batches)
 

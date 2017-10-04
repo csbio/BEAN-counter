@@ -183,17 +183,9 @@ if __name__ == '__main__':
     parser.add_argument('dataset_and_sample_table_files', metavar = 'DATASET_1 SAMPLE_TABLE_1 DATASET_2 SAMPLE_TABLE_2 ...', nargs = '+', help = 'The datasets and sample tables that are to be combined, in alternating order.')
     parser.add_argument('--output_folder', help = 'The folder to which the resulting combined matrix and sample table are written.')
     parser.add_argument('--all_strains', action = 'store_true', help = 'Add this flag if you want to keep all of the strains in the combined dataset, instead of the interesect of the strains. Strains present in one dataset but not the other will be represented as NaNs in the combined dataset.')
-    parser.add_argument('-v', '--verbosity', help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
+    parser.add_argument('-v', '--verbosity', type = int, default = 1, help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
 
     args = parser.parse_args()
-
-    # Take care of verbosity right away
-    if args.verbosity is None:
-        verbosity = 1
-    elif args.verbosity.isdigit():
-        verbosity = int(args.verbosity)
-    else:
-        verbosity = 1
 
     # Get the data ready to rumble!
     dataset_list = []
@@ -216,7 +208,7 @@ if __name__ == '__main__':
 
     all_strains = args.all_strains
 
-    if verbosity >= 2:
+    if args.verbosity >= 2:
         print dataset_list
         print sample_table_list
         print args.all_strains
@@ -226,5 +218,5 @@ if __name__ == '__main__':
     if not os.path.isdir(output_folder):
         os.makedirs(output_folder)
 
-    main(dataset_list, sample_table_list, all_strains, output_folder, verbosity)
+    main(dataset_list, sample_table_list, all_strains, output_folder, args.verbosity)
 

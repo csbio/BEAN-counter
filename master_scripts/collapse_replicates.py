@@ -326,24 +326,16 @@ if __name__ == '__main__':
     parser.add_argument('output_folder', help = 'The folder to which the resulting collapsed matrix and sample table are written')
     parser.add_argument('--cols_to_keep', nargs = '+', help = 'A space-delimited list of column names from the sample table to include in the new, collapsed sample table.')
     parser.add_argument('--how_to_collapse', nargs = '+', help = 'A space-delimited list, parallel to the list from "--cols_to_keep", giving the method by which each column should be collapsed. Current options are:\n"concat" to keep all values and semicolon delimit,\n"uniq" if the values for each condition in a replicate group are the same; and\n"mean" to compute a mean and standard deviation of the values (NaNs are removed first).')
-    parser.add_argument('-v', '--verbosity', help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
+    parser.add_argument('-v', '--verbosity', type = int, default = 1, help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
 
     args = parser.parse_args()
-
-    # Take care of verbosity right away
-    if args.verbosity is None:
-        verbosity = 1
-    elif args.verbosity.isdigit():
-        verbosity = int(args.verbosity)
-    else:
-        verbosity = 1
 
     # Get the data ready to rumble!
     dataset_file = os.path.abspath(args.dataset_file)
     assert os.path.isfile(dataset_file), "Dataset file does not exist."
     dataset = load_dataset(args.dataset_file)
 
-    if verbosity >= 2:
+    if args.verbosity >= 2:
         print dataset
 
     assert os.path.isfile(args.sample_table), "Sample table file does not exist."
@@ -366,7 +358,7 @@ if __name__ == '__main__':
     except:
         assert False, 'correlation cutoff must be a floating-point number!'
 
-    if verbosity >= 2:
+    if args.verbosity >= 2:
         print cols_to_keep
         print how_to_collapse
 
@@ -374,4 +366,4 @@ if __name__ == '__main__':
     if not os.path.isdir(output_folder):
         os.makedirs(output_folder)
 
-    main(dataset, sample_table, collapse_col, cor_cutoff, output_folder, cols_to_keep, how_to_collapse, verbosity)
+    main(dataset, sample_table, collapse_col, cor_cutoff, output_folder, cols_to_keep, how_to_collapse, args.verbosity)
