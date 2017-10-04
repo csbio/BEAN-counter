@@ -70,7 +70,7 @@ def combine_zscore_matrices(config_params):
         f = gzip.open(lane_interactions_filename)
 
         gene_barcode_ids, condition_ids, zscore_matrix = cPickle.load(f)
-        print "number of nonzero barcodes: {}".format(len(gene_barcode_ids))
+        # print "number of nonzero barcodes: {}".format(len(gene_barcode_ids))
         f.close()
         zscore_matrix_list.append(zscore_matrix)
         condition_id_list.append(condition_ids)
@@ -80,7 +80,7 @@ def combine_zscore_matrices(config_params):
     # Because these matrices may not share all of the same rows
     # in the same order, here I must align the rows of the
     # matrices and add missing rows if needed. Using NaNs to
-    # fill the rows in some matrix that didn't have any counts
+    # fill the rows in some matrices that didn't have any counts
     # because they are handled later in this script.
     all_gene_barcode_ids = list(all_gene_barcode_ids)
     all_gene_barcode_indices = {x:i for i,x in enumerate(all_gene_barcode_ids)}
@@ -95,7 +95,9 @@ def combine_zscore_matrices(config_params):
     all_zscore_matrix = np.hstack(aligned_zscore_matrix_list)
     all_condition_ids = np.vstack(condition_id_list)
 
-    print all_zscore_matrix.shape
+    # print all_zscore_matrix.shape
+    assert len(all_gene_barcode_ids) == all_zscore_matrix.shape[0], "Number of barcodes does not match the number of rows in the matrix"
+    assert len(condition_ids) == all_zscore_matrix.shape[1], "Number of conditions does not match the number of columns in the matrix"
 
     return all_gene_barcode_ids, all_condition_ids, all_zscore_matrix
 

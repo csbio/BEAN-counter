@@ -56,23 +56,43 @@ def combine_count_matrices(config_params):
 
     count_matrix_list = []
     condition_id_list = []
+    gene_barcode_id_list = []
+    all_gene_barcode_ids = set()
 
     for lane_id in all_lane_ids:
         count_matrix_filename = get_dumped_count_matrix_filename(config_params, lane_id)
         f = gzip.open(count_matrix_filename)
 
         gene_barcode_ids, condition_ids, count_matrix = cPickle.load(f)
+	print "number of nonzero barcodes: {}".format(len(gene_barcode_ids))
+
         f.close()
         count_matrix_list.append(count_matrix)
         condition_id_list.append(condition_ids)
+        gene_barcode_id_list.append(gene_barcode_ids)
+        all_gene_barcode_ids.update(gene_barcode_ids)
 
-    all_count_matrix = np.hstack(count_matrix_list)
+    # Because these matrices may not share all of the same rows
+    # in the same order, here I must align the rows of the
+    # matrices and add missing rows if needed. Using zeros to
+    # fill the rows in some matrices that didn't have any counts.
+    all_gene_barcode_ids = list(all_gene_barcode_ids)
+    all_gene_barcode_indices = {x:i for i,x in enumerate(all_gene_barcode_ids)}
+    aligned_count_matrix_list = []
+    for i in range(len(count_matrix_list)):
+        aligned_count_matrix_list.append(np.zeros((len(all_gene_barcode_ids), len(condition_id_list[i]))))
+        orig_barcodes = gene_barcode_id_list[i]
+        for j, barcode in enumerate(orig_barcodes):
+            aligned_count_matrix_list[i][all_gene_barcode_indices[barcode], :] = count_matrix_list[i][j, :]
+
+    all_count_matrix = np.hstack(aligned_count_matrix_list)
     all_condition_ids = np.vstack(condition_id_list)
 
-    # Note: for all matrices, the gene_barcode_ids, should be the same. When generating the count matrix,
-    # I do not let any gene_barcode_ids disappear, even if they have no counts whatsoever. This should
-    # simplify initial processing steps, and the filtering does not need to happen until later.
-    return gene_barcode_ids, all_condition_ids, all_count_matrix
+    print all_count_matrix.shape
+    assert len(all_gene_barcode_ids) == all_count_matrix.shape[0], "Number of barcodes does not match the number of rows in the matrix"
+    assert len(all_condition_ids) == all_count_matrix.shape[1], "Number of conditions does not match the number of columns in the matrix"
+
+    return all_gene_barcode_ids, all_condition_ids, all_count_matrix
 
 def dump_dataset(dataset, filename):
 
