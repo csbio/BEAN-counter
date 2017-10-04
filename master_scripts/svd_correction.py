@@ -436,10 +436,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('dataset_file', help = 'The dataset on which to perform batch correction.')
     parser.add_argument('sample_table', help = 'The sample table corresponding to the dataset.')
-    parser.add_argument('max_components', help = 'The maximum number of SVD components to remove.')
+    parser.add_argument('max_components', type = int, help = 'The maximum number of SVD components to remove.')
     parser.add_argument('output_folder', help = 'The folder to which results are exported.')
     parser.add_argument('-incl', '--include_column', help = 'Column in the sample table that specifies True/False whether or not the condition in that row should be used when computing the SVD components to remove. If it starts with an exclamation point, then the values in the column are negated first.')
-    parser.add_argument('-v', '--verbosity', help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
+    parser.add_argument('-v', '--verbosity', type = int, default = 1, help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
 
     args = parser.parse_args()
 
@@ -451,9 +451,6 @@ if __name__ == '__main__':
     assert os.path.isfile(args.sample_table), "Sample table file does not exist."
     sample_table = read_sample_table(args.sample_table)
 
-    assert args.max_components.isdigit(), "The specified maximum number of components to remove is not an integer."
-    max_components = int(args.max_components)
-
     output_folder = os.path.abspath(args.output_folder)
     if not os.path.isdir(output_folder):
         os.makedirs(output_folder)
@@ -464,9 +461,4 @@ if __name__ == '__main__':
     else:
         include_column = None
 
-    if args.verbosity.isdigit():
-        verbosity = int(args.verbosity)
-    else:
-        verbosity = 1
-
-    main(dataset, sample_table, max_components, include_column, output_folder, dataset_file, verbosity)
+    main(dataset, sample_table, args.max_components, include_column, output_folder, dataset_file, args.verbosity)

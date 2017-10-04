@@ -126,17 +126,9 @@ if __name__ == '__main__':
     parser.add_argument('--strain_columns', help = 'The columns from the barcode table to be included in the visualization.')
     parser.add_argument('--condition_columns', help = 'The columns from the sample table to be included in the visualization.')
     parser.add_argument('--value_name', help = 'Optional argument to specify a name for the column that stores the matrix values')
-    parser.add_argument('-v', '--verbosity', help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
+    parser.add_argument('-v', '--verbosity', type = int, default = 1, help = 'The level of verbosity printed to stdout. Ranges from 0 to 3, 1 is default.')
 
     args = parser.parse_args()
-
-    # Take care of verbosity right away
-    if args.verbosity is None:
-        verbosity = 1
-    elif args.verbosity.isdigit():
-        verbosity = int(args.verbosity)
-    else:
-        verbosity = 1
 
     # Handle the presence/absence of custom columns
     if args.strain_table is None or args.strain_columns is None:
@@ -158,10 +150,10 @@ if __name__ == '__main__':
     assert os.path.isfile(dataset_file), "Dataset file does not exist."
     dataset = load_dataset(args.dataset_file)
 
-    if verbosity >= 2:
+    if args.verbosity >= 2:
         print dataset
 
     table = args.table
     val_name = args.value_name
 
-    main(dataset, dataset_file, table, val_name, strain_table_f, strain_columns, sample_table_f, condition_columns, verbosity)
+    main(dataset, dataset_file, table, val_name, strain_table_f, strain_columns, sample_table_f, condition_columns, args.verbosity)
