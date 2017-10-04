@@ -100,8 +100,8 @@ def filter_dataset_for_barcodes(dataset, config_params):
     include_bool_ind = np.array([bool_dict[x] for x in barcode_tab['include?']])
     include_table = barcode_tab[include_bool_ind]
     not_include_table = barcode_tab[np.invert(include_bool_ind)]
-
-    include_strain_ids = include_table['Strain_ID']
+    
+    include_strain_ids = include_table['Strain_ID'].values
     include_strain_indices = np.array([i for i, strain_id in enumerate(strain_ids) if strain_id in include_strain_ids])
 
     filtered_strain_ids = strain_ids[include_strain_indices]
