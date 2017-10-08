@@ -27,7 +27,7 @@ import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 import cluster_dataset_wrappers as clus_wrap
-from cg_common_functions import get_temp_clustergram_name, read_sample_table
+from cg_common_functions import get_temp_clustergram_name, read_sample_table, read_barcode_table
 
 import argparse
 
@@ -76,7 +76,7 @@ if not os.path.isdir(output_folder):
 sample_table = read_sample_table(args.sample_table)
 
 # Read in the barcode table
-strain_table = read_sample_table(args.strain_table)
+strain_table = read_barcode_table(args.strain_table)
 
 # Cluster the matrix, with the option of clustering a new dataset using the original
 # matrix to define the clustering
