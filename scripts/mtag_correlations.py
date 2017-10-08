@@ -96,8 +96,8 @@ def combine_zscore_matrices(config_params):
     all_condition_ids = np.vstack(condition_id_list)
 
     # print all_zscore_matrix.shape
-    assert len(all_gene_barcode_ids) == all_zscore_matrix.shape[0], "Number of barcodes does not match the number of rows in the matrix"
-    assert len(condition_ids) == all_zscore_matrix.shape[1], "Number of conditions does not match the number of columns in the matrix"
+    assert len(all_gene_barcode_ids) == all_zscore_matrix.shape[0], "Number of barcodes: {}; Number of rows in matrix: {}; these should match!".format(len(all_gene_barcode_ids), len(all_zscore_matrix.shape[0]))
+    assert len(all_condition_ids) == all_zscore_matrix.shape[1], "Number of conditions: {}; Number of columns in matrix: {}; these should match!".format(len(all_condition_ids), len(all_zscore_matrix.shape[1]))
 
     return all_gene_barcode_ids, all_condition_ids, all_zscore_matrix
 
