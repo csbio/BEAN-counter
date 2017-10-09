@@ -9,7 +9,7 @@ import numpy as np
 import itertools as it
 
 
-def get_group_correlations(cor_mat, group_names, within_group = True):
+def get_group_correlations(cor_mat, group_names, within_group = True, verbosity = 1):
 
     # Group names must line up with rows/columns that are in those
     # respective groups
@@ -36,8 +36,14 @@ def get_group_correlations(cor_mat, group_names, within_group = True):
     #print group_names.shape
     #print group_to_ind
 
-    # Set the lower triangular of the correlation matrix to nan!
-    cor_mat[np.tril_indices_from(cor_mat)] = np.nan
+    # If we are looking at within-group similarities, set the lower
+    # triangular of the correlation matrix to nan. Do NOT do this
+    # for between-group comparisons. That was in here in previous
+    # versions and it is incorrect - real similarities, sometimes
+    # ALL of them, get turned into nans.
+    if within_group:
+        cor_mat = cor_mat.copy()
+        cor_mat[np.tril_indices_from(cor_mat)] = np.nan
 
     ## Get upper triangular from the first diagonal and above.
     #row_triu_indices, col_triu_indices = np.triu_indices_from(cor_mat, 1)
@@ -64,7 +70,15 @@ def get_group_correlations(cor_mat, group_names, within_group = True):
 
         # Get the values
         corrs = cor_mat[np.ix_(group_to_ind[pair[0]], group_to_ind[pair[1]])]
-        #print corrs
+        if verbosity >= 3:
+            print pair
+            print "batch {} indices:".format(pair[0])
+            print group_to_ind[pair[0]]
+            print "batch {} indices:".format(pair[1])
+            print group_to_ind[pair[1]]
+            print corrs
+            print corrs.shape
+            print np.sum(np.isnan(corrs))
         #input()
         
         # Add the mean correlation to the list!
