@@ -144,7 +144,11 @@ def filter_dataset_for_index_tags(dataset, config_params):
 
     f = open(index_tag_corr_filename, 'rt')
     index_tags, correlations = cPickle.load(f)
-    index_tags_to_remove = np.array([index_tags[i] for i,corr in enumerate(correlations) if corr >= index_tag_correlation_cutoff])
+    index_tags_to_remove = index_tags[correlations >= index_tag_correlation_cutoff]
+    # When no index tags should be removed, the commented-out solution immediately
+    # below generates an empty 'float64' array instead of an empty string array,
+    # which causes a bug.
+    #index_tags_to_remove = np.array([index_tags[i] for i,corr in enumerate(correlations) if corr >= index_tag_correlation_cutoff])
     # print 'index_tags_to_remove:'
     # print '\n'.join(index_tags_to_remove) + '\n'
    
@@ -178,12 +182,17 @@ def filter_dataset_for_barcode_specific_patterns(dataset, config_params):
 
     f = open(barcode_spec_corr_filename, 'rt')
     barcode_spec_condition_ids, barcode_spec_correlations, start_base = cPickle.load(f)
-    cond_ids_to_remove = np.array([barcode_spec_condition_ids[i] for i,corr in enumerate(barcode_spec_correlations) if corr >= barcode_specific_correlation_cutoff])
+    cond_ids_to_remove = barcode_spec_condition_ids[barcode_spec_correlations >= barcode_specific_correlation_cutoff]
+    # Similarly to above, I moved from list comprehensions to numpy vectorized operations
+    # in case no conditions should be removed.
+    #cond_ids_to_remove = np.array([barcode_spec_condition_ids[i] for i,corr in enumerate(barcode_spec_correlations) if corr >= barcode_specific_correlation_cutoff])
     if get_verbosity(config_params) >= 2:
         print 'condition_ids_to_remove:'
         print cond_ids_to_remove
   
-    if cond_ids_to_remove != []:
+    if cond_ids_to_remove.size > 0:
+    # What was I thinking here...???
+    #if cond_ids_to_remove != []:
         to_remove_idx = np.array([a_is_row_in_b(tuple(x[1]), cond_ids_to_remove) for x in sample_table[['screen_name', 'expt_id']].iterrows()])
     else:
         to_remove_idx = np.array([False for x in sample_table[['screen_name', 'expt_id']].iterrows()])
