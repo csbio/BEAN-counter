@@ -64,8 +64,12 @@ def strain_match(a, b):
     a_inds = []
     b_inds = []
     for i, x in enumerate(a):
-        if a_is_row_in_b(x, b):
-            b_match_ind = np.where(np.all(x == b, axis = 1))[0]
+        # Changing from matching based on 2-D array to just lists
+        # b/c "Strain_ID" is now just a single identifier string.
+        #if a_is_row_in_b(x, b):
+        if x in b:
+            #b_match_ind = np.where(np.all(x == b, axis = 1))[0]
+            b_match_ind = np.where(x == np.array(b))[0]
             assert np.size(b_match_ind) == 1, "Strain {} somehow is matching multiple rows in the final strains array".format(x)
             b_match_int = int(b_match_ind)
             a_inds.append(i)
@@ -83,21 +87,25 @@ def unique_rows(a):
 
 def combine_datasets(datasets, all_strains, verbosity):
 
+    # NO MORE STRAIN TUPLE IDENTIFIERS
     # First, get all strains to include in the final matrix - this depends
     # on if the value of all_strains is True (union of all strains) or
     # False (intersect of all strains)
-    strains_tuple_list = [[tuple(z) for z in y] for y in [x[0] for x in datasets]]
+    #strains_tuple_list = [[tuple(z) for z in y] for y in [x[0] for x in datasets]]
+    # But I do need to get the set of strains from each dataset
+    strains_list = [x[0] for x in datasets]
 
     if verbosity >= 2:
-        print strains_tuple_list
+        print strains_list
+        #print strains_tuple_list
 
-    final_strains = set(strains_tuple_list[0])
+    final_strains = set(strains_list[0])
     if all_strains:
-        for i in range(1, len(strains_tuple_list)):
-            final_strains = final_strains.union(set(strains_tuple_list[i]))
+        for i in range(1, len(strains_list)):
+            final_strains = final_strains.union(set(strains_list[i]))
     else:
-        for i in range(1, len(strains_tuple_list)):
-            final_strains = final_strains.intersection(set(strains_tuple_list[i]))
+        for i in range(1, len(strains_list)):
+            final_strains = final_strains.intersection(set(strains_list[i]))
     final_strains = np.array(list(final_strains))
 
     if verbosity >= 2:
@@ -107,7 +115,7 @@ def combine_datasets(datasets, all_strains, verbosity):
     # Now, get indices to reorder each matrix's rows to match the new order of the strains
     old_strain_indices = []
     new_strain_indices = []
-    for strains in strains_tuple_list:
+    for strains in strains_list:
         strain_indices = strain_match(strains, final_strains)
         old_strain_indices.append(np.array(strain_indices[0]))
         new_strain_indices.append(np.array(strain_indices[1]))
