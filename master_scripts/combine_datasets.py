@@ -81,7 +81,7 @@ def unique_rows(a):
     unique_a = np.unique(a.view([('', a.dtype)]*a.shape[1]))
     return unique_a.view(a.dtype).reshape((unique_a.shape[0], a.shape[1]))
 
-def combine_datasets(datasets, all_strains):
+def combine_datasets(datasets, all_strains, verbosity):
 
     # First, get all strains to include in the final matrix - this depends
     # on if the value of all_strains is True (union of all strains) or
@@ -156,7 +156,7 @@ def combine_sample_tables(tables):
 
 def main(dataset_list, sample_table_list, all_strains, output_folder, verbosity):
 
-    combined_dataset = combine_datasets(dataset_list, all_strains)
+    combined_dataset = combine_datasets(dataset_list, all_strains, verbosity)
 
     if verbosity >= 2:
         print combined_dataset
