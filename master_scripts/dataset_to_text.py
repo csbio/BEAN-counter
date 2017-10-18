@@ -68,9 +68,9 @@ def main(dataset, dataset_file, table, val_name, strain_table_f, strain_columns,
         
         # Write out the strains!
         with open(strain_fname, 'wt') as strain_f:
-            strain_f.write('Strain_ID\tBarcode\n')
+            strain_f.write('Strain_ID\n')
             for strain in strains:
-                strain_f.write('\t'.join(strain) + '\n')
+                strain_f.write(strain + '\n')
 
         # Write out the conditions!
         with open(cond_fname, 'wt') as cond_f:
@@ -86,7 +86,6 @@ def main(dataset, dataset_file, table, val_name, strain_table_f, strain_columns,
     else:
         # Create containers for the rowname, colname, and value columns of the new table
         Strain_IDs = []
-        Barcodes = []
         screen_names = []
         expt_ids = []
         values = []
@@ -94,8 +93,7 @@ def main(dataset, dataset_file, table, val_name, strain_table_f, strain_columns,
         # Iterate over the rows and columns of the matrix, and fill in the lists!
         for i in range(matrix.shape[0]):
             for j in range(matrix.shape[1]):
-                Strain_IDs.append(strains[i][0])
-                Barcodes.append(strains[i][1])
+                Strain_IDs.append(strains[i])
                 screen_names.append(conditions[j][0])
                 expt_ids.append(conditions[j][1])
                 values.append(matrix[i, j])
@@ -103,10 +101,10 @@ def main(dataset, dataset_file, table, val_name, strain_table_f, strain_columns,
         # Create the data frame!
         if val_name is None:
             val_name = 'value'
-        table = pd.DataFrame({'Strain_ID': Strain_IDs, 'Barcode': Barcodes, 'screen_name': screen_names, 'expt_id': expt_ids, val_name: values})
+        table = pd.DataFrame({'Strain_ID': Strain_IDs, 'screen_name': screen_names, 'expt_id': expt_ids, val_name: values})
 
         # Reorder the data frame columns!
-        table = table.reindex(columns = ['Strain_ID', 'Barcode', 'screen_name', 'expt_id', val_name])
+        table = table.reindex(columns = ['Strain_ID', 'screen_name', 'expt_id', val_name])
 
         # Write the table out to file!
         tab_fname = os.path.join(out_folder, 'data_table.txt.gz')
