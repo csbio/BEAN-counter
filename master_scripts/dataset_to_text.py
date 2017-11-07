@@ -95,6 +95,7 @@ def main(dataset, dataset_file, table, val_name, strain_table_f, strain_columns,
             assert all([x in strain_table.columns for x in strain_columns]), "Not all of the specified columns are in the provided strain table ({})".format(';'.join(list(set(strain_columns) - set(strain_table.columns))))
         else:
             strain_columns = []
+            strain_table_idx = {}
 
         if sample_table_f is not None and strain_columns is not None:
             sample_table = read_sample_table(sample_table_f)
@@ -103,6 +104,7 @@ def main(dataset, dataset_file, table, val_name, strain_table_f, strain_columns,
             assert all([x in sample_table.columns for x in condition_columns]), "Not all of the specified columns are in the provided sample table ({})".format(';'.join(list(set(condition_columns) - set(sample_table.columns))))
         else:
             condition_columns = []
+            sample_table_idx = {}
 
         # Determine identities of final table columns
         if val_name is None:
@@ -123,10 +125,10 @@ def main(dataset, dataset_file, table, val_name, strain_table_f, strain_columns,
 
         # Iterate over the rows and columns of the matrix, and fill in the lists!
         for i in range(matrix.shape[0]):
-            strain_idx = strain_table_idx[tuple(strains[i])]
+            strain_idx = strain_table_idx.get(tuple(strains[i]))
             for j in range(matrix.shape[1]):
                 k = 5
-                condition_idx = sample_table_idx[tuple(conditions[j])]
+                condition_idx = sample_table_idx.get(tuple(conditions[j]))
                 
                 final_data[0].append(strains[i][0])
                 final_data[1].append(strains[i][1])
