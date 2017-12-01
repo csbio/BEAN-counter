@@ -1,0 +1,5 @@
+# Python byte-compiled/optimized/whatnot
+*.py[cod]
+
+# Vim swapfiles
+*.sw[mnop]
