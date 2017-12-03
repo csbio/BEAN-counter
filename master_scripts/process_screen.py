@@ -54,7 +54,7 @@ import merge_count_matrices
 import filter_final_count_matrix
 
 
-def main(config_file, start, stop)
+def main(config_file, start, stop):
 
     print 'start: {}'.format(start)
     print 'stop: {}'.format(stop)
