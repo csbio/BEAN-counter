@@ -80,7 +80,6 @@ def main(config_file, start, stop):
     ###########################################
 
     # Get the config file, which is the only argument needed for the pipeline
-    config_file = args.config_file
     config_params = cfp.parse(config_file)
 
     # Read in the sample table
@@ -104,7 +103,7 @@ def main(config_file, start, stop):
             print 'time to process = {}'.format(time.strftime('%H:%M:%S', time.gmtime(end_time - start_time)))
 
     if stop == 1:
-        sys.exit(0)
+        return None
     #    
     # An initial round of cg interaction scoring is performed
     # at the lane level, 
@@ -117,7 +116,7 @@ def main(config_file, start, stop):
             print 'time to process = {}'.format(time.strftime('%H:%M:%S', time.gmtime(end_time - start_time)))
 
     if stop == 2:
-        sys.exit(0)
+        return None
 
     # Calculate index tag (condition) correlations on
     # the DMSO profiles, for removal in the matrix
@@ -127,7 +126,7 @@ def main(config_file, start, stop):
         mtag_correlations.main(config_file)
 
     if stop == 3:
-        sys.exit(0)
+        return None
 
     # Merge all of the count matrices into one big count matrix
     if start <= 4:
@@ -135,7 +134,7 @@ def main(config_file, start, stop):
         merge_count_matrices.main(config_file)
 
     if stop == 4:
-        sys.exit(0)
+        return None
 
     # Filter out all of the strains and conditions with the following issues:
     # 1) They were flagged to be excluded a priori
@@ -148,7 +147,7 @@ def main(config_file, start, stop):
         filter_final_count_matrix.main(config_file)
 
     if stop == 5:
-        sys.exit(0)
+        return None
 
     # Calculate chemical-genetic interaction z-scores on the entire dataset
     if start <= 6:
@@ -159,7 +158,7 @@ def main(config_file, start, stop):
         print 'time to process = {}'.format(time.strftime('%H:%M:%S', time.gmtime(end - start)))
 
     if stop == 6:
-        sys.exit(0)
+        return None
 
 if __name__ == '__main__':
     main(args.config_file, args.start, args.stop)
