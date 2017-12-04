@@ -6,7 +6,7 @@
 # the barseq_counter pipeline.
 
 import os
-import pandas as pd
+import pandas as pd, numpy as np
 from datetime import datetime
 import ruamel_yaml as yaml
 
@@ -66,6 +66,10 @@ def get_temp_clustergram_name(output_folder, name):
 
     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     return os.path.join(output_folder,'{}_{}'.format(timestamp, name))
+
+def a_is_row_in_b(a, b):
+
+    return np.any(np.all(a == b, axis = 1))
 
 # def get_distribution_dir(output_folder):
 #
