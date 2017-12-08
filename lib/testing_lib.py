@@ -67,7 +67,9 @@ def copy_data_to_results_dir(data_dir, results_dir):
 
     shutil.copytree(data_dir, results_dir)
 
+def get_file():
 
+    print __file__
 
 #def set
 
