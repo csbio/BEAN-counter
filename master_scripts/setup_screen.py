@@ -64,10 +64,23 @@ args = parser.parse_args()
 import textwrap
 
 
+# Interactive mode!
+if args.interactive:
+
+    for loc_param in p.loc_list:
+
+        loc_param.get_input()
+
+
 # Make sure I check that each parameter has a valid value
+
+# Deal with modifying paths of all config_file locations
+
+# Deal with moving screen config folder to the working dir
 
 # Check if location files already exist, and quit if --clobber is not set
 
+# Config file-writing function
 def write_config_file(loc_list):
 
     fname = loc_list[0].value
@@ -82,11 +95,18 @@ def write_config_file(loc_list):
             #print param.help
             #print textwrap.wrap(param.help, width = 60)
             #print '# {}\n'.format(textwrap.wrap(param.help, width = 60)[0])
-            f.writelines(['# {}\n'.format(x) for x in textwrap.wrap(param.help, width = 61)])
+            f.writelines(['# {}\n'.format(x) for x in textwrap.wrap(param.help, width = 60)])
             f.write('{}: {}\n'.format(param.name, param.value))
             f.write('\n')
 
         f.write('...\n')
+
+# Lane location file-writing function
+def write_lane_location_file(fname):
+    pass
+
+
+######  Final directory creation and file writing steps!!!  ######
 
 # Create directory structure and generate necessary files
 if not os.path.isdir('config_files'):
