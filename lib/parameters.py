@@ -31,14 +31,87 @@ class Param:
     # value at that index in the list of options, BUT
     # give priority to matching on the real values).
     def _standardize_value(self, val):
-        if self.options is not None:
-            if val in self.options:
-                return val
-            elif val.isdigit():
+
+        # First, if it's blank, other functions will handle that
+        if val in [None, '']:
+            return val
+        
+        # See if the value matches the type it is required to be.
+        # The coercion to string prevents things like coercing "2"
+        # to boolean from giving the appearance of working.
+        try:
+            matches_type = str(self.type(val)) == str(val)
+        except:
+            matches_type = False
+
+        # See if the value is coerceable to int and if it
+        # matches the range of options given.
+        matches_int = True
+        try:
+            int(val)
+        except:
+            matches_int = False
+
+
+        # Put it all together here
+        if self.options is None:
+            if matches_type:
+                return self.type(val)
+            else:
+                assert False, 'Value "{}" for parameter "{}" cannot be coerced to type {}, and no options are pre-defined for integer-based selection.'.format(val, self.name, self.type)
+        else:
+            if matches_type:
+                if self.type(val) in self.options:
+                    return self.type(val)
+            if matches_int:
                 if int(val) in range(len(self.options)):
                     return self.options[int(val)]
-            else:
-                return val
+            # If the value could not be matched to the options either
+            # via it's correctly-typed value or via integer indexing,
+            # then it is not a valid value for that parameter.
+            assert False, 'Value "{}" could not be matched to parameter "{}" by name or by position in the list of options. It is required to be of type {}'.format(val, self.name, self.type)
+
+
+
+
+#            if self.options is not None:
+#                if std_val in self.options:
+#                    return std_val
+#
+#        # If val could not be coerced to the required type,
+#        # or if it could but did not match the given options,
+#        # attempt to match it to one of the options via integer
+#        # index.
+#
+#
+#        # If it 
+#
+#        if self.options is not None:
+#            # First, try to convert the value to its required
+#            # type as defined in the "type" parameter.
+#            try:
+#                std_val = self.type(val)
+#            # If this does not work, do nothing
+#            except:
+#                pass
+#            # But if it does work, check if it's in the list
+#            # of options
+#            else:
+#                if std_val in self.options:
+#                    return std_val
+#            
+#            # However, just because the coercion worked, doesn't
+#            # mean it's correct. If a number was given as an option
+#            # for a bool or string argument, then it would be
+#            # inappropriately coerced to that type. It will therefore
+#            # not match the set or approved parameters in
+#            # self.options, so we go back to checking to see if the
+#            # value is an integer stored as a string.
+#            elif val.isdigit():
+#                if int(val) in range(len(self.options)):
+#                    return self.options[int(val)]
+#            else:
+#                return val
 
     # Function to check for a valid "value" value
     def _is_valid_value(self, val):
