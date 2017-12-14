@@ -21,13 +21,13 @@ class Param:
 
     # Function to check for a valid "value" value
     def _is_valid_value(self, val):
-        return val not in [None, '']
+        if self.options is not None:
+            return val in self.options
+        else:
+            return val not in [None, '']
 
     def has_valid_value(self):
-        if self.options is not None:
-            return self.value in self.options
-        else:
-            return self._is_valid_value(self.value)
+        return self._is_valid_value(self.value)
 
     def _write_help_string(self):
         # Setup
@@ -76,6 +76,8 @@ class Param:
                     break
                 else:
                     print ''
+                    if not self._is_valid_value(y):
+                        print '"{}" is not a valid value for "{}".'.format(y, self.name)
                     print 'No default value exists for "{}", so the user must supply one!'.format(self.name)
                     print ''
 
