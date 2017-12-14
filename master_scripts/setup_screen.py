@@ -76,7 +76,7 @@ def write_config_file(loc_list):
         f.write('---\n\n')
         f.write('##########   BEAN-counter configuration file   #########\n')
         f.write('\n')
-        f.write('####  File/folder locations  ####')
+        f.write('####  File/folder locations  ####\n')
         f.write('\n')
         for param in loc_list[1:]:
             #print param.help
