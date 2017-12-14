@@ -17,7 +17,7 @@ class Param:
         self.value = value
         self.type = type
         self.help = help
-        if isinstance(options, (basestring, int, float)):
+        if isinstance(options, (basestring, int, float, bool)):
             self.options = [options]
         elif isinstance(options, (list, tuple)):
             self.options = list(options)
@@ -192,6 +192,125 @@ screen_config_folder = Param(
                 'the file that maps barcodes '\
                 'to strains and their identifiers (barcodes.txt).',
         options = list_valid_screen_config_dirs())
+
+###########################
+##  Advanced parameters  ##
+###########################
+
+verbosity = Param(
+        name = 'verbosity',
+        value = 1,
+        type = int,
+        help = 'Verbosity of messages printed to stdout. '\
+                '0 is none, 1 is default (step-relevant announcements), '\
+                '2 prints object inspection results, and 3 presents even '\
+                'deeper (and more cryptic) inspection results.',
+        options = range(4))
+
+remove_barcode_specific_conditions = Param(
+        name = 'remove_barcode_specific_conditions',
+        value = True,
+        type = bool,
+        help = 'Remove conditions matching the "barcode-specific" pattern ' \
+                '(positive interactions for barcodes beginning with one ' \
+                'particular base) with correlation greater than that defined ' \
+                'by "barcode_specific_template_correlation_cutoff".',
+        options = [True, False])
+
+barcode_specific_template_correlation_cutoff = Param(
+        name = 'barcode_specific_template_correlation_cutoff',
+        value = 0.3,
+        type = float,
+        help = 'See "remove_barcode_specific_conditions".',
+        options = None)
+
+remove_correlated_index_tags = Param(
+        name = 'remove_correlated_index_tags',
+        value = True,
+        type = bool,
+        help = 'Remove conditions associated with highly-self-correlating '\
+                'index tags (in control conditions) with correlation greater ' \
+                ' than that defined by "index_tag_correlation_cutoff". ' \
+                'Intended for use with larger screens, as these are more likely ' \
+                'to have coverage of multiple negative control conditions with ' \
+                'the same index tag.',
+        options = [True, False])
+
+index_tag_correlation_cutoff = Param(
+        name = 'index_tag_correlation_cutoff',
+        value = 0.4,
+        type = float,
+        help = 'See "remove_correlated_index_tags".',
+        options = None)
+
+common_primer_tolerance = Param(
+        name = 'common_primer_tolerance',
+        value = 2,
+        type = int,
+        help = 'Number of substitution errors allowed in the common primer sequence.',
+        options = None)
+
+barcode_tolerance = Param(
+        name = 'barcode_tolerance',
+        value = 2,
+        type = int,
+        help = 'Number of substitution errors allowed in the barcode sequence.',
+        options = None)
+
+control_detection_limit = Param(
+        name = 'control_detection_limit',
+        value = 20,
+        type = int,
+        help = 'Read count below which strains in control conditions are '\
+                'labeled as "not detected" and set to NA prior to calculation '\
+                'of the mean control profile.',
+        options = None)
+
+sample_detection_limit = Param(
+        name = 'sample_detection_limit',
+        value = 20,
+        type = int,
+        help = 'Read count below which strains in non-control conditions are '\
+                '"not detected." All counts below this number are set to this '\
+                'number, which prevents NAs when log-transforming. Also applies '\
+                'to control conditions when their normalized profiles are being computed.',
+        options = None)
+
+strain_pass_read_count = Param(
+        name = 'strain_pass_read_count',
+        value = 20,
+        type = int,
+        help = 'For a strain to pass, the fraction of conditions with read counts '\
+                '>= "strain_pass_read_count" must be >= "strain_pass_fraction". '\
+                'This filtering step occurs AFTER removing strains/conditions with ' \
+                'zero counts.',
+        options = None)
+
+strain_pass_fraction = Param(
+        name = 'strain_pass_fraction',
+        value = 0.25,
+        type = int,
+        help = 'See "strain_pass_read_count".',
+        options = None)
+
+condition_pass_read_count = Param(
+        name = 'condition_pass_read_count',
+        value = 20,
+        type = int,
+        help = 'For a condition to pass, the fraction of conditions with read counts '\
+                '>= "condition_pass_read_count" must be >= "condition_pass_fraction". '\
+                'This filtering step occurs AFTER removing strains/conditions with ' \
+                'zero counts.',
+        options = None)
+
+condition_pass_fraction = Param(
+        name = 'condition_pass_fraction',
+        value = 0.25,
+        type = int,
+        help = 'See "condition_pass_read_count".',
+        options = None)
+
+
 
 
 

@@ -102,6 +102,17 @@ def write_config_file(params):
             getattr(params, param).write_config(f)
             f.write('\n')
 
+        f.write('\n\n')
+        f.write('####  Advanced parameters  ####\n\n')
+        f.write('# Do not change unless you are comfortable doing so :-)\n')
+
+        for param in ['verbosity', 'remove_barcode_specific_conditions', 'barcode_specific_template_correlation_cutoff',
+                'remove_correlated_index_tags', 'index_tag_correlation_cutoff', 'common_primer_tolerance',
+                'barcode_tolerance', 'control_detection_limit', 'sample_detection_limit', 'strain_pass_read_count',
+                'strain_pass_fraction', 'condition_pass_read_count', 'condition_pass_fraction']:
+            getattr(params, param).write_config(f)
+            f.write('\n')
+
         f.write('...\n')
 
 # Lane location file-writing function
