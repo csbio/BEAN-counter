@@ -337,7 +337,7 @@ strain_pass_read_count = Param(
 strain_pass_fraction = Param(
         name = 'strain_pass_fraction',
         value = 0.25,
-        type = int,
+        type = float,
         help = 'See "strain_pass_read_count".',
         options = None)
 
@@ -354,7 +354,7 @@ condition_pass_read_count = Param(
 condition_pass_fraction = Param(
         name = 'condition_pass_fraction',
         value = 0.25,
-        type = int,
+        type = float,
         help = 'See "condition_pass_read_count".',
         options = None)
 
