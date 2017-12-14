@@ -17,7 +17,28 @@ class Param:
         self.value = value
         self.type = type
         self.help = help
-        self.options = options
+        if isinstance(options, (basestring, int, float)):
+            self.options = [options]
+        elif isinstance(options, (list, tuple)):
+            self.options = list(options)
+        elif options is None:
+            self.options = options
+        else:
+            assert False, 'Not a valid value for the "options" argument.'
+
+    # Function to standardize the input value to its
+    # intended value (aka: if it's an integer, grab the
+    # value at that index in the list of options, BUT
+    # give priority to matching on the real values).
+    def _standardize_value(self, val):
+        if self.options is not None:
+            if val in self.options:
+                return val
+            elif val.isdigit():
+                if int(val) in range(len(self.options)):
+                    return self.options[int(val)]
+            else:
+                return val
 
     # Function to check for a valid "value" value
     def _is_valid_value(self, val):
@@ -55,14 +76,12 @@ class Param:
             y = raw_input('{}: '.format(self.name))
             if y == 'o':
                 if self.options is not None:
-                    if isinstance(self.options, basestring):
-                        print self.options
-                    elif isinstance(self.options, (list, tuple)):
-                        for opt in self.options:
-                            print ''
-                            print 'Options for {}:'.format(self.name)
-                            print opt
-                            print
+                    for i, opt in enumerate(self.options):
+                        print ''
+                        print 'Options for {}:'.format(self.name)
+                        print '(specify via either name or number)'
+                        print '{}: {}'.format(i, opt)
+                        print
                 else:
                     print ''
                     print 'No pre-defined options for "{}".'.format(self.name)
@@ -70,6 +89,7 @@ class Param:
             elif y == 'h':
                 self._write_help_string()
             else:
+                y = self._standardize_value(y)
                 if self._is_valid_value(y):
                     self.value = y
                 if self.has_valid_value():

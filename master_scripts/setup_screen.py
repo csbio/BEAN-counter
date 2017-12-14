@@ -83,6 +83,7 @@ if args.interactive:
 # Config file-writing function
 def write_config_file(loc_list):
 
+    working_dir = os.getcwd()
     fname = loc_list[0].value
     with open(fname, 'wt') as f:
 
@@ -96,7 +97,7 @@ def write_config_file(loc_list):
             #print textwrap.wrap(param.help, width = 60)
             #print '# {}\n'.format(textwrap.wrap(param.help, width = 60)[0])
             f.writelines(['# {}\n'.format(x) for x in textwrap.wrap(param.help, width = 60)])
-            f.write('{}: {}\n'.format(param.name, param.value))
+            f.write('{}: {}\n'.format(param.name, os.path.join(working_dir, param.value)))
             f.write('\n')
 
         f.write('...\n')
