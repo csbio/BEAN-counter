@@ -50,12 +50,16 @@ import argparse
 #arg_name_idx = {x:i for i,x in enumerate(arg_names)}
 #assert len(arg_name_idx) == len(arg_list), "One or more arguments have the same name."
 
+# Define some parameter sets
+loc_list = ['config_file', 'output_directory', 'lane_location_file', 'sample_table_file', 'screen_config_folder']
+
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-i', '--interactive', action = 'store_true', help = 'Activates interactive mode.')
 parser.add_argument('--clobber', action = 'store_true', help = 'Overwrite existing files.')
 loc_group = parser.add_argument_group('file/folder locations')
-for param in p.loc_list:
-    loc_group.add_argument('--{}'.format(param.name), default = param.value, type = param.type, help = param.help)
+for param in loc_list:
+    par_obj = getattr(p, param)
+    loc_group.add_argument('--{}'.format(par_obj.name), default = par_obj.value, type = par_obj.type, help = par_obj.help)
 
 args = parser.parse_args()
 
@@ -67,9 +71,10 @@ import textwrap
 # Interactive mode!
 if args.interactive:
 
-    for loc_param in p.loc_list:
+    for param in loc_list:
+        par_obj = getattr(p, param)
 
-        loc_param.get_input()
+        par_obj.get_input()
 
 
 # Make sure I check that each parameter has a valid value
@@ -81,10 +86,10 @@ if args.interactive:
 # Check if location files already exist, and quit if --clobber is not set
 
 # Config file-writing function
-def write_config_file(loc_list):
+def write_config_file(params):
 
     working_dir = os.getcwd()
-    fname = loc_list[0].value
+    fname = params.config_file.value
     with open(fname, 'wt') as f:
 
         f.write('---\n\n')
@@ -92,12 +97,9 @@ def write_config_file(loc_list):
         f.write('\n')
         f.write('####  File/folder locations  ####\n')
         f.write('\n')
-        for param in loc_list[1:]:
-            #print param.help
-            #print textwrap.wrap(param.help, width = 60)
-            #print '# {}\n'.format(textwrap.wrap(param.help, width = 60)[0])
-            f.writelines(['# {}\n'.format(x) for x in textwrap.wrap(param.help, width = 60)])
-            f.write('{}: {}\n'.format(param.name, os.path.join(working_dir, param.value)))
+
+        for param in ['output_directory', 'lane_location_file', 'sample_table_file', 'screen_config_folder']:
+            getattr(params, param).write_config(f)
             f.write('\n')
 
         f.write('...\n')
@@ -113,6 +115,6 @@ def write_lane_location_file(fname):
 if not os.path.isdir('config_files'):
     os.makedirs('config_files')
 
-write_config_file(p.loc_list)
+write_config_file(p)
 
 

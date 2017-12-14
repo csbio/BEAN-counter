@@ -101,6 +101,12 @@ class Param:
                     print 'No default value exists for "{}", so the user must supply one!'.format(self.name)
                     print ''
 
+    # Function to spit param out to config file
+    def write_config(self, f):
+        f.writelines(['# {}\n'.format(x) for x in textwrap.wrap(self.help, width = 60)])
+        f.write('{}: {}\n'.format(self.name, self.value))
+
+
 
 # Detection of valid screen_config directories in the
 # 'data/screen_config/' directory.
@@ -142,53 +148,50 @@ print list_valid_screen_config_dirs()
 
 # Definitions of file/folder locations for the config file
 # (and of the config file itself!)
-loc_list = []
-loc_list.append(
-        Param(name = 'config_file',
-            value = os.path.join('config_files', 'config_file.yaml'),
-            type = str,
-            help = 'File that coordinates all aspects of interaction scoring.',
-            options = None))
+#loc_list = []
+config_file = Param(
+        name = 'config_file',
+        value = os.path.join('config_files', 'config_file.yaml'),
+        type = str,
+        help = 'File that coordinates all aspects of interaction scoring.',
+        options = None)
 
-loc_list.append(
-        Param(name = 'output_directory',
-            value = 'output',
-            type = str,
-            help = 'Directory to which output is written',
-            options = None))
+output_directory = Param(
+        name = 'output_directory',
+        value = 'output',
+        type = str,
+        help = 'Directory to which output is written',
+        options = None)
 
-loc_list.append(
-        Param(name = 'lane_location_file',
-            value = os.path.join('config_files', 'lane_locations.txt'),
-            type = str,
-            help = 'File that maps the lane column in the sample table ' \
-                    'to the folder containing raw sequencing data for that lane.',
-            options = None))
+lane_location_file = Param(
+        name = 'lane_location_file',
+        value = os.path.join('config_files', 'lane_locations.txt'),
+        type = str,
+        help = 'File that maps the lane column in the sample table ' \
+                'to the folder containing raw sequencing data for that lane.',
+        options = None)
 
-loc_list.append(
-        Param(name = 'sample_table_file',
-            value = os.path.join('sample_table_files', 'sample_table.txt'),
-            type = str,
-            help = 'File that contains all sample information, including unique IDs, '\
-                    'negative control status, the sequence ' \
-                    'of the index tag(s) each sample was labeled with and the '\
-                    'sequencing lane from which the data came.',
-            options = None))
+sample_table_file = Param(
+        name = 'sample_table_file',
+        value = os.path.join('sample_table_files', 'sample_table.txt'),
+        type = str,
+        help = 'File that contains all sample information, including unique IDs, '\
+                'negative control status, the sequence ' \
+                'of the index tag(s) each sample was labeled with and the '\
+                'sequencing lane from which the data came.',
+        options = None)
 
-loc_list.append(
-        Param(name = 'screen_config_folder',
-            value = None,
-            type = str,
-            help = 'Folder in "$BARSEQ_PATH/data/screen_configs/" that contains: ' \
-                    '1) a file that defines the structure of the '\
-                    'sequenced PCR product(s), which is required for '\
-                    'correctly parsing the sequencing data (screen_config.yaml), and 2) '\
-                    'the file that maps barcodes '\
-                    'to strains and their identifiers (barcodes.txt).',
-#            options = None))
-            options = list_valid_screen_config_dirs()))
+screen_config_folder = Param(
+        name = 'screen_config_folder',
+        value = None,
+        type = str,
+        help = 'Folder in "$BARSEQ_PATH/data/screen_configs/" that contains: ' \
+                '1) a file that defines the structure of the '\
+                'sequenced PCR product(s), which is required for '\
+                'correctly parsing the sequencing data (screen_config.yaml), and 2) '\
+                'the file that maps barcodes '\
+                'to strains and their identifiers (barcodes.txt).',
+        options = list_valid_screen_config_dirs())
 
-print loc_list[-1].name
-print loc_list[-1].options
 
 
