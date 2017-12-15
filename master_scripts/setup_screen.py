@@ -84,13 +84,31 @@ import textwrap
 # Interactive mode!
 if args.interactive:
 
+    # Location parameters
+    print '\n\n\n'
+    print '#####################################################'
+    print '######           Location parameters           ######'
+    print '#####################################################'
+    print '\n'
     for param in loc_list:
         par_obj = getattr(p, param)
         par_obj.get_input()
 
+    # Sample table parameters
+    print '\n\n\n'
+    print '#####################################################'
+    print '######         Sample table parameters         ######'
+    print '#####################################################'
+    print '\n'
+    for param in sample_tab_list:
+        par_obj = getattr(p, param)
+        par_obj.get_input()
+
+
+    # Advanced parameters
     while True:
         print '\n'
-        print 'Would you like to specify advanced options?'
+        print 'Would you like to specify advanced parameters?'
         adv = raw_input('(y/n): ')
         if adv in ['y', 'n']:
             break
@@ -98,6 +116,11 @@ if args.interactive:
             print ''
             print 'Value must be in ("y", "n"). Please try again.'
         
+    print '\n\n\n'
+    print '#####################################################'
+    print '######           Advanced parameters           ######'
+    print '#####################################################'
+    print '\n'
     if adv == 'y':
         for param in adv_list:
             par_obj = getattr(p, param)
@@ -118,7 +141,11 @@ for param in loc_list_noconfig:
     par_obj.value = os.path.join(working_dir, par_obj.value)
 
 # Check if location files/folders already exist, and quit if --clobber is False
-print '\n\n'
+print '\n\n\n'
+print '#####################################################'
+print '######         File writing parameters         ######'
+print '#####################################################'
+print '\n'
 p.clobber.get_input()
 print '\n\n'
 
