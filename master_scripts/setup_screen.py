@@ -80,6 +80,7 @@ args = parser.parse_args()
 
 # Remainder of imports
 import textwrap
+import shutil
 
 # Interactive mode!
 if args.interactive:
@@ -134,6 +135,7 @@ else:
 
 # Make sure I check that each parameter has a valid value
 
+
 # Deal with modifying paths of all config_file locations
 working_dir = os.getcwd()
 for param in loc_list_noconfig:
@@ -153,12 +155,12 @@ print '\n\n'
 f_exists_strings = []
 for param in loc_list:
     par_obj = getattr(p, param)
-    if os.path.isfile(par_obj.value):
+    if os.path.isfile(par_obj.value) or (os.path.isdir(par_obj.value) and len(os.listdir(par_obj.value)) > 0):
         f_exists_strings.append('{}: {}'.format(par_obj.name, par_obj.value))
 
 if not p.clobber.value:
     if len(f_exists_strings) > 0:
-        assert False, '\n\nThe following file(s) exist and cannot be overwritten unless '\
+        assert False, '\n\nThe following file(s)/folder(s) exist and cannot be overwritten unless '\
                 '"--clobber" is specified: {}'.format('\n' + '\n'.join(f_exists_strings) + '\n')
 
 # Deal with moving screen config folder to the working dir
@@ -221,8 +223,59 @@ def write_lane_location_file(params):
     return None
 
 def write_sample_table(params):
-    pass
+    
+    n_lns = params.num_lanes.value
+    plts_p_ln = params.plates_per_lane.value
+    plt_sz = params.plate_size.value
 
+    lns = get_formatted_lanes(n_lns)
+
+    n_smpls = plt_sz * plts_p_ln * n_lns
+    max_digits = len(str(n_smpls)) + 2
+
+    columns = ['screen_name', 'expt_id', 'name', 'include?', 'control?', 'lane']
+    # Just skip extra column names if not specified properly
+    n_ex_cols = 0
+    if p.extra_columns.value is not None and ' ' not in p.extra_columns.value:
+        ex_cols = p.extra_columns.value.split(',')
+        columns.extend(ex_cols)
+
+    fname = params.sample_table_file.value
+    fname_parent = os.path.dirname(fname)
+    if not os.path.isdir(fname_parent):
+        os.makedirs(fname_parent)
+    with open(fname, 'wt') as f:
+        f.write('\t'.join(columns) + '\n')
+        for i in range(n_lns):
+            for j in range(plts_p_ln):
+                for k in range(plt_sz):
+                    line = [params.screen_name.value,
+                            '1{:0{dig}}'.format(i, dig = max_digits),
+                            '',
+                            True,
+                            False,
+                            lns[i]] + [''] * len(ex_cols)
+                    f.write('\t'.join(line) + '\n')
+    
+    return None
+
+
+def copy_screen_config(params):
+    barseq_path = os.getenv('BARSEQ_PATH')
+    assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
+    sc_root_dir = os.path.join(barseq_path, 'data', 'screen_configs')
+    final_dir = params.screen_config_folder.value
+    dir_basename = os.path.basename(final_dir)
+    orig_dir = os.path.join(sc_root_dir, dir_basename)
+
+    # Assuming that if the script has gotten this far,
+    # it's okay to overwrite the existing screen config
+    # directory...
+    if os.path.isdir(final_dir):
+        shutil.rmtree(final_dir)
+        shutil.copytree(orig_dir, final_dir)
+
+    return None
 
 ######  Final directory creation and file writing steps!!!  ######
 
