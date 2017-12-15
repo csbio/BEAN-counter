@@ -140,7 +140,8 @@ for param in loc_list_noconfig:
     par_obj = getattr(p, param)
     par_obj.value = os.path.join(working_dir, par_obj.value)
 
-# Check if location files/folders already exist, and quit if --clobber is False
+# Check if location files already exist, and quit if they do
+# and --clobber is False
 print '\n\n\n'
 print '#####################################################'
 print '######         File writing parameters         ######'
@@ -152,12 +153,12 @@ print '\n\n'
 f_exists_strings = []
 for param in loc_list:
     par_obj = getattr(p, param)
-    if os.path.isdir(par_obj.value) or os.path.isfile(par_obj.value):
+    if os.path.isfile(par_obj.value):
         f_exists_strings.append('{}: {}'.format(par_obj.name, par_obj.value))
 
 if not p.clobber.value:
     if len(f_exists_strings) > 0:
-        assert False, '\n\nThe following files/folders exist and cannot be overwritten unless '\
+        assert False, '\n\nThe following file(s) exist and cannot be overwritten unless '\
                 '"--clobber" is specified: {}'.format('\n' + '\n'.join(f_exists_strings) + '\n')
 
 # Deal with moving screen config folder to the working dir
@@ -189,8 +190,37 @@ def write_config_file(params, location_list, advanced_list):
 
         f.write('...\n')
 
+# Creating directories for each lane
+def get_formatted_lanes(num_lanes):
+    max_digits = len(str(num_lanes))
+    return ['lane{:0{dig}}'.format(i, dig = max_digits) for i in range(1, num_lanes + 1)]
+
+def get_raw_dir():
+    working_dir = os.getcwd()
+    return os.path.join(working_dir, 'raw')
+
+def write_raw_dirs(params):
+    lanes = get_formatted_lanes(params.num_lanes.value)
+    raw_dir = get_raw_dir()
+    if not os.path.isdir(raw_dir):
+        os.makedirs(raw_dir)
+    for lane in lanes:
+        lane_dir = os.path.join(raw_dir, lane)
+        if not os.path.isdir(lane_dir):
+            os.makedirs(lane_dir)
+
 # Lane location file-writing function
-def write_lane_location_file(fname):
+def write_lane_location_file(params):
+    lanes = get_formatted_lanes(params.num_lanes.value)
+    fname = params.lane_location_file.value
+    raw_dir = get_raw_dir()
+    with open(fname, 'wt') as f:
+        f.write('lane\tlocation\n')
+        for lane in lanes:
+            f.write('{}\t{}\n'.format(lane, os.path.join(raw_dir, lane)))
+    return None
+
+def write_sample_table(params):
     pass
 
 
@@ -200,6 +230,20 @@ def write_lane_location_file(fname):
 if not os.path.isdir('config_files'):
     os.makedirs('config_files')
 
-write_config_file(p, loc_list, adv_list)
+# Write config file
+write_config_file(p, loc_list_noconfig, adv_list)
+
+# Create output directory
+if not os.path.isdir(p.output_directory.value):
+    os.makedirs(p.output_directory.value)
+
+# Write lane location file and raw data directory
+write_lane_location_file(p)
+write_raw_dirs(p)
+
+# Write sample table file
+write_sample_table(p)
+
+# Copy screen config directory over
 
 
