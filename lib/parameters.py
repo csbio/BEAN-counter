@@ -255,6 +255,46 @@ screen_config_folder = Param(
                 'to strains and their identifiers (barcodes.txt).',
         options = list_valid_screen_config_dirs())
 
+###############################
+##  Sample table parameters  ##
+###############################
+screen_name = Param(
+        name = 'screen_name',
+        value = None,
+        type = str,
+        help = 'Name of the screen that uniquely identifies '\
+                'it from all other performed screens.',
+        options = None)
+
+plate_size = Param(
+        name = 'plate_size',
+        value = 96,
+        type = int,
+        help = 'Number of conditions per plate.',
+        options = None)
+
+plates_per_lane = Param(
+        name = 'plates_per_lane',
+        value = None,
+        type = int,
+        help = 'Number of full condition plates per sequencing lane.',
+        options = None)
+
+num_lanes = Param(
+        name = 'num_lanes',
+        value = None,
+        type = int,
+        help = 'Number of sequencing lanes',
+        options = None)
+
+extra_columns = Param(
+        name = 'extra_columns',
+        value = None,
+        type = str,
+        help = 'Extra columns to include in the sample information table.'\
+                ' Must be separated by commas and not include spaces.',
+        options = None)
+
 ###########################
 ##  Advanced parameters  ##
 ###########################

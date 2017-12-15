@@ -52,21 +52,34 @@ import argparse
 
 # Define some parameter sets
 loc_list = ['config_file', 'output_directory', 'lane_location_file', 'sample_table_file', 'screen_config_folder']
+loc_list_noconfig = ['output_directory', 'lane_location_file', 'sample_table_file', 'screen_config_folder']
+sample_tab_list = ['screen_name', 'plate_size', 'plates_per_lane', 'num_lanes', 'extra_columns']
+adv_list = ['verbosity', 'remove_barcode_specific_conditions', 'barcode_specific_template_correlation_cutoff',
+        'remove_correlated_index_tags', 'index_tag_correlation_cutoff', 'common_primer_tolerance',
+        'barcode_tolerance', 'control_detection_limit', 'sample_detection_limit', 'strain_pass_read_count',
+        'strain_pass_fraction', 'condition_pass_read_count', 'condition_pass_fraction']
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-i', '--interactive', action = 'store_true', help = 'Activates interactive mode.')
-parser.add_argument('--{}'.format(p.clobber), default = p.clobber.value, type = p.clobber.type, help = p.clobber.help)
+parser.add_argument('--{}'.format(p.clobber.name), action = 'store_true', help = p.clobber.help)
 loc_group = parser.add_argument_group('file/folder locations')
 for param in loc_list:
     par_obj = getattr(p, param)
     loc_group.add_argument('--{}'.format(par_obj.name), default = par_obj.value, type = par_obj.type, help = par_obj.help)
+sample_tab_group = parser.add_argument_group('sample table parameters')
+for param in sample_tab_list:
+    par_obj = getattr(p, param)
+    sample_tab_group.add_argument('--{}'.format(par_obj.name), default = par_obj.value, type = par_obj.type, help = par_obj.help)
+adv_group = parser.add_argument_group('advanced parameters')
+for param in adv_list:
+    par_obj = getattr(p, param)
+    adv_group.add_argument('--{}'.format(par_obj.name), default = par_obj.value, type = par_obj.type, help = par_obj.help)
 
 args = parser.parse_args()
 
 
 # Remainder of imports
 import textwrap
-
 
 # Interactive mode!
 if args.interactive:
@@ -86,14 +99,12 @@ if args.interactive:
             print 'Value must be in ("y", "n"). Please try again.'
         
     if adv == 'y':
-        for param in ['verbosity', 'remove_barcode_specific_conditions', 'barcode_specific_template_correlation_cutoff',
-                'remove_correlated_index_tags', 'index_tag_correlation_cutoff', 'common_primer_tolerance',
-                'barcode_tolerance', 'control_detection_limit', 'sample_detection_limit', 'strain_pass_read_count',
-                'strain_pass_fraction', 'condition_pass_read_count', 'condition_pass_fraction']:
+        for param in adv_list:
             par_obj = getattr(p, param)
             par_obj.get_input()
 
 # If not interactive mode, set all params via their command-line arguments
+# (This is a bit circular, but it should work out).
 else:
     pass
     
@@ -102,7 +113,7 @@ else:
 
 # Deal with modifying paths of all config_file locations
 working_dir = os.getcwd()
-for param in ['output_directory', 'lane_location_file', 'sample_table_file', 'screen_config_folder']:
+for param in loc_list_noconfig:
     par_obj = getattr(p, param)
     par_obj.value = os.path.join(working_dir, par_obj.value)
 
@@ -112,7 +123,7 @@ p.clobber.get_input()
 print '\n\n'
 
 f_exists_strings = []
-for param in ['config_file', 'output_directory', 'lane_location_file', 'sample_table_file', 'screen_config_folder']:
+for param in loc_list:
     par_obj = getattr(p, param)
     if os.path.isdir(par_obj.value) or os.path.isfile(par_obj.value):
         f_exists_strings.append('{}: {}'.format(par_obj.name, par_obj.value))
@@ -125,7 +136,7 @@ if not p.clobber.value:
 # Deal with moving screen config folder to the working dir
 
 # Config file-writing function
-def write_config_file(params):
+def write_config_file(params, location_list, advanced_list):
 
     working_dir = os.getcwd()
     fname = params.config_file.value
@@ -137,7 +148,7 @@ def write_config_file(params):
         f.write('####  File/folder locations  ####\n')
         f.write('\n')
 
-        for param in ['output_directory', 'lane_location_file', 'sample_table_file', 'screen_config_folder']:
+        for param in location_list:
             getattr(params, param).write_config(f)
             f.write('\n')
 
@@ -145,10 +156,7 @@ def write_config_file(params):
         f.write('####  Advanced parameters  ####\n\n')
         f.write('# Do not change unless you are comfortable doing so :-)\n')
 
-        for param in ['verbosity', 'remove_barcode_specific_conditions', 'barcode_specific_template_correlation_cutoff',
-                'remove_correlated_index_tags', 'index_tag_correlation_cutoff', 'common_primer_tolerance',
-                'barcode_tolerance', 'control_detection_limit', 'sample_detection_limit', 'strain_pass_read_count',
-                'strain_pass_fraction', 'condition_pass_read_count', 'condition_pass_fraction']:
+        for param in advanced_list:
             getattr(params, param).write_config(f)
             f.write('\n')
 
@@ -165,6 +173,6 @@ def write_lane_location_file(fname):
 if not os.path.isdir('config_files'):
     os.makedirs('config_files')
 
-write_config_file(p)
+write_config_file(p, loc_list, adv_list)
 
 
