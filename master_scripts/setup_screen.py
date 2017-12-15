@@ -55,7 +55,7 @@ loc_list = ['config_file', 'output_directory', 'lane_location_file', 'sample_tab
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-i', '--interactive', action = 'store_true', help = 'Activates interactive mode.')
-parser.add_argument('--clobber', action = 'store_true', help = 'Overwrite existing files.')
+parser.add_argument('--{}'.format(p.clobber), default = p.clobber.value, type = p.clobber.type, help = p.clobber.help)
 loc_group = parser.add_argument_group('file/folder locations')
 for param in loc_list:
     par_obj = getattr(p, param)
@@ -73,17 +73,56 @@ if args.interactive:
 
     for param in loc_list:
         par_obj = getattr(p, param)
-
         par_obj.get_input()
 
+    while True:
+        print '\n'
+        print 'Would you like to specify advanced options?'
+        adv = raw_input('(y/n): ')
+        if adv in ['y', 'n']:
+            break
+        else:
+            print ''
+            print 'Value must be in ("y", "n"). Please try again.'
+        
+    if adv == 'y':
+        for param in ['verbosity', 'remove_barcode_specific_conditions', 'barcode_specific_template_correlation_cutoff',
+                'remove_correlated_index_tags', 'index_tag_correlation_cutoff', 'common_primer_tolerance',
+                'barcode_tolerance', 'control_detection_limit', 'sample_detection_limit', 'strain_pass_read_count',
+                'strain_pass_fraction', 'condition_pass_read_count', 'condition_pass_fraction']:
+            par_obj = getattr(p, param)
+            par_obj.get_input()
+
+# If not interactive mode, set all params via their command-line arguments
+else:
+    pass
+    
 
 # Make sure I check that each parameter has a valid value
 
 # Deal with modifying paths of all config_file locations
+working_dir = os.getcwd()
+for param in ['output_directory', 'lane_location_file', 'sample_table_file', 'screen_config_folder']:
+    par_obj = getattr(p, param)
+    par_obj.value = os.path.join(working_dir, par_obj.value)
+
+# Check if location files/folders already exist, and quit if --clobber is False
+print '\n\n'
+p.clobber.get_input()
+print '\n\n'
+
+f_exists_strings = []
+for param in ['config_file', 'output_directory', 'lane_location_file', 'sample_table_file', 'screen_config_folder']:
+    par_obj = getattr(p, param)
+    if os.path.isdir(par_obj.value) or os.path.isfile(par_obj.value):
+        f_exists_strings.append('{}: {}'.format(par_obj.name, par_obj.value))
+
+if not p.clobber.value:
+    if len(f_exists_strings) > 0:
+        assert False, '\n\nThe following files/folders exist and cannot be overwritten unless '\
+                '"--clobber" is specified: {}'.format('\n' + '\n'.join(f_exists_strings) + '\n')
 
 # Deal with moving screen config folder to the working dir
-
-# Check if location files already exist, and quit if --clobber is not set
 
 # Config file-writing function
 def write_config_file(params):

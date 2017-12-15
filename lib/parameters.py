@@ -161,21 +161,23 @@ class Param:
 def is_valid_screen_config_dir(folder):
 
     files = os.listdir(folder)
-    print 'files:', files
+    #print 'files:', files
     if 'screen_config.yaml' in files:
         sc_params = read_screen_config_params(os.path.join(folder, 'screen_config.yaml'))
         if 'gene_barcode_file' in sc_params:
-            print 'gene barcode file:', sc_params['gene_barcode_file']
+            #print 'gene barcode file:', sc_params['gene_barcode_file']
             try:
                 read_barcode_table(sc_params['gene_barcode_file'])
             except Exception as e:
-                print 'Assertion failed'
+                #print 'Assertion failed'
+                pass
             else:
-                print 'Assertion passed'
+                #print 'Assertion passed'
+                pass
 
             # If no exception was raised, then return True!
             if 'e' not in locals():
-                print 'returning True...'
+                #print 'returning True...'
                 return True
 
     # If anything fails, return False
@@ -185,18 +187,30 @@ def list_valid_screen_config_dirs():
     barseq_path = os.getenv('BARSEQ_PATH')
     assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
     sc_root_dir = os.path.join(barseq_path, 'data', 'screen_configs')
-    print 'root dir:', sc_root_dir
+    #print 'root dir:', sc_root_dir
     sc_dirs = [x for x in os.listdir(sc_root_dir) if os.path.isdir(os.path.join(sc_root_dir, x))]
-    print 'screen config dirs:', sc_dirs
+    #print 'screen config dirs:', sc_dirs
     valid_sc_dirs = [x for x in sc_dirs if is_valid_screen_config_dir(os.path.join(sc_root_dir, x))]
-    print 'valid screen config dirs:', valid_sc_dirs
+    #print 'valid screen config dirs:', valid_sc_dirs
     return valid_sc_dirs
 
-print list_valid_screen_config_dirs()
+#print list_valid_screen_config_dirs()
+
+
+#########################
+## Random command-line ##
+## params              ##
+#########################
+clobber = Param(
+        name = 'clobber',
+        value = False,
+        type = bool,
+        help = 'Would you like to overwrite existing config and '\
+                'condition/strain information files?',
+        options = None)
 
 # Definitions of file/folder locations for the config file
 # (and of the config file itself!)
-#loc_list = []
 config_file = Param(
         name = 'config_file',
         value = os.path.join('config_files', 'config_file.yaml'),
