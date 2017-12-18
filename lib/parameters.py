@@ -32,9 +32,10 @@ class Param:
     # give priority to matching on the real values).
     def _standardize_value(self, val):
 
-        # First, if it's blank, other functions will handle that
+        # First, if it's blank/None, there is nothing to standardize.
+        # Other functions will handle that
         if val in [None, '']:
-            return val
+            return None
         
         # See if the value matches the type it is required to be.
         # The coercion to string prevents things like coercing "2"
@@ -58,7 +59,7 @@ class Param:
             if matches_type:
                 return self.type(val)
             else:
-                # This nonmatching value will be taken care of in subsequent steps
+                # This type-nonmatching value will be taken care of in subsequent steps
                 return val
                 #assert False, 'Value "{}" for parameter "{}" cannot be coerced to type {}, and no options are pre-defined for integer-based selection.'.format(val, self.name, self.type)
         else:
@@ -83,17 +84,23 @@ class Param:
         # as it will say that integers are not valid inputs even
         # when they are used for selection from a list of parameters.
 
-        # First, see if the value matches the required type.
+        # First, if value is None, the only way this is okay is if
+        # '_any_' was specified for the "options" field
+        if val is None:
+            return self.options == ['_any_']
+
+        # Then, see if the value matches the required type.
         # If not, then it's not valid!
         if not isinstance(val, self.type):
             return False
         
-        # If it matches type, then it must match the pre-defined options.
+        # If it matches type, then it must match the pre-defined options
+        # if they exist.
         if self.options is not None:
             return val in self.options
-        # And if there are no pre-defined options, ensure it's not blank.
-        else:
-            return val not in [None, '']
+
+        # Otherwise, you have a value that matches self.type that can be anything.
+        return True
 
     def has_valid_value(self):
         return self._is_valid_value(self.value)
@@ -124,17 +131,15 @@ class Param:
             y = raw_input('{}: '.format(self.name))
             y = y.strip()
             if y == 'o':
+                print ''
                 if self.options is not None:
+                    print 'Options for {}:'.format(self.name)
+                    print '(specify via either name or number)'
                     for i, opt in enumerate(self.options):
-                        print ''
-                        print 'Options for {}:'.format(self.name)
-                        print '(specify via either name or number)'
                         print '{}: {}'.format(i, opt)
-                        print
                 else:
-                    print ''
                     print 'No pre-defined options for "{}".'.format(self.name)
-                    print ''
+                print ''
             elif y == 'h':
                 self._write_help_string()
             else:
@@ -294,7 +299,7 @@ extra_columns = Param(
         type = str,
         help = 'Extra columns to include in the sample information table.'\
                 ' Must be separated by commas and not include spaces.',
-        options = None)
+        options = '_any_')
 
 
 ###########################
@@ -309,7 +314,7 @@ sub_screen_column = Param(
                 'to partition the raw count data prior to scoring interactions. '\
                 'The user must manually add the values into this column that '\
                 'identify the different partitions.',
-        options = None)
+        options = '_any_')
 
 verbosity = Param(
         name = 'verbosity',
