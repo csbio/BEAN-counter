@@ -140,15 +140,24 @@ if args.interactive:
 # If not interactive mode, set all params via their command-line arguments
 # (This is a bit circular, but it should work out).
 else:
-    pass
+    def params_from_args(params, arguments, param_list):
+        for param in param_list:
+            par_obj = getattr(params, param)
+            par_obj.value = getattr(arguments, param)
 
-# Make sure I check that each parameter has a valid value
+    params_from_args(p, args, loc_list + sample_tab_list + bas_list + adv_list)
+        
+
+# Check that each parameter has a valid value
+# I **could** also add these types of checks to the argparse configuration, but
+# this is probably not the best use of my time. Error messages here give the same
+# if not better information to the user.
 def get_invalid_params(params, param_list):
     invalid_param_list = []
     for param in param_list:
         par_obj = getattr(params, param)
         if not par_obj.has_valid_value():
-            invalid_param_list.append((par_obj.name, par_obj.value))
+            invalid_param_list.append(par_obj)
     return invalid_param_list
 
 ## Adding some bad params as a test
@@ -156,8 +165,16 @@ def get_invalid_params(params, param_list):
 #p.num_lanes.value = 'a'
 
 invalid_param_list = get_invalid_params(p, loc_list + sample_tab_list + bas_list + adv_list)
-assert len(invalid_param_list) == 0, '\n\nThe following parameters, for some reason, '\
-        'do not possess valid values (parameter: value):\n\n{}\n\n'.format('\n'.join(['{}: {}'.format(x[0], x[1]) for x in invalid_param_list]))
+if len(invalid_param_list) > 0:
+    string_list = []
+    for x in invalid_param_list:
+        string_list.append('{}: {}'.format(x.name, x.value))
+        if (x.options is not None) and (x.options != '_any_'):
+            string_list.append('    options: {}'.format('\n             '.join([str(y) for y in x.options])))
+        string_list.append('')
+    string = '\n'.join(string_list)
+    assert False, '\n\nThe following parameters do not possess valid values '\
+            '(parameter: value; options below if pre-specified):\n\n{}\n\n'.format(string)
 
 
 # Deal with modifying paths of all config_file locations
@@ -168,13 +185,16 @@ for param in loc_list:
 
 # Check if location files already exist, and quit if they do
 # and --clobber is False
-print '\n\n\n'
-print '#####################################################'
-print '######         File writing parameters         ######'
-print '#####################################################'
-print '\n'
-p.clobber.get_input()
-print '\n\n'
+if args.interactive:
+    print '\n\n\n'
+    print '#####################################################'
+    print '######         File writing parameters         ######'
+    print '#####################################################'
+    print '\n'
+    p.clobber.get_input()
+    print '\n\n'
+else:
+    params_from_args(p, args, ['clobber'])
 
 f_exists_strings = []
 for param in loc_list:
@@ -274,6 +294,7 @@ def write_sample_table(params):
         ex_cols = []
 
     # Add sub_screen_column to set of extra columns (replace any spaces)
+    print 'sub_screen_column: ', p.sub_screen_column.value
     if p.sub_screen_column.value is not None:
         ex_cols.append(p.sub_screen_column.value.replace(' ', '_'))
 
@@ -281,6 +302,8 @@ def write_sample_table(params):
     for col in ex_cols:
         if col not in columns:
             columns.append(col)
+
+    print columns
 
     fname = params.sample_table_file.value
     fname_parent = os.path.dirname(fname)
@@ -300,6 +323,9 @@ def write_sample_table(params):
                             'False',
                             lns[i]] + [''] * len(ex_cols)
                     f.write('\t'.join(line) + '\n')
+    
+    print params.screen_name.value
+    print n
     
     return None
 

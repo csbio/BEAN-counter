@@ -17,7 +17,9 @@ class Param:
         self.value = value
         self.type = type
         self.help = help
-        if isinstance(options, (basestring, int, float, bool)):
+        if options == '_any_':
+            self.options = options
+        elif isinstance(options, (basestring, int, float, bool)):
             self.options = [options]
         elif isinstance(options, (list, tuple)):
             self.options = list(options)
@@ -87,7 +89,7 @@ class Param:
         # First, if value is None, the only way this is okay is if
         # '_any_' was specified for the "options" field
         if val is None:
-            return self.options == ['_any_']
+            return self.options == '_any_'
 
         # Then, see if the value matches the required type.
         # If not, then it's not valid!
@@ -96,7 +98,7 @@ class Param:
         
         # If it matches type, then it must match the pre-defined options
         # if they exist.
-        if self.options is not None:
+        if self.options not in [None, '_any_']:
             return val in self.options
 
         # Otherwise, you have a value that matches self.type that can be anything.
@@ -143,10 +145,14 @@ class Param:
             elif y == 'h':
                 self._write_help_string()
             else:
+                #print 'raw val:', y
                 y = self._standardize_value(y)
+                #print 'standardized val:', y
                 if self._is_valid_value(y):
+                    #print 'is_valid_value'
                     self.value = y
                 if self.has_valid_value():
+                    #print 'has_valid_value'
                     break
                 else:
                     print ''
