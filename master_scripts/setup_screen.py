@@ -54,7 +54,8 @@ import argparse
 loc_list = ['config_file', 'output_directory', 'lane_location_file', 'sample_table_file', 'screen_config_folder']
 loc_list_noconfig = ['output_directory', 'lane_location_file', 'sample_table_file', 'screen_config_folder']
 sample_tab_list = ['screen_name', 'plate_size', 'plates_per_lane', 'num_lanes', 'extra_columns']
-adv_list = ['verbosity', 'remove_barcode_specific_conditions', 'barcode_specific_template_correlation_cutoff',
+bas_list = ['verbosity', 'sub_screen_column']
+adv_list = ['remove_barcode_specific_conditions', 'barcode_specific_template_correlation_cutoff',
         'remove_correlated_index_tags', 'index_tag_correlation_cutoff', 'common_primer_tolerance',
         'barcode_tolerance', 'control_detection_limit', 'sample_detection_limit', 'strain_pass_read_count',
         'strain_pass_fraction', 'condition_pass_read_count', 'condition_pass_fraction']
@@ -70,6 +71,10 @@ sample_tab_group = parser.add_argument_group('sample table parameters')
 for param in sample_tab_list:
     par_obj = getattr(p, param)
     sample_tab_group.add_argument('--{}'.format(par_obj.name), default = par_obj.value, type = par_obj.type, help = par_obj.help)
+basic_group = parser.add_argument_group('basic parameters')
+for param in bas_list:
+    par_obj = getattr(p, param)
+    basic_group.add_argument('--{}'.format(par_obj.name), default = par_obj.value, type = par_obj.type, help = par_obj.help)
 adv_group = parser.add_argument_group('advanced parameters')
 for param in adv_list:
     par_obj = getattr(p, param)
@@ -102,6 +107,15 @@ if args.interactive:
     print '#####################################################'
     print '\n'
     for param in sample_tab_list:
+        par_obj = getattr(p, param)
+        par_obj.get_input()
+
+    print '\n\n\n'
+    print '#####################################################'
+    print '######            Basic parameters             ######'
+    print '#####################################################'
+    print '\n'
+    for param in bas_list:
         par_obj = getattr(p, param)
         par_obj.get_input()
 
@@ -164,7 +178,7 @@ if not p.clobber.value:
                 '"--clobber" is specified: {}'.format('\n' + '\n'.join(f_exists_strings) + '\n')
 
 # Config file-writing function
-def write_config_file(params, location_list, advanced_list):
+def write_config_file(params, location_list, basic_list, advanced_list):
 
     working_dir = os.getcwd()
     fname = params.config_file.value
@@ -177,6 +191,13 @@ def write_config_file(params, location_list, advanced_list):
         f.write('\n')
 
         for param in location_list:
+            getattr(params, param).write_config(f)
+            f.write('\n')
+
+        f.write('\n\n')
+        f.write('####  Basic parameters  ####\n\n')
+
+        for param in basic_list:
             getattr(params, param).write_config(f)
             f.write('\n')
 
@@ -232,11 +253,24 @@ def write_sample_table(params):
     max_digits = len(str(n_smpls)) + 2
 
     columns = ['screen_name', 'expt_id', 'name', 'include?', 'control?', 'lane']
-    # Just skip extra column names if not specified properly
+    # First properly format the list of extra columns
     n_ex_cols = 0
-    if p.extra_columns.value is not None and ' ' not in p.extra_columns.value:
-        ex_cols = p.extra_columns.value.split(',')
-        columns.extend(ex_cols)
+    if p.extra_columns.value is not None:
+        ex_cols_raw = p.extra_columns.value.split(',')
+        # Remove flanking whitespace, and replace any internal spaces
+        # with underscores instead of skipping or throwing an error
+        ex_cols = [x.strip().replace(' ', '_') for x in ex_cols_raw]
+    else:
+        ex_cols = []
+
+    # Add sub_screen_column to set of extra columns (replace any spaces)
+    if p.sub_screen_column.value is not None:
+        ex_cols.append(p.sub_screen_column.value.replace(' ', '_'))
+
+    # Now add extra columns that are unique
+    for col in ex_cols:
+        if col not in columns:
+            columns.append(col)
 
     fname = params.sample_table_file.value
     fname_parent = os.path.dirname(fname)
@@ -285,7 +319,7 @@ if not os.path.isdir('config_files'):
     os.makedirs('config_files')
 
 # Write config file
-write_config_file(p, loc_list_noconfig, adv_list)
+write_config_file(p, loc_list_noconfig, bas_list, adv_list)
 
 # Create output directory
 if not os.path.isdir(p.output_directory.value):

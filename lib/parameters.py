@@ -122,6 +122,7 @@ class Param:
 
         while True:
             y = raw_input('{}: '.format(self.name))
+            y = y.strip()
             if y == 'o':
                 if self.options is not None:
                     for i, opt in enumerate(self.options):
@@ -295,9 +296,20 @@ extra_columns = Param(
                 ' Must be separated by commas and not include spaces.',
         options = None)
 
+
 ###########################
-##  Advanced parameters  ##
+##  Basic parameters     ##
 ###########################
+
+sub_screen_column = Param(
+        name = 'sub_screen_column',
+        value = None,
+        type = str,
+        help = 'Column in the sample information table that specifies how '\
+                'to partition the raw count data prior to scoring interactions. '\
+                'The user must manually add the values into this column that '\
+                'identify the different partitions.',
+        options = None)
 
 verbosity = Param(
         name = 'verbosity',
@@ -308,6 +320,10 @@ verbosity = Param(
                 '2 prints object inspection results, and 3 presents even '\
                 'deeper (and more cryptic) inspection results.',
         options = range(4))
+
+###########################
+##  Advanced parameters  ##
+###########################
 
 remove_barcode_specific_conditions = Param(
         name = 'remove_barcode_specific_conditions',
