@@ -63,22 +63,18 @@ adv_list = ['remove_barcode_specific_conditions', 'barcode_specific_template_cor
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-i', '--interactive', action = 'store_true', help = 'Activates interactive mode.')
 parser.add_argument('--{}'.format(p.clobber.name), action = 'store_true', help = p.clobber.help)
-loc_group = parser.add_argument_group('file/folder locations')
-for param in loc_list:
-    par_obj = getattr(p, param)
-    loc_group.add_argument('--{}'.format(par_obj.name), default = par_obj.value, type = par_obj.type, help = par_obj.help)
-sample_tab_group = parser.add_argument_group('sample table parameters')
-for param in sample_tab_list:
-    par_obj = getattr(p, param)
-    sample_tab_group.add_argument('--{}'.format(par_obj.name), default = par_obj.value, type = par_obj.type, help = par_obj.help)
-basic_group = parser.add_argument_group('basic parameters')
-for param in bas_list:
-    par_obj = getattr(p, param)
-    basic_group.add_argument('--{}'.format(par_obj.name), default = par_obj.value, type = par_obj.type, help = par_obj.help)
-adv_group = parser.add_argument_group('advanced parameters')
-for param in adv_list:
-    par_obj = getattr(p, param)
-    adv_group.add_argument('--{}'.format(par_obj.name), default = par_obj.value, type = par_obj.type, help = par_obj.help)
+
+def add_arg_group(prsr, params, param_list, name):
+    grp = prsr.add_argument_group(name)
+    for param in param_list:
+        par_obj = getattr(params, param)
+        grp.add_argument('--{}'.format(par_obj.name), default = par_obj.value, type = par_obj.type, help = par_obj.help)
+    return None
+
+add_arg_group(parser, p, loc_list, 'file/folder locations')
+add_arg_group(parser, p, sample_tab_list, 'sample table parameters')
+add_arg_group(parser, p, bas_list, 'basic parameters')
+add_arg_group(parser, p, adv_list, 'advanced parameters')
 
 args = parser.parse_args()
 
@@ -144,6 +140,7 @@ if args.interactive:
 # If not interactive mode, set all params via their command-line arguments
 # (This is a bit circular, but it should work out).
 else:
+    #for 
     pass
     
 
