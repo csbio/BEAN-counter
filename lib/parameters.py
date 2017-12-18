@@ -252,7 +252,7 @@ screen_config_folder = Param(
                 'sequenced PCR product(s), which is required for '\
                 'correctly parsing the sequencing data (screen_config.yaml), and 2) '\
                 'the file that maps barcodes '\
-                'to strains and their identifiers (barcodes.txt).',
+                'to strains and their identifiers (<my-mutant-library>_barcodes.txt).',
         options = list_valid_screen_config_dirs())
 
 ###############################

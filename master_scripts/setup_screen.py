@@ -138,7 +138,7 @@ else:
 
 # Deal with modifying paths of all config_file locations
 working_dir = os.getcwd()
-for param in loc_list_noconfig:
+for param in loc_list:
     par_obj = getattr(p, param)
     par_obj.value = os.path.join(working_dir, par_obj.value)
 
@@ -162,8 +162,6 @@ if not p.clobber.value:
     if len(f_exists_strings) > 0:
         assert False, '\n\nThe following file(s)/folder(s) exist and cannot be overwritten unless '\
                 '"--clobber" is specified: {}'.format('\n' + '\n'.join(f_exists_strings) + '\n')
-
-# Deal with moving screen config folder to the working dir
 
 # Config file-writing function
 def write_config_file(params, location_list, advanced_list):
@@ -246,14 +244,16 @@ def write_sample_table(params):
         os.makedirs(fname_parent)
     with open(fname, 'wt') as f:
         f.write('\t'.join(columns) + '\n')
+        n = 0
         for i in range(n_lns):
             for j in range(plts_p_ln):
                 for k in range(plt_sz):
+                    n += 1
                     line = [params.screen_name.value,
-                            '1{:0{dig}}'.format(i, dig = max_digits),
+                            '1{:0{dig}}'.format(n, dig = max_digits),
                             '',
-                            True,
-                            False,
+                            'True',
+                            'False',
                             lns[i]] + [''] * len(ex_cols)
                     f.write('\t'.join(line) + '\n')
     
@@ -273,7 +273,8 @@ def copy_screen_config(params):
     # directory...
     if os.path.isdir(final_dir):
         shutil.rmtree(final_dir)
-        shutil.copytree(orig_dir, final_dir)
+    
+    shutil.copytree(orig_dir, final_dir)
 
     return None
 
@@ -298,5 +299,5 @@ write_raw_dirs(p)
 write_sample_table(p)
 
 # Copy screen config directory over
-
+copy_screen_config(p)
 
