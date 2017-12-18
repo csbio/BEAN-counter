@@ -140,11 +140,24 @@ if args.interactive:
 # If not interactive mode, set all params via their command-line arguments
 # (This is a bit circular, but it should work out).
 else:
-    #for 
     pass
-    
 
 # Make sure I check that each parameter has a valid value
+def get_invalid_params(params, param_list):
+    invalid_param_list = []
+    for param in param_list:
+        par_obj = getattr(params, param)
+        if not par_obj.has_valid_value():
+            invalid_param_list.append((par_obj.name, par_obj.value))
+    return invalid_param_list
+
+## Adding some bad params as a test
+#p.verbosity.value = 4
+#p.num_lanes.value = 'a'
+
+invalid_param_list = get_invalid_params(p, loc_list + sample_tab_list + bas_list + adv_list)
+assert len(invalid_param_list) == 0, '\n\nThe following parameters, for some reason, '\
+        'do not possess valid values (parameter: value):\n\n{}\n\n'.format('\n'.join(['{}: {}'.format(x[0], x[1]) for x in invalid_param_list]))
 
 
 # Deal with modifying paths of all config_file locations
