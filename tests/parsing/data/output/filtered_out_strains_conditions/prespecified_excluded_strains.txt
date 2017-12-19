@@ -1,0 +1,1 @@
+Barcode	Strain_ID	include?	ORF	Gene_name	Gene_name_ID

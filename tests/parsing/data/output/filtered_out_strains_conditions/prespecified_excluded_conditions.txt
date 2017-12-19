@@ -1,0 +1,5 @@
+screen_name	expt_id	name	include?	control?	lane	index_tag	index_tag_plate	index_tag_well	concentration	units	not_pos_control	not_pos_neg_control	sub_screen_name	chem_id	tech_rep_id	bio_rep_id	fdr_sample_type
+RIKEN	000060	DMSO	False	True	lane01	CTCAAGGTGT	2	E12			TRUE	FALSE	spring_2013			DMSO_000060	
+RIKEN	000072	DMSO	False	True	lane01	ACCAGGTACT	2	F12			TRUE	FALSE	spring_2013			DMSO_000072	
+RIKEN	000084	DMSO	False	True	lane01	ATCGAGTCGA	2	G12			TRUE	FALSE	spring_2013			DMSO_000084	
+RIKEN	000096	DMSO	False	True	lane01	CACATGTCGA	2	H12			TRUE	FALSE	spring_2013			DMSO_000096	
