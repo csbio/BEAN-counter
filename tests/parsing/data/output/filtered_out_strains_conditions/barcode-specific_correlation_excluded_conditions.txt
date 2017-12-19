@@ -1,0 +1,1 @@
+screen_name	expt_id	name	include?	control?	lane	index_tag	index_tag_plate	index_tag_well	concentration	units	not_pos_control	not_pos_neg_control	sub_screen_name	chem_id	tech_rep_id	bio_rep_id	fdr_sample_type	barcode-specific_effect_correlation	barcode-specific_effect_start_base

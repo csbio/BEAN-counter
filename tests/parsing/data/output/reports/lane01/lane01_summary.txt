@@ -1,0 +1,4 @@
+Total number of reads: 1000000
+Number of reads with common primer: 978420 (97.84 %)
+Number of reads that match index tags and genetic barcodes: 789448 (78.94 % of total counts, 80.69 % of common primer counts)
+Original size of the data: 318 barcodes (gene mutants) x 768 index tags (conditions)Final size of the data (zero-count barcodes/tags removed): 253 barcodes (gene mutants) x 766 index tags (conditions)
