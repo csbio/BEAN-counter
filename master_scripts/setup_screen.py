@@ -80,7 +80,6 @@ args = parser.parse_args()
 
 
 # Remainder of imports
-import textwrap
 import shutil
 
 # Interactive mode!
@@ -370,4 +369,13 @@ write_sample_table(p)
 
 # Copy screen config directory over
 copy_screen_config(p)
+
+# Print congratulatory message with further instructions
+#final_string = 'Congratulations! You have successfully set up your screen for processing '\
+#        'with BEAN-counter. Please see below for further instructions:\n\n'\
+#        'Move, copy, or symlink your sequencing data to the respective lane folders in the raw data folder:\n{raw}\n\n'\
+#        'A template sample information table has been provided here, containing the maximum '\
+#        'possible number of conditions given the number of conditions per plate, plates per lane, '\
+#        'and total lanes: {sam}\n'\
+#        'If you have already prepared a sample information table'
 
