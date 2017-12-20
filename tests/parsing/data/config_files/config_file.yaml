@@ -3,22 +3,22 @@
 ###### File/folder locations
 
 # Where to put the results!
-output_folder: /project/csbio/chemical_genomics_pipeline/test_datasets/parsing_test_small_2/output
+output_folder: output
 
 # Sample table
 # Maps index tags and sequence lanes to sample information
-sample_table_file: /project/csbio/chemical_genomics_pipeline/test_datasets/parsing_test_small_2/sample_table/riken_bigscreen_lane01.txt
+sample_table_file: sample_table/riken_bigscreen_lane01.txt
 
 # Lane location table
 # Maps the lane column in the sample table to the folder
 # containing the raw sequencing data for that lane
-lane_location_file: /project/csbio/chemical_genomics_pipeline/test_datasets/parsing_test_small_2/config_files/lane_locations.txt
+lane_location_file: config_files/lane_locations.txt
 
 # Screen configuration file
 # Contains the information on the structure of the sequenced
 # PCR product(s), which is required for correctly parsing
 # the sequencing data. Also points to the barcode file.
-screen_config_file: /project/csbio/chemical_genomics_pipeline/test_datasets/parsing_test_small_2/S_cerevisiae_minipool/config.yaml
+screen_config_file: S_cerevisiae_minipool/config.yaml
 
 
 ###### Automatic removal of conditions
