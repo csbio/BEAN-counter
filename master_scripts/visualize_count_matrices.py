@@ -26,7 +26,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 import cluster_dataset_wrappers as clus_wrap
-from cg_common_functions import get_sample_table
+from cg_common_functions import get_sample_table, parse_yaml
 
 import argparse
 
@@ -58,7 +58,7 @@ def get_all_lane_ids(sample_table):
 
 # Get the config file, which is the only argument needed for the pipeline
 config_file = args.config_file
-config_params = cfp.parse(config_file)
+config_params = parse_yaml(config_file)
 
 # Read in the sample table
 sample_table = get_sample_table(config_params)

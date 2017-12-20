@@ -12,7 +12,7 @@ import gzip
 import cPickle
 
 import cluster_dataset as clus
-from cg_common_functions import get_verbosity, get_sample_table, get_barcode_table
+from cg_common_functions import get_verbosity, get_sample_table, get_barcode_table, parse_yaml
 
 
 def get_lane_data_path(config_params, lane_id):
@@ -153,7 +153,7 @@ class ColumnError(Exception):
 # the output (the CDT labels)
 def cluster_count_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_string):
 
-    config_params = cfp.parse(config_file)
+    config_params = parse_yaml(config_file)
 
     sample_detection_limit, control_detection_limit = get_detection_limits(config_params)
 
@@ -183,7 +183,7 @@ def cluster_count_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_strin
 
 def cluster_zscore_matrix(config_file, lane_id, strain_fmt_string, cond_fmt_string):
 
-    config_params = cfp.parse(config_file)
+    config_params = parse_yaml(config_file)
 
     # If the file does not exist, then do not attempt to cluster it!
     try:
