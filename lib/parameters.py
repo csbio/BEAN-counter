@@ -217,12 +217,14 @@ clobber = Param(
         name = 'clobber',
         value = False,
         type = bool,
-        help = 'Would you like to overwrite existing config and '\
-                'condition/strain information files?',
-        options = None)
+        help = 'If True, overwrites existing config and '\
+                'condition/strain information files.',
+        options = [False, True])
 
-# Definitions of file/folder locations for the config file
-# (and of the config file itself!)
+############################################################
+# Definitions of file/folder locations for the config file #
+# (and of the config file itself!)                         #
+############################################################
 config_file = Param(
         name = 'config_file',
         value = os.path.join('config_files', 'config_file.yaml'),
@@ -270,6 +272,18 @@ screen_config_folder = Param(
 ###############################
 ##  Sample table parameters  ##
 ###############################
+new_sample_table = Param(
+        name = 'new_sample_table',
+        value = False,
+        type = bool,
+        help = 'If True, a sample table is created with the filename '\
+                'specified in the "sample_table_file" parameter. The '\
+                '"screen_name," "plate_size," "plates_per_lane," '\
+                'and "num_lanes" parameters are used to create the '\
+                'table; each parameter must be specified if it '\
+                'does not possess an acceptable default value.',
+        options = [False, True])
+
 screen_name = Param(
         name = 'screen_name',
         value = None,
@@ -344,7 +358,7 @@ remove_barcode_specific_conditions = Param(
                 '(positive interactions for barcodes beginning with one ' \
                 'particular base) with correlation greater than that defined ' \
                 'by "barcode_specific_template_correlation_cutoff".',
-        options = [True, False])
+        options = [False, True])
 
 barcode_specific_template_correlation_cutoff = Param(
         name = 'barcode_specific_template_correlation_cutoff',
@@ -363,7 +377,7 @@ remove_correlated_index_tags = Param(
                 'Intended for use with larger screens, as these are more likely ' \
                 'to have coverage of multiple negative control conditions with ' \
                 'the same index tag.',
-        options = [True, False])
+        options = [False, True])
 
 index_tag_correlation_cutoff = Param(
         name = 'index_tag_correlation_cutoff',

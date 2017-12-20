@@ -46,6 +46,16 @@ import parameters as p
 # Parse arguments
 import argparse
 
+# Helper function to make sure "True" and "False" are correctly
+# parsed to the respective booleans (for argparse).
+def tf_string_to_bool(x):
+    if x.upper() in ['TRUE', 'T']:
+        return True
+    elif x.upper() in ['FALSE', 'F']:
+        return False
+    else:
+        return x
+
 #arg_names = [x.name for x in arg_list]
 #arg_name_idx = {x:i for i,x in enumerate(arg_names)}
 #assert len(arg_name_idx) == len(arg_list), "One or more arguments have the same name."
@@ -53,25 +63,36 @@ import argparse
 # Define some parameter sets
 loc_list = ['config_file', 'output_directory', 'lane_location_file', 'sample_table_file', 'screen_config_folder']
 loc_list_noconfig = ['output_directory', 'lane_location_file', 'sample_table_file', 'screen_config_folder']
-sample_tab_list = ['screen_name', 'plate_size', 'plates_per_lane', 'num_lanes', 'extra_columns']
+raw_dat_list = ['num_lanes']
+sample_tab_list = ['new_sample_table', 'screen_name', 'plate_size', 'plates_per_lane', 'extra_columns']
 bas_list = ['verbosity', 'sub_screen_column']
 adv_list = ['remove_barcode_specific_conditions', 'barcode_specific_template_correlation_cutoff',
         'remove_correlated_index_tags', 'index_tag_correlation_cutoff', 'common_primer_tolerance',
         'barcode_tolerance', 'control_detection_limit', 'sample_detection_limit', 'strain_pass_read_count',
         'strain_pass_fraction', 'condition_pass_read_count', 'condition_pass_fraction']
 
+def add_arg(pr, p_obj):
+    if p_obj.type == bool:
+        pr.add_argument('--{}'.format(p_obj.name), default = p_obj.value, type = tf_string_to_bool, help = p_obj.help)
+    else:
+        pr.add_argument('--{}'.format(p_obj.name), default = p_obj.value, type = p_obj.type, help = p_obj.help)
+
+
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-i', '--interactive', action = 'store_true', help = 'Activates interactive mode.')
-parser.add_argument('--{}'.format(p.clobber.name), action = 'store_true', help = p.clobber.help)
+add_arg(parser, p.clobber)
+#parser.add_argument('--{}'.format(p.clobber.name), default = p.clobber.value, type = p.clobber.type, help = p.clobber.help)
 
 def add_arg_group(prsr, params, param_list, name):
     grp = prsr.add_argument_group(name)
     for param in param_list:
         par_obj = getattr(params, param)
-        grp.add_argument('--{}'.format(par_obj.name), default = par_obj.value, type = par_obj.type, help = par_obj.help)
+        add_arg(grp, par_obj)
+        #grp.add_argument('--{}'.format(par_obj.name), default = par_obj.value, type = par_obj.type, help = par_obj.help)
     return None
 
 add_arg_group(parser, p, loc_list, 'file/folder locations')
+add_arg_group(parser, p, raw_dat_list, 'raw data folder setup')
 add_arg_group(parser, p, sample_tab_list, 'sample table parameters')
 add_arg_group(parser, p, bas_list, 'basic parameters')
 add_arg_group(parser, p, adv_list, 'advanced parameters')
@@ -95,15 +116,30 @@ if args.interactive:
         par_obj = getattr(p, param)
         par_obj.get_input()
 
+    # Raw data folder setup parameters
+    print '\n\n\n'
+    print '#####################################################'
+    print '######           Location parameters           ######'
+    print '#####################################################'
+    print '\n'
+    for param in raw_dat_list:
+        par_obj = getattr(p, param)
+        par_obj.get_input()
+
     # Sample table parameters
     print '\n\n\n'
     print '#####################################################'
     print '######         Sample table parameters         ######'
     print '#####################################################'
     print '\n'
-    for param in sample_tab_list:
-        par_obj = getattr(p, param)
-        par_obj.get_input()
+    # First, check if sample table should be generated
+    par_obj = getattr(p, sample_tab_list[0])
+    par_obj.get_input()
+    # If so, then get the parameters!
+    if par_obj.value is True:
+        for param in sample_tab_list[1:]:
+            par_obj = getattr(p, param)
+            par_obj.get_input()
 
     print '\n\n\n'
     print '#####################################################'
@@ -144,7 +180,9 @@ else:
             par_obj = getattr(params, param)
             par_obj.value = getattr(arguments, param)
 
-    params_from_args(p, args, loc_list + sample_tab_list + bas_list + adv_list)
+    # I don't think I need to take "new_sample_table == False" here, but I have
+    # my eye on it.
+    params_from_args(p, args, loc_list + raw_dat_list + sample_tab_list + bas_list + adv_list)
         
 
 # Check that each parameter has a valid value
@@ -163,7 +201,14 @@ def get_invalid_params(params, param_list):
 #p.verbosity.value = 4
 #p.num_lanes.value = 'a'
 
-invalid_param_list = get_invalid_params(p, loc_list + sample_tab_list + bas_list + adv_list)
+# Here I create different invalid param lists based on if a new sample table
+# is to be generated or not.
+#print 'new_sample_table:', p.new_sample_table.value
+if p.new_sample_table.value is True:
+    invalid_param_list = get_invalid_params(p, loc_list + raw_dat_list + sample_tab_list + bas_list + adv_list)
+else:
+    invalid_param_list = get_invalid_params(p, loc_list + raw_dat_list + [sample_tab_list[0]] + bas_list + adv_list)
+
 if len(invalid_param_list) > 0:
     string_list = []
     for x in invalid_param_list:
@@ -198,13 +243,16 @@ else:
 f_exists_strings = []
 for param in loc_list:
     par_obj = getattr(p, param)
+    # Special case where sample_table_file will not be written
+    if p.new_sample_table.value is False and par_obj.name == 'sample_table_file':
+        continue
     if os.path.isfile(par_obj.value) or (os.path.isdir(par_obj.value) and len(os.listdir(par_obj.value)) > 0):
         f_exists_strings.append('{}: {}'.format(par_obj.name, par_obj.value))
 
 if not p.clobber.value:
     if len(f_exists_strings) > 0:
         assert False, '\n\nThe following file(s)/folder(s) exist and cannot be overwritten unless '\
-                '"--clobber" is specified: {}'.format('\n' + '\n'.join(f_exists_strings) + '\n')
+                '"--clobber True" is specified: {}'.format('\n' + '\n'.join(f_exists_strings) + '\n')
 
 # Config file-writing function
 def write_config_file(params, location_list, basic_list, advanced_list):
@@ -293,7 +341,7 @@ def write_sample_table(params):
         ex_cols = []
 
     # Add sub_screen_column to set of extra columns (replace any spaces)
-    print 'sub_screen_column: ', p.sub_screen_column.value
+    #print 'sub_screen_column: ', p.sub_screen_column.value
     if p.sub_screen_column.value is not None:
         ex_cols.append(p.sub_screen_column.value.replace(' ', '_'))
 
@@ -302,7 +350,7 @@ def write_sample_table(params):
         if col not in columns:
             columns.append(col)
 
-    print columns
+    #print columns
 
     fname = params.sample_table_file.value
     fname_parent = os.path.dirname(fname)
@@ -323,8 +371,8 @@ def write_sample_table(params):
                             lns[i]] + [''] * len(ex_cols)
                     f.write('\t'.join(line) + '\n')
     
-    print params.screen_name.value
-    print n
+    #print params.screen_name.value
+    #print n
     
     return None
 
@@ -364,8 +412,9 @@ if not os.path.isdir(p.output_directory.value):
 write_lane_location_file(p)
 write_raw_dirs(p)
 
-# Write sample table file
-write_sample_table(p)
+# Write sample table file, but only if specified
+if p.new_sample_table.value is True:
+    write_sample_table(p)
 
 # Copy screen config directory over
 copy_screen_config(p)
