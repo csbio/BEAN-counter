@@ -101,6 +101,7 @@ args = parser.parse_args()
 
 
 # Remainder of imports
+import textwrap
 import shutil
 
 # Interactive mode!
@@ -419,12 +420,41 @@ if p.new_sample_table.value is True:
 # Copy screen config directory over
 copy_screen_config(p)
 
+def wrap_with_newlines(x, width):
+    return '\n'.join(['\n'.join(textwrap.wrap(line, width, break_long_words = False,
+        replace_whitespace = False)) for line in x.splitlines() if line.strip() != ''])
+
 # Print congratulatory message with further instructions
-#final_string = 'Congratulations! You have successfully set up your screen for processing '\
-#        'with BEAN-counter. Please see below for further instructions:\n\n'\
-#        'Move, copy, or symlink your sequencing data to the respective lane folders in the raw data folder:\n{raw}\n\n'\
-#        'A template sample information table has been provided here, containing the maximum '\
-#        'possible number of conditions given the number of conditions per plate, plates per lane, '\
-#        'and total lanes: {sam}\n'\
-#        'If you have already prepared a sample information table'
+congrats_string = 'Congratulations! You have successfully set up your screen for processing '\
+        'with BEAN-counter. Please see below for further instructions:\n'\
+        '(These instructions are repeated in setup_instructions.txt)'
+
+raw_data_string = 'Move, copy, or symlink your sequencing data to the respective lane folders '\
+        'in the raw data folder:\n{raw}'.format(raw = get_raw_dir())
+
+if p.new_sample_table.value is True:
+    sample_table_string = 'A template sample information table was generated here, '\
+            'containing the maximum possible number of conditions given the number '\
+            'of conditions per plate, plates per lane, and total lanes:\n{}'.format(
+                    p.sample_table_file.value)
+else:
+    sample_table_string = None
+
+instructions_fname = 'setup_instructions.txt'
+with open(instructions_fname, 'wt') as f:
+    f.write(wrap_with_newlines(raw_data_string, 70) + '\n\n')
+    if sample_table_string is not None:
+        f.write(wrap_with_newlines(sample_table_string, 70))
+
+print '\n\n'
+print '\n'.join(['#' * 70] * 3)
+print '\n'
+print wrap_with_newlines(congrats_string, 70)
+print '\n'
+print wrap_with_newlines(raw_data_string, 70)
+if sample_table_string is not None:
+    print '\n'
+    print wrap_with_newlines(sample_table_string, 70)
+print '\n'
+print '\n'.join(['#' * 70] * 3)
 
