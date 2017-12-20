@@ -8,7 +8,7 @@
 import os
 import pandas as pd, numpy as np
 from datetime import datetime
-import ruamel_yaml as yaml
+import yaml
 
 bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False, 'T': True, 'F': False, '1': True, '0': False}
 
