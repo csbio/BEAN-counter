@@ -1,2 +1,2 @@
 lane_id	location
-lane01	/project/csbio/chemical_genomics_pipeline/test_datasets/parsing_test_small_2/raw/lane01
+lane01	raw/lane01
