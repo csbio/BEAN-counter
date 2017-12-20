@@ -24,7 +24,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
-from cg_common_functions import get_verbosity, get_sample_table, get_barcode_table, bool_dict
+from cg_common_functions import get_verbosity, get_sample_table, get_barcode_table, bool_dict, parse_yaml
 
 #def get_sample_table(config_params):
 #
@@ -300,7 +300,7 @@ def dump_filtered_count_matrix(config_params, dataset):
 def main(config_file):
 
     # Read in the config params
-    config_params = cfp.parse(config_file)
+    config_params = parse_yaml(config_file)
     sample_table = get_sample_table(config_params)
     barcode_table = get_barcode_table(config_params)
 

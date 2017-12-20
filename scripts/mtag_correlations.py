@@ -20,7 +20,7 @@ sys.path.append('./lib')
 
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
-from cg_common_functions import get_verbosity, get_sample_table
+from cg_common_functions import get_verbosity, get_sample_table, parse_yaml
 
 
 #def get_sample_table(config_params):
@@ -342,7 +342,7 @@ def plot_control_index_tag_correlations(index_tag_corrs, index_tag_path):
 def main(config_file):
 
     # Read in the config params
-    config_params = cfp.parse(config_file)
+    config_params = parse_yaml(config_file)
     sample_table = get_sample_table(config_params)
 
     # Read in all of the z-score matrices and combine into one matrix
