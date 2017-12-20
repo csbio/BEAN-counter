@@ -28,7 +28,6 @@ import argparse
 barseq_path = os.getenv('BARSEQ_PATH')
 sys.path.append(os.path.join(barseq_path, 'lib'))
 
-import config_file_parser as cfp
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 from cg_common_functions import read_sample_table

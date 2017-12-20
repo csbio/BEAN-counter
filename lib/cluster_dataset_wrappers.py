@@ -11,7 +11,6 @@ import pandas as pd
 import gzip
 import cPickle
 
-import config_file_parser as cfp
 import cluster_dataset as clus
 from cg_common_functions import get_verbosity, get_sample_table, get_barcode_table
 
