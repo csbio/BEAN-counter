@@ -8,7 +8,9 @@
 import os
 import pandas as pd, numpy as np
 from datetime import datetime
+<<<<<<< HEAD
 import yaml
+>>>>>>> setup
 
 bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False, 'T': True, 'F': False, '1': True, '0': False}
 
@@ -19,6 +21,8 @@ def get_verbosity(config_params):
         return v
     else:
         return 0
+
+yaml = YAML()
 
 def parse_yaml(filename):
 
