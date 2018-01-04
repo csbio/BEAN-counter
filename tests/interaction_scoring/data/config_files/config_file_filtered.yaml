@@ -1,0 +1,84 @@
+# BEAN-counter configuration file
+
+###### File/folder locations
+
+# Where to put the results!
+output_folder: output
+
+# Sample table
+# Maps index tags and sequence lanes to sample information
+sample_table_file: sample_table/sample_table_filtered.txt
+
+# Lane location table
+# Maps the lane column in the sample table to the folder
+# containing the raw sequencing data for that lane
+lane_location_file: config_files/lane_locations.txt
+
+# Screen configuration file
+# Contains the information on the structure of the sequenced
+# PCR product(s), which is required for correctly parsing
+# the sequencing data. Also points to the barcode file.
+screen_config_file: screen_config/config_filtered.yaml
+
+
+###### Automatic removal of conditions
+
+# Should conditions matching the "barcode-specific" pattern (positive interactions for barcodes
+# beginning with one particular base) be removed? (can apply to small or large screens)
+# (True / False)
+remove_barcode_specific_conditions: True
+
+# Should conditions associated with highly-self-correlating index tags (in control conditions) be removed?
+# (Intended for use in larger screens, e.g. 6+ lanes)
+# (True / False)
+remove_correlated_index_tags: True
+
+
+###### Miscellaneous parameters
+# How verbose should the messages printed to stdout be? Values are:
+# 0: no messages
+# 1: "announcements," aka "generating z-score matrix for lane X" (default)
+# 2: inspection of objects
+# 3: deeper inspection of objects, very cryptic
+verbosity: 2
+
+
+##### ADVANCED OPTIONS
+##### DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING :-)
+#
+tmp_output_dir: /export/scratch/BEAN-counter_tests/protocol_processing
+
+# Set the number of errors allowed in the common primer and
+# genetic barcode (up to and including)
+common_primer_tolerance: 2
+barcode_tolerance: 2
+
+# Set the read count at which strains in control conditions are "not detected"
+# These are set to NA and excluded from the mean control profile
+control_detection_limit: 20
+
+# Set the read count at which strains in non-control conditions are "not detected"
+# This also applies to control conditions when their normalized profiles are being computed
+# (just not when they are used for the reference profile)
+# All counts below this number are set to this number. This prevents NAs when taking
+# the log of the read counts
+sample_detection_limit: 20
+
+# Strain quality cutoff. For a strain to pass, the fraction of conditions with 
+# read counts >= "strain_pass_read_count" must be >= "strain_pass_fraction".
+strain_pass_read_count: 20
+strain_pass_fraction: 0.25
+
+# Condition quality cutoff. For a condition to pass, the fraction of conditions with 
+# read counts >= "condition_pass_read_count" must be >= "condition_pass_fraction".
+condition_pass_read_count: 20
+condition_pass_fraction: 0.25
+
+# Index tag correlation cutoff. If the mean correlation of all DMSO conditions with a particular index tag is
+# above "index_tag_correlation_cutoff", all conditions with that index tag are removed from the dataset
+index_tag_correlation_cutoff: 0.4
+
+# Barcode-specific correlation to template cutoff. Remove any condition that correlates to any of the
+# "barcode-specific" profiles more strongly than this value.
+barcode_specific_template_correlation_cutoff: 0.3
+
