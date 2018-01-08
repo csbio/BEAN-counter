@@ -24,12 +24,11 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
-from cg_common_functions import get_verbosity, get_barcode_table, get_sample_table, parse_yaml, bool_dict
+from cg_common_functions import get_verbosity, get_barcode_table, get_sample_table, get_num_cores, parse_yaml, bool_dict
 from cluster_dataset_wrappers import customize_strains, customize_conditions
-
-sys.path.append(os.path.join(barseq_path, 'lib/python2.7/site-packages')) 
-from mlabwrap import mlab
-
+from lowess import py_lowess
+from contextlib import closing
+from multiprocessing import Pool
 
 def get_lane_data_path(config_params, lane_id):
 
@@ -127,13 +126,31 @@ def smooth(xx, yy):
     yy_normalized = np.zeros(xx.shape) + np.nan
     if np.sum(yy[k]) == 0:
         return yy_normalized
-    lowess_line = np.array( mlab.smooth(xx[k], yy[k], 0.3, 'rlowess')  ).transpose()[0]
+    # The individual profiles will never be big enough to take advantage of
+    # parallelization. If anything, this function should be called in parallel
+    # instead. Setting num_cores to 1 just uses python's builtin `map` instead
+    # of using multiprocessing with one core.
+    lowess_line = py_lowess(xx[k], yy[k], f = 0.3, iter = 5, num_cores = 1)
     if np.sum(lowess_line) == 0:
         return yy_normalized
     yy_normalized[k] = xx[k] * yy[k] / lowess_line
     return yy_normalized
 
+def normalize_one_profile(j):
+    global matrix_
+    global mean_control_profile_
+    global sample_detection_limit_
+    print j
+    y = matrix_[:, j]
+    y[y < sample_detection_limit_] = sample_detection_limit_
+    y_log = np.log(y)
+    return smooth(mean_control_profile_, y_log)
+
 def normalizeUsingAllControlsAndSave(config_params, outfolder, dataset, control_condition_ids, lane_id):
+    global matrix_
+    global mean_control_profile_
+    global sample_detection_limit_
+
     barcode_gene_ids, condition_ids, matrix = dataset
     
     # Make sure the counts are floats for all normalization procedures
@@ -168,15 +185,24 @@ def normalizeUsingAllControlsAndSave(config_params, outfolder, dataset, control_
     # Replace each profile in the matrix with a smoothed profile
     # In the process, set the counts for any strain under the sample count detection limit
     # to the sample count detection limit. This prevents logging of zero values
-    for j in range(matrix.shape[1]):
-        if get_verbosity(config_params) >= 3:
-            print j
-        y = matrix[:, j]
-        y[y < sample_detection_limit] = sample_detection_limit
-        y_log = np.log(y)
-        if get_verbosity(config_params) >= 3:
-            print y
-        matrix[:, j] = smooth(mean_control_profile, y_log)
+    matrix_ = matrix
+    mean_control_profile_ = mean_control_profile
+    sample_detection_limit_ = sample_detection_limit
+    num_cores = get_num_cores(config_params)
+    if num_cores > 1:
+        with closing(Pool(processes = num_cores)) as pool:
+            matrix = np.vstack(pool.map(normalize_one_profile, range(matrix.shape[1]))).T
+    else:
+        matrix = np.vstack(map(normalize_one_profile, range(matrix.shape[1]))).T
+    #for j in range(matrix.shape[1]):
+    #    if get_verbosity(config_params) >= 3:
+    #        print j
+    #    y = matrix[:, j]
+    #    y[y < sample_detection_limit] = sample_detection_limit
+    #    y_log = np.log(y)
+    #    if get_verbosity(config_params) >= 3:
+    #        print y
+    #    matrix[:, j] = smooth(mean_control_profile, y_log)
     
     # Dump out the lowess-normalized matrix
     lowess_dataset = [barcode_gene_ids, condition_ids, matrix]
@@ -223,8 +249,10 @@ def getAsymmetricSigmaForScipyMatrix(raw_mean_control_profile, dev_control_matri
         if get_verbosity(config_params) >= 3:
             print dev_control_matrix_tall[pos],  dev_control_matrix_tall_squared[pos]
             print dev_control_matrix_tall.shape, dev_control_matrix_tall_squared.shape, pos.shape, scipy.nonzero(pos)[0].shape[0]
-    lowess[pos] = np.array( mlab.smooth(repeated_raw_mean_control_profile[pos],  dev_control_matrix_tall_squared[pos] , 0.3, 'lowess')  ).transpose()[0]
-    lowess[neg] = np.array( mlab.smooth(repeated_raw_mean_control_profile[neg],  dev_control_matrix_tall_squared[neg] , 0.3, 'lowess')  ).transpose()[0]
+    lowess[pos] = py_lowess(np.asarray(repeated_raw_mean_control_profile[pos].ravel().tolist()[0]), dev_control_matrix_tall_squared[pos], 
+                                   f=0.3, iter=1, num_cores = get_num_cores(config_params))
+    lowess[neg] = py_lowess(np.asarray(repeated_raw_mean_control_profile[neg].ravel().tolist()[0]), dev_control_matrix_tall_squared[neg],
+                                   f=0.3, iter=1, num_cores = get_num_cores(config_params))
     lowess_pos = np.zeros(raw_mean_control_profile.shape) + np.nan
     lowess_neg = np.zeros(raw_mean_control_profile.shape) + np.nan
     for i in range(raw_mean_control_profile.shape[0]):
@@ -233,9 +261,24 @@ def getAsymmetricSigmaForScipyMatrix(raw_mean_control_profile, dev_control_matri
                 lowess_pos[i] = lowess[j]
             else:
                 lowess_neg[i] = lowess[j]
-    lowess_symmetric = np.array( mlab.smooth(repeated_raw_mean_control_profile,  dev_control_matrix_tall, 'lowess')  ).transpose()[0]
+   
+    ## Symmetric lowess is not used
+    ## Smooths symmetric matrix, removing NaNs and non-well-behaved input    
+    #formatted_symmetric_x = np.asarray(repeated_raw_mean_control_profile.ravel().tolist()[0])
+    #formatted_symmetric_y = np.reshape(dev_control_matrix_tall.flatten(), -1)
+    #lowess_symmetric = np.zeros(formatted_symmetric_x.shape) + np.nan
+    #k = wellbehaved(formatted_symmetric_x) & wellbehaved(formatted_symmetric_y)
+    #lowess_result = py_lowess(formatted_symmetric_x[k], formatted_symmetric_y[k], f=0.1, iter=1)
+    #for i in range(len(lowess_symmetric)):
+    #    j = 0
+    #    if k[i]: 
+    #        lowess_symmetric[i] = lowess_result[j]
+    #        j += 1
+    
+    #lowess_symmetric = np.array( mlab.smooth(repeated_raw_mean_control_profile,  dev_control_matrix_tall, 'lowess')  ).transpose()[0]
 
-    return np.sqrt( lowess_neg ).real , np.sqrt( lowess_pos ).real, np.sqrt(lowess_symmetric[range(raw_mean_control_profile.shape[0])]).real
+    #return np.sqrt( lowess_neg ).real , np.sqrt( lowess_pos ).real, np.sqrt(lowess_symmetric[range(raw_mean_control_profile.shape[0])]).real
+    return np.sqrt( lowess_neg ).real , np.sqrt( lowess_pos ).real
 
 def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, control_condition_ids, lane_id):
     barcode_gene_ids, condition_ids, matrix = deviation_dataset
@@ -258,17 +301,25 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
     # Compute the mean control profile on the raw control profiles (again)
     mean_control_profile = np.log( np.nanmean( control_raw_matrix, axis=1 ))
 
-    lowess_neg, lowess_pos, lowess_symmetric = getAsymmetricSigmaForScipyMatrix(mean_control_profile, control_matrix, config_params)
+    #lowess_neg, lowess_pos, lowess_symmetric = getAsymmetricSigmaForScipyMatrix(mean_control_profile, control_matrix, config_params)
+    lowess_neg, lowess_pos = getAsymmetricSigmaForScipyMatrix(mean_control_profile, control_matrix, config_params)
     for i in range(matrix.shape[1]):
         deviation = np.array( matrix[:, [i]] )
+        print 'deviation shape:', deviation.shape
+        print 'lowess_neg shape:', lowess_neg.shape
+        print 'lowess_pos shape:', lowess_pos.shape
         k = wellbehaved(deviation) # this remains same but nevertheless I have put it here
         I = np.argsort(abs(deviation[k]))
         I = I[range(int( I.shape[0]*0.75) )] # median 75%
         sigma = np.std(deviation[k][I])
-        sigma = np.zeros(mean_control_profile.shape) + sigma
-        total_sigma_neg = np.maximum(sigma, lowess_neg)
-        total_sigma_pos = np.maximum(sigma, lowess_pos)
+        #sigma = np.zeros(mean_control_profile.shape) + sigma
+        sigma = np.zeros(deviation.shape) + sigma
+        total_sigma_neg = np.nanmax([sigma, lowess_neg], axis = 0)
+        total_sigma_pos = np.nanmax([sigma, lowess_pos], axis = 0)
         zscores = np.zeros(deviation.shape) + np.nan
+        print 'zscores shape:', zscores.shape
+        print 'total_sigma_neg shape:', total_sigma_neg.shape
+        print 'total_sigma_pos shape:', total_sigma_pos.shape
         zscores[deviation < 0] = deviation[deviation < 0] / total_sigma_neg[deviation < 0]
         zscores[deviation > 0] = deviation[deviation > 0] / total_sigma_pos[deviation > 0]
         zscores[deviation == 0] = 0
