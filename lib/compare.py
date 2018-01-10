@@ -101,38 +101,8 @@ def compare_2d_datasets(dataset_1, dataset_2, output, prefix, new_log = True):
     mat_corr_pearson = pearsonr(matrix_1.flatten(), matrix_2.flatten())
     col_corrs_pearson = np.array([pearsonr(matrix_1[:, i], matrix_2[:, i])[0] for i in range(matrix_1.shape[1])])
     col_corrs_spearman = np.array([spearmanr(matrix_1[:, i], matrix_2[:, i])[0] for i in range(matrix_1.shape[1])])
-    
-    ## Plot absolute error distribution
-    #abs_error_hist = np.histogram(abs_error_mat, bins = 200)
-    #with open(os.path.join(output, prefix + '_abs-error.txt'), 'wt') as abs_error_hist_f:
-    #    abs_error_hist_f.write('bin_lower\tbin_upper\tcounts\n')
-    #    for i in range(len(abs_error_hist[0])):
-    #        abs_error_hist_f.write('{}\t{}\t{}\n'.format(abs_error_hist[1][i], abs_error_hist[1][i+1], abs_error_hist[0][i]))
-    #fig = plt.figure()
-    #plt.bar((abs_error_hist[1][:-1] + abs_error_hist[1][1:]) / 2, abs_error_hist[0],
-    #        align = 'center', width = (abs_error_hist[1][1] - abs_error_hist[1][0]))
-    #plt.xlabel('Absolute error')
-    #plt.ylabel('Frequency')
-    #plt.title(prefix)
-    #fig.savefig(os.path.join(output, prefix + '_abs-error.png'))
-    #plt.close()
 
     export_histogram(abs_error_mat, 'Absolute error', 'Frequency', output, prefix, 'abs-error')
-
-    ## Plot relative error (relative to matrix 1) distribution
-    #rel_error_hist = np.histogram(log10_abs_rel_error_mat[np.isfinite(log10_abs_rel_error_mat)], bins = 200)
-    #with open(os.path.join(output, prefix + '_rel-error.txt'), 'wt') as rel_error_hist_f:
-    #    rel_error_hist_f.write('bin_lower\tbin_upper\tcounts\n')
-    #    for i in range(len(rel_error_hist[0])):
-    #        rel_error_hist_f.write('{}\t{}\t{}\n'.format(rel_error_hist[1][i], rel_error_hist[1][i+1], rel_error_hist[0][i]))
-    #fig = plt.figure()
-    #plt.bar((rel_error_hist[1][:-1] + rel_error_hist[1][1:]) / 2, rel_error_hist[0],
-    #        align = 'center', width = (rel_error_hist[1][1] - rel_error_hist[1][0]))
-    #plt.xlabel('log10 ( abs ( relative error ) )')
-    #plt.ylabel('Frequency')
-    #plt.title(prefix)
-    #fig.savefig(os.path.join(output, prefix + '_rel-error.png'))
-    #plt.close()
 
     export_histogram(log10_abs_rel_error_mat, 'log10 ( abs ( relative error ) )', 'Frequency', output, prefix, 'rel-error')
 
@@ -145,37 +115,8 @@ def compare_2d_datasets(dataset_1, dataset_2, output, prefix, new_log = True):
     fig.savefig(os.path.join(output, prefix + '_rel-error_vs_abs-error.png'))
     plt.close()
     
-    ## Plot pearson correlations between profiles
-    #col_corrs_pearson_hist = np.histogram(col_corrs_pearson, bins = 200)
-    #with open(os.path.join(output, prefix + '_columnwise_pearson.txt'), 'wt') as col_corrs_pearson_hist_f:
-    #    col_corrs_pearson_hist_f.write('bin_lower\tbin_upper\tcounts\n')
-    #    for i in range(len(col_corrs_pearson_hist[0])):
-    #        col_corrs_pearson_hist_f.write('{}\t{}\t{}\n'.format(col_corrs_pearson_hist[1][i], col_corrs_pearson_hist[1][i+1], col_corrs_pearson_hist[0][i]))
-    #fig = plt.figure()
-    #plt.bar((col_corrs_pearson_hist[1][:-1] + col_corrs_pearson_hist[1][1:]) / 2, col_corrs_pearson_hist[0],
-    #        align = 'center', width = (col_corrs_pearson_hist[1][1] - col_corrs_pearson_hist[1][0]))
-    #plt.xlabel('Columnwise Pearson correlation coefficient')
-    #plt.ylabel('Frequency')
-    #plt.title(prefix)
-    #fig.savefig(os.path.join(output, prefix + '_columnwise_pearson.png'))
-    #plt.close()
-    
+    # Get stats on Pearson/Spearman corrs between the datasets
     export_histogram(col_corrs_pearson, 'Columnwise Pearson correlation coefficient', 'Frequency', output, prefix, 'columnwise_pearson')
-    
-    ## Plot spearman correlations between profiles
-    #col_corrs_spearman_hist = np.histogram(col_corrs_spearman, bins = 200)
-    #with open(os.path.join(output, prefix + '_columnwise_spearman.txt'), 'wt') as col_corrs_spearman_hist_f:
-    #    col_corrs_spearman_hist_f.write('bin_lower\tbin_upper\tcounts\n')
-    #    for i in range(len(col_corrs_spearman_hist[0])):
-    #        col_corrs_spearman_hist_f.write('{}\t{}\t{}\n'.format(col_corrs_spearman_hist[1][i], col_corrs_spearman_hist[1][i+1], col_corrs_spearman_hist[0][i]))
-    #fig = plt.figure()
-    #plt.bar((col_corrs_spearman_hist[1][:-1] + col_corrs_spearman_hist[1][1:]) / 2, col_corrs_spearman_hist[0],
-    #        align = 'center', width = (col_corrs_spearman_hist[1][1] - col_corrs_spearman_hist[1][0]))
-    #plt.xlabel('Columnwise Spearman correlation coefficient')
-    #plt.ylabel('Frequency')
-    #plt.title(prefix)
-    #fig.savefig(os.path.join(output, prefix + '_columnwise_spearman.png'))
-    #plt.close()
     
     export_histogram(col_corrs_spearman, 'Columnwise Spearman correlation coefficient', 'Frequency', output, prefix, 'columnwise_spearman')
 
