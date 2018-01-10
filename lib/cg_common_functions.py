@@ -76,7 +76,7 @@ def get_num_cores(config_params):
     n_raw = config_params.get('num_cores')
     max_cores = cpu_count()
     if n_raw is None:
-        n = ceil(max_cores / 2.)
+        n = int(np.ceil(max_cores / 2.))
     elif n_raw == 'all':
         n = max_cores
     elif n_raw == 1:
@@ -84,12 +84,12 @@ def get_num_cores(config_params):
     elif isinstance(n_raw, int):
         n = n_raw
     elif isinstance(n_raw, float):
-        n = ceil(max_cores * n_raw)
+        n = int(np.ceil(max_cores * n_raw))
     else:
         print '\nWarning: the "num_cores" parameter specified in the config file ' \
                 '("{}") is not valid. Defaulting to the number of detected cores ' \
                 '/ 2'.format(n_raw)
-        n = ceil(max_cores / 2.)
+        n = int(np.ceil(max_cores / 2.))
     
     return n
 

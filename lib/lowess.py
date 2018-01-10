@@ -97,13 +97,14 @@ def span_inds(x, h, r):
     for i,foc_x in enumerate(x):
         while abs(foc_x - x[start]) > h[i]:
             start += 1
-        while abs(foc_x - x[stop]) <= h[i]:
-            if stop < n - 1:
+        if stop < n:
+            while abs(foc_x - x[stop]) < h[i]:
                 stop += 1
-            else:
-                break
+                if stop == n:
+                    break
+
         starts_[i] = start
-        stops_[i] = stop
+        stops_[i] = stop - 1
     return starts_, stops_
 
 def calc_span(i):
@@ -118,13 +119,24 @@ def calc_yest(i):
     global y_
     global h
     global delta
+   
+    # If this has already converged, as evidenced by all delta values
+    # in the span being zero, then just return the previous y estimate.
+    # NOTE: this completely depends on calculating the span such that
+    # the interval is exclusive. This way, it is guaranteed (hopefully)
+    # that all values in w are nonzero and that the only thing that can
+    # cause all weights to be zero is if all delta values within the
+    # span are zero.
+    delta_span = delta[starts[i]:(stops[i] + 1)]
+    if np.allclose(delta_span, 0):
+        return y_[i]
     
     x_span = x_[starts[i]:(stops[i] + 1)]
     y_span = y_[starts[i]:(stops[i] + 1)]
-                
+
     w = np.clip(np.abs((x_span - x_[i]) / h[i]), 0.0, 1.0)
     w = cube(1 - cube(w))
-    weights = delta[starts[i]:(stops[i] + 1)] * w
+    weights = delta_span * w
     b = np.array([np.sum(weights * y_span), np.sum(weights * y_span * x_span)])
     A = np.array([[np.sum(weights), np.sum(weights * x_span)],
                   [np.sum(weights * x_span), np.sum(weights * x_span * x_span)]])

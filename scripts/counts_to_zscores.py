@@ -140,7 +140,7 @@ def normalize_one_profile(j):
     global matrix_
     global mean_control_profile_
     global sample_detection_limit_
-    print j
+    #print j
     y = matrix_[:, j]
     y[y < sample_detection_limit_] = sample_detection_limit_
     y_log = np.log(y)
@@ -189,6 +189,7 @@ def normalizeUsingAllControlsAndSave(config_params, outfolder, dataset, control_
     mean_control_profile_ = mean_control_profile
     sample_detection_limit_ = sample_detection_limit
     num_cores = get_num_cores(config_params)
+    #print matrix.shape
     if num_cores > 1:
         with closing(Pool(processes = num_cores)) as pool:
             matrix = np.vstack(pool.map(normalize_one_profile, range(matrix.shape[1]))).T
