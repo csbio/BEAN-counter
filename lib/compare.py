@@ -95,16 +95,27 @@ def compare_2d_datasets(dataset_1, dataset_2, output, prefix, new_log = True):
     abs_error_mat = matrix_2 - matrix_1
     rel_error_mat = abs_error_mat / matrix_1
     log10_abs_rel_error_mat = np.log10(np.abs(rel_error_mat))
-    print np.sum(np.isinf(rel_error_mat))
-    print np.sum(np.isnan(rel_error_mat))
+    #print np.sum(np.isinf(rel_error_mat))
+    #print np.sum(np.isnan(rel_error_mat))
+    #print np.unique(np.array(rel_error_mat[~np.isfinite(rel_error_mat)], dtype = np.str))
     
-    mat_corr_pearson = pearsonr(matrix_1.flatten(), matrix_2.flatten())
+    mat_corr_pearson = pearsonr(matrix_1.flatten(), matrix_2.flatten())[0]
+    mat_corr_spearman = spearmanr(matrix_1.flatten(), matrix_2.flatten())[0]
     col_corrs_pearson = np.array([pearsonr(matrix_1[:, i], matrix_2[:, i])[0] for i in range(matrix_1.shape[1])])
     col_corrs_spearman = np.array([spearmanr(matrix_1[:, i], matrix_2[:, i])[0] for i in range(matrix_1.shape[1])])
 
     export_histogram(abs_error_mat, 'Absolute error', 'Frequency', output, prefix, 'abs-error')
+    export_histogram(rel_error_mat, 'Relative error', 'Frequency', output, prefix, 'rel-error')
+    export_histogram(log10_abs_rel_error_mat, 'log10 ( abs ( relative error ) )', 'Frequency', output, prefix, 'log10-abs-rel-error')
 
-    export_histogram(log10_abs_rel_error_mat, 'log10 ( abs ( relative error ) )', 'Frequency', output, prefix, 'rel-error')
+    # Summarize individual value differences per column
+    # Must work in absolute value space so differences don't cancel
+    abs_error_columnwise_abs_mean = np.nanmean(np.abs(abs_error_mat), axis = 0)
+    rel_error_columnwise_abs_mean = np.array([np.mean(np.abs(x[np.isfinite(x)])) for x in rel_error_mat.T])
+    #print rel_error_columnwise_mean
+
+    export_histogram(abs_error_columnwise_abs_mean, 'Columnwise mean of abs( absolute error )', 'Frequency', output, prefix, 'abs-error-columnwise-abs-mean')
+    export_histogram(rel_error_columnwise_abs_mean, 'Columnwise mean of abs( relative error )', 'Frequency', output, prefix, 'rel-error-columnwise-abs-mean')
 
     # Plot relative error vs. absolute error
     fig = plt.figure()
@@ -116,24 +127,56 @@ def compare_2d_datasets(dataset_1, dataset_2, output, prefix, new_log = True):
     plt.close()
     
     # Get stats on Pearson/Spearman corrs between the datasets
-    export_histogram(col_corrs_pearson, 'Columnwise Pearson correlation coefficient', 'Frequency', output, prefix, 'columnwise_pearson')
+    export_histogram(col_corrs_pearson, 'Columnwise Pearson correlation coefficient', 'Frequency', output, prefix, 'columnwise_pearson', x_range = (-1, 1))
     
-    export_histogram(col_corrs_spearman, 'Columnwise Spearman correlation coefficient', 'Frequency', output, prefix, 'columnwise_spearman')
-
-    print >>log, '=============================================='
-    print >>log, prefix + '\n'
-    print >>log, '----------------------------------------------'
-
+    export_histogram(col_corrs_spearman, 'Columnwise Spearman correlation coefficient', 'Frequency', output, prefix, 'columnwise_spearman', x_range = (-1, 1))
     
+    # Compute/compile comparison stats
     comparison_stats = {
             'n_nans_1' : len(nan_inds_1[0]),
             'n_nans_2' : len(nan_inds_2[0]),
-            'all_close' : np.allclose(matrix_1, matrix_2)
+            'n_nans_in_1_not_2' : len(nan_inds_1_not_2[0]),
+            'n_nans_in_2_not_1' : len(nan_inds_2_not_1[0]),
+            'n_vals' : matrix_1.size,
+            'n_equiv_vals' : np.sum(np.isclose(matrix_1, matrix_2)),
+            'all_close' : np.allclose(matrix_1, matrix_2),
+            'matrix_pearson': mat_corr_pearson,
+            'matrix_spearman': mat_corr_spearman
             }
-    return comparison_stats, align_stats
 
-def export_histogram(x, xlabel, ylabel, output, prefix, fname, bins = 200):
-    freq, endpoints = np.histogram(x[np.isfinite(x)], bins = bins)
+    print >>log, '=============================================='
+    print >>log, prefix
+    print >>log, '----------------------------------------------'
+    print >>log, '\n'
+
+    print >>log, 'matrix alignment statistics'
+    print >>log, '----------------------------------------------'
+    print >>log, 'num rows in matrix 1:', align_stats['n_rows_1']
+    print >>log, 'num rows in matrix 2:', align_stats['n_rows_2']
+    print >>log, 'num rows in matrix 1 but not 2:', len(align_stats['rows_1_not_2'])
+    print >>log, 'num rows in matrix 2 but not 1:', len(align_stats['rows_2_not_1'])
+    print >>log, 'num cols in matrix 1:', align_stats['n_cols_1']
+    print >>log, 'num cols in matrix 2:', align_stats['n_cols_2']
+    print >>log, 'num cols in matrix 1 but not 2:', len(align_stats['cols_1_not_2'])
+    print >>log, 'num cols in matrix 2 but not 1:', len(align_stats['cols_2_not_1'])
+    print >>log, '\n'
+
+    print >>log, 'matrix comparison statistics'
+    print >>log, '(performed on aligned matrices)'
+    print >>log, '----------------------------------------------'
+    print >>log, 'num values in each matrix:', comparison_stats['n_vals']
+    print >>log, 'num equivalent values between matrices 1 and 2:', comparison_stats['n_equiv_vals']
+    print >>log, 'matrix correlation, Pearson:', comparison_stats['matrix_pearson']
+    print >>log, 'matrix correlation, Spearman:', comparison_stats['matrix_spearman']
+    print >>log, 'num nans in matrix 1:', comparison_stats['n_nans_1']
+    print >>log, 'num nans in matrix 2:', comparison_stats['n_nans_2']
+    print >>log, 'num nans in matrix 1 but not 2:', comparison_stats['n_nans_in_1_not_2']
+    print >>log, 'num nans in matrix 2 but not 1:', comparison_stats['n_nans_in_2_not_1']
+    
+    return aligned_dataset_1, aligned_dataset_2, comparison_stats, align_stats
+
+def export_histogram(x, xlabel, ylabel, output, prefix, fname, bins = 400, x_range = None):
+    freq, endpoints = np.histogram(x[np.isfinite(x)], bins = bins, range = x_range)
     with open(os.path.join(output, '{}_{}.txt'.format(prefix, fname)), 'wt') as txt_f:
         txt_f.write('bin_lower\tbin_upper\tcounts\n')
         for i in range(len(freq)):
