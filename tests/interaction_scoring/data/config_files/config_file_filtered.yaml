@@ -48,6 +48,9 @@ verbosity: 2
 #
 tmp_output_dir: /export/scratch/BEAN-counter_tests/protocol_processing
 
+# Number of cores to use
+num_cores : 1
+
 # Set the number of errors allowed in the common primer and
 # genetic barcode (up to and including)
 common_primer_tolerance: 2

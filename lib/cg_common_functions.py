@@ -9,6 +9,7 @@ import os
 import pandas as pd, numpy as np
 from datetime import datetime
 import yaml
+from multiprocessing import cpu_count
 
 bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False, 'T': True, 'F': False, '1': True, '0': False}
 
@@ -20,7 +21,7 @@ def get_verbosity(config_params):
     else:
         return 0
 
-yaml = YAML()
+#yaml = YAML()
 
 def parse_yaml(filename):
 
@@ -63,6 +64,34 @@ def read_barcode_table(tab_filename, required_columns = ['Strain_ID']):
     # dependent on barcodes anymore).
     assert not any(tab['Strain_ID'].duplicated()), 'Duplicated values were found for within the "Strain_ID" column of the barcode table. Please ensure that all of these values are unique. The barcode table is here: {}'.format(tab_filename)
     return tab
+
+def get_num_cores(config_params):
+    '''
+    Use integers to specify the exact number of cores.
+    Use floats to specify the proportion of the
+    processor's cores to use. Use "all" to specify all
+    cores. Defaults to the number of detected cores
+    divided by 2.
+    '''
+    n_raw = config_params.get('num_cores')
+    max_cores = cpu_count()
+    if n_raw is None:
+        n = int(np.ceil(max_cores / 2.))
+    elif n_raw == 'all':
+        n = max_cores
+    elif n_raw == 1:
+        n = 1
+    elif isinstance(n_raw, int):
+        n = n_raw
+    elif isinstance(n_raw, float):
+        n = int(np.ceil(max_cores * n_raw))
+    else:
+        print '\nWarning: the "num_cores" parameter specified in the config file ' \
+                '("{}") is not valid. Defaulting to the number of detected cores ' \
+                '/ 2'.format(n_raw)
+        n = int(np.ceil(max_cores / 2.))
+    
+    return n
 
 def get_temp_clustergram_name(output_folder, name):
 
