@@ -48,8 +48,10 @@ with gzip.open(os.path.join(data_dir, 'output', 'interactions', lane, '{}_scaled
 with gzip.open(os.path.join(results_dir, 'output', 'interactions', lane, '{}_scaled_dev.dump.gz'.format(lane))) as res_int_score_mat_f:
     res_int_score_dataset = cPickle.load(res_int_score_mat_f)
 
+reports_dir = os.path.join(results_dir, 'reports')
+os.makedirs(reports_dir)
 aligned_old_dataset, aligned_new_dataset, comparison_stats, align_stats = compare_2d_datasets(orig_int_score_dataset,
-        res_int_score_dataset, results_dir, 'interaction-scoring')
+        res_int_score_dataset, reports_dir, 'interaction-scoring')
 
 def test_rows_align():
     '''
