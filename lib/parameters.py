@@ -206,6 +206,39 @@ def list_valid_screen_config_dirs():
     #print 'valid screen config dirs:', valid_sc_dirs
     return valid_sc_dirs
 
+def list_valid_screen_config_files():
+    barseq_path = os.getenv('BARSEQ_PATH')
+    assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
+    sc_root_dir = os.path.join(barseq_path, 'data', 'screen_config_files')
+    sc_files = [x for x in os.listdir(sc_root_dir) if x.endswith('.yaml')]
+    valid_sc_files = []
+    for sc_file in sc_files:
+        try:
+            read_screen_config_params(os.path.join(sc_root_dir, sc_file))
+        except Exception as e:
+            pass
+        else:
+            valid_sc_files.append(sc_file)
+
+    return valid_sc_files
+
+def list_valid_gene_barcode_files():
+    barseq_path = os.getenv('BARSEQ_PATH')
+    assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
+    bc_root_dir = os.path.join(barseq_path, 'data', 'gene_barcode_files')
+    bc_files = os.listdir(bc_root_dir)
+    valid_bc_files = []
+    for bc_file in bc_files:
+        try:
+            read_barcode_table(os.path.join(bc_root_dir, bc_file))
+        except Exception as e:
+            pass
+        else:
+            valid_bc_files.append(bc_file)
+
+    return valid_bc_files
+
+
 #print list_valid_screen_config_dirs()
 
 
@@ -257,17 +290,28 @@ sample_table_file = Param(
                 'sequencing lane from which the data came.',
         options = None)
 
-screen_config_folder = Param(
-        name = 'screen_config_folder',
+gene_barcode_file = Param(
+        name = 'gene_barcode_file',
         value = None,
         type = str,
-        help = 'Folder in "$BARSEQ_PATH/data/screen_configs/" that contains: ' \
-                '1) a file that defines the structure of the '\
-                'sequenced PCR product(s), which is required for '\
-                'correctly parsing the sequencing data (screen_config.yaml), and 2) '\
-                'the file that maps barcodes '\
+        help = 'Tab-delimited text file in $BARSEQ_PATH/data/gene_barcode_files '\
+                'that maps barcodes to strains and their identifiers. '\
+                'Suggested format: <my-mutant-library>_barcodes.txt. '\
+                'Must contain unique "Strain_ID" column.',
+        options = list_valid_gene_barcode_files())
+
+screen_config_file = Param(
+        name = 'screen_config_file',
+        value = None,
+        type = str,
+        help = 'YAML-formatted file in "$BARSEQ_PATH/data/screen_configs/" that ' \
+                'defines the structure of the sequenced PCR product(s). This is '\
+                'required for correctly parsing the sequencing data.'
+        options = list_valid_screen_config_files())
+                
+
+'the file that maps barcodes '\
                 'to strains and their identifiers (<my-mutant-library>_barcodes.txt).',
-        options = list_valid_screen_config_dirs())
 
 ###############################
 ##  Sample table parameters  ##

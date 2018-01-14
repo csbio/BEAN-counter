@@ -47,13 +47,14 @@ def get_screen_config_params(config_params):
 
 def read_screen_config_params(filename):
     screen_config_params = parse_yaml(filename)
-    screen_config_params['gene_barcode_file'] = os.path.join(os.path.dirname(filename),
-            screen_config_params['gene_barcode_file'])
+    #screen_config_params['gene_barcode_file'] = os.path.join(os.path.dirname(filename),
+    #        screen_config_params['gene_barcode_file'])
     return screen_config_params
 
 def get_barcode_table(config_params):
-    screen_config_params = get_screen_config_params(config_params)
-    tab = read_barcode_table(screen_config_params['gene_barcode_file'], required_columns = ['Strain_ID', 'include?'])
+    #screen_config_params = get_screen_config_params(config_params)
+    #tab = read_barcode_table(screen_config_params['gene_barcode_file'], required_columns = ['Strain_ID', 'include?'])
+    tab = read_barcode_table(config_params['gene_barcode_file'], required_columns = ['Strain_ID', 'include?'])
     return tab
 
 def read_barcode_table(tab_filename, required_columns = ['Strain_ID']):
