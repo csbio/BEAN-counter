@@ -1,8 +1,4 @@
 ---
-
-# "gene barcode file" must be in the same directory as this config file
-gene_barcode_file: Sc_hap_del_mp_hs_1_filtered.txt
-
 # For single-read sequencing, only "read 1" parameters are required.
 # For paired-end sequencing, an index tag and common primer are required
 # for the forward and reverse read, but a barcode

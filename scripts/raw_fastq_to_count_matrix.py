@@ -67,11 +67,13 @@ def remove_barseq_file(config_params, lane_id):
     os.remove(fname)
     return None
 
-def get_barcode_to_gene(screen_config_params):
+def get_barcode_to_gene(config_params):
     # Need to update for paired-end configuration
     #barseq_path = os.getenv('BARSEQ_PATH')
+
+    screen_config_params = get_screen_config_params(config_params)
     
-    filename = screen_config_params['gene_barcode_file']
+    filename = config_params['gene_barcode_file']
     #full_path = os.path.join(barseq_path, 'data', 'barcodes', filename)
     barcode_tab = read_barcode_table(filename)
 
@@ -145,7 +147,7 @@ def get_index_tag_to_condition(config_params, lane_id):
 
     return index_tag_to_condition
     
-def fastq_to_barseq(config_params, screen_config_params, lane_id):
+def fastq_to_barseq(config_params, lane_id):
 
     lane_location_tab = get_lane_location_table(config_params)
     
@@ -161,7 +163,7 @@ def fastq_to_barseq(config_params, screen_config_params, lane_id):
     cg_file.create_output_dir(data_path)
     cg_file.create_output_dir(reports_path)
 
-    total_counts, common_primer_counts, barcodes_in_data, index_tags_in_data, read_type_dict, parsed_coords = read_fastq(config_params, screen_config_params, raw_folder, data_path, lane_id)
+    total_counts, common_primer_counts, barcodes_in_data, index_tags_in_data, read_type_dict, parsed_coords = read_fastq(config_params, raw_folder, data_path, lane_id)
 
     return total_counts, common_primer_counts, barcodes_in_data, index_tags_in_data, read_type_dict, parsed_coords
 
@@ -261,7 +263,9 @@ def get_fastq_filename_list(folder, read_type, barcode_reads):
     return filenames
 
 
-def read_fastq(config_params, screen_config_params, folder, out_path, lane_id):
+def read_fastq(config_params, folder, out_path, lane_id):
+
+    screen_config_params = get_screen_config_params(config_params)
 
     # Get all possible common primer/index tag/barcode parameters, then determine
     # how to proceed.
@@ -525,14 +529,14 @@ def main(config_file, lane_id):
     # Get maps of barcode to barcode_gene (keeps the strains unique/traceable), and index tag to condition
     if get_verbosity(config_params) >= 1:
         print 'creating mappings from barcodes and index tags...'
-    barcode_to_gene = get_barcode_to_gene(screen_config_params)
+    barcode_to_gene = get_barcode_to_gene(config_params)
     index_tag_to_condition = get_index_tag_to_condition(config_params, lane_id)
 
     # Loop over the raw fastq files, write out the "index_tag\tbarcode" file,
     # and return all encountered index tags and barcodes
     if get_verbosity(config_params) >= 1:
         print 'parsing fastq file(s)...'
-    total_counts, common_primer_counts, barcodes_in_data, index_tags_in_data, read_type_dict, parsed_coords = fastq_to_barseq(config_params, screen_config_params, lane_id)
+    total_counts, common_primer_counts, barcodes_in_data, index_tags_in_data, read_type_dict, parsed_coords = fastq_to_barseq(config_params, lane_id)
 
     if get_verbosity(config_params) >= 1:
         print 'barcode to gene map: {}'.format(barcode_to_gene.items()[0:5])
