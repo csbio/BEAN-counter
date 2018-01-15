@@ -276,8 +276,6 @@ def getAsymmetricSigmaForScipyMatrix(raw_mean_control_profile, dev_control_matri
     #        lowess_symmetric[i] = lowess_result[j]
     #        j += 1
     
-    #lowess_symmetric = np.array( mlab.smooth(repeated_raw_mean_control_profile,  dev_control_matrix_tall, 'lowess')  ).transpose()[0]
-
     #return np.sqrt( lowess_neg ).real , np.sqrt( lowess_pos ).real, np.sqrt(lowess_symmetric[range(raw_mean_control_profile.shape[0])]).real
     return np.sqrt( lowess_neg ).real , np.sqrt( lowess_pos ).real
 
