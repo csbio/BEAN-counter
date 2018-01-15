@@ -76,7 +76,7 @@ def test_abs_error():
     '''
     Compares the values in the new "results" z-score matrix to those in
     the original, reference z-score matrix, using the "aligned" aka
-    "intersected" of the old/new matrices.
+    "intersected" versions of the old/new matrices.
     '''
     assert comparison_stats['all_close']
 

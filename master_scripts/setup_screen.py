@@ -41,7 +41,10 @@ barseq_path = os.getenv('BARSEQ_PATH')
 assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
 sys.path.append(os.path.join(barseq_path, 'lib'))
 
+import pandas as pd
+
 import parameters as p
+from cg_common_functions import read_barcode_table
 
 # Parse arguments
 import argparse
@@ -61,8 +64,8 @@ def tf_string_to_bool(x):
 #assert len(arg_name_idx) == len(arg_list), "One or more arguments have the same name."
 
 # Define some parameter sets
-loc_list = ['config_file', 'output_directory', 'lane_location_file', 'sample_table_file', 'screen_config_folder']
-loc_list_noconfig = ['output_directory', 'lane_location_file', 'sample_table_file', 'screen_config_folder']
+loc_list = ['config_file', 'output_directory', 'lane_location_file', 'sample_table_file', 'gene_barcode_file', 'screen_config_file']
+loc_list_noconfig = ['output_directory', 'lane_location_file', 'sample_table_file', 'gene_barcode_file', 'screen_config_file']
 raw_dat_list = ['num_lanes']
 sample_tab_list = ['new_sample_table', 'screen_name', 'plate_size', 'plates_per_lane', 'extra_columns']
 bas_list = ['verbosity', 'sub_screen_column']
@@ -120,7 +123,7 @@ if args.interactive:
     # Raw data folder setup parameters
     print '\n\n\n'
     print '#####################################################'
-    print '######           Location parameters           ######'
+    print '######          Raw data folder setup          ######'
     print '#####################################################'
     print '\n'
     for param in raw_dat_list:
@@ -226,7 +229,14 @@ if len(invalid_param_list) > 0:
 working_dir = os.getcwd()
 for param in loc_list:
     par_obj = getattr(p, param)
-    par_obj.value = os.path.join(working_dir, par_obj.value)
+    if par_obj.name == 'gene_barcode_file':
+        gene_barcode_folder = os.path.join(working_dir, 'barcodes')
+        par_obj.value = os.path.join(gene_barcode_folder, par_obj.value)
+    elif par_obj.name == 'screen_config_file':
+        config_folder = os.path.join(working_dir, 'config_files')
+        par_obj.value = os.path.join(config_folder, par_obj.value)
+    else:
+        par_obj.value = os.path.join(working_dir, par_obj.value)
 
 # Check if location files already exist, and quit if they do
 # and --clobber is False
@@ -247,7 +257,8 @@ for param in loc_list:
     # Special case where sample_table_file will not be written
     if p.new_sample_table.value is False and par_obj.name == 'sample_table_file':
         continue
-    if os.path.isfile(par_obj.value) or (os.path.isdir(par_obj.value) and len(os.listdir(par_obj.value)) > 0):
+    #if os.path.isfile(par_obj.value) or (os.path.isdir(par_obj.value) and len(os.listdir(par_obj.value)) > 0):
+    if os.path.isfile(par_obj.value):
         f_exists_strings.append('{}: {}'.format(par_obj.name, par_obj.value))
 
 if not p.clobber.value:
@@ -378,29 +389,50 @@ def write_sample_table(params):
     return None
 
 
-def copy_screen_config(params):
+#def copy_screen_config(params):
+#    sc_root_dir = os.path.join(barseq_path, 'data', 'screen_configs')
+#    final_dir = params.screen_config_folder.value
+#    dir_basename = os.path.basename(final_dir)
+#    orig_dir = os.path.join(sc_root_dir, dir_basename)
+#
+#    # Assuming that if the script has gotten this far,
+#    # it's okay to overwrite the existing screen config
+#    # directory...
+#    if os.path.isdir(final_dir):
+#        shutil.rmtree(final_dir)
+#    
+#    shutil.copytree(orig_dir, final_dir)
+#
+#    return None
+
+def copy_gene_barcode_file(params):
     barseq_path = os.getenv('BARSEQ_PATH')
-    assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
-    sc_root_dir = os.path.join(barseq_path, 'data', 'screen_configs')
-    final_dir = params.screen_config_folder.value
-    dir_basename = os.path.basename(final_dir)
-    orig_dir = os.path.join(sc_root_dir, dir_basename)
+    bc_root_dir = os.path.join(barseq_path, 'data', 'gene_barcode_files')
+    final_path = params.gene_barcode_file.value
+    basename = os.path.basename(final_path)
+    orig_path = os.path.join(bc_root_dir, basename)
+    # Check to see if there is an "include?" column. If not, add it in!
+    tab = read_barcode_table(orig_path)
+    if 'include?' not in tab:
+        tab['include?'] = True
+    tab.to_csv(final_path, sep = '\t', header = True, index = False)
 
-    # Assuming that if the script has gotten this far,
-    # it's okay to overwrite the existing screen config
-    # directory...
-    if os.path.isdir(final_dir):
-        shutil.rmtree(final_dir)
-    
-    shutil.copytree(orig_dir, final_dir)
-
-    return None
+def copy_screen_config_file(params):
+    barseq_path = os.getenv('BARSEQ_PATH')
+    sc_root_dir = os.path.join(barseq_path, 'data', 'screen_config_files')
+    final_path = params.screen_config_file.value
+    basename = os.path.basename(final_path)
+    orig_path = os.path.join(sc_root_dir, basename)
+    shutil.copy(orig_path, final_path)
 
 ######  Final directory creation and file writing steps!!!  ######
 
 # Create directory structure and generate necessary files
 if not os.path.isdir('config_files'):
     os.makedirs('config_files')
+
+if not os.path.isdir(gene_barcode_folder):
+    os.makedirs(gene_barcode_folder)
 
 # Write config file
 write_config_file(p, loc_list_noconfig, bas_list, adv_list)
@@ -417,8 +449,9 @@ write_raw_dirs(p)
 if p.new_sample_table.value is True:
     write_sample_table(p)
 
-# Copy screen config directory over
-copy_screen_config(p)
+# Copy screen config and gene barcode files over
+copy_gene_barcode_file(p)
+copy_screen_config_file(p)
 
 def wrap_with_newlines(x, width):
     return '\n'.join(['\n'.join(textwrap.wrap(line, width, break_long_words = False,
