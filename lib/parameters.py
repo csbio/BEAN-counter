@@ -306,7 +306,7 @@ screen_config_file = Param(
         type = str,
         help = 'YAML-formatted file in "$BARSEQ_PATH/data/screen_configs/" that ' \
                 'defines the structure of the sequenced PCR product(s). This is '\
-                'required for correctly parsing the sequencing data.'
+                'required for correctly parsing the sequencing data.',
         options = list_valid_screen_config_files())
                 
 
