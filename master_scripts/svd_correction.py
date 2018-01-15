@@ -6,13 +6,13 @@
 
 # This script takes in a chemical genetic interaction score dataset (matrix and strain/
 # condition ids) as well as a sample table containing information on each condition.
-# Then, it associates each condition with a "batch" as defined by the entires in the
-# specified column in the sample table. Using the batches, the script first performs a
-# filtering step in order to remove duplicated conditions within the same batch that we
-# would expect to show similarity, as this would create artificial batch effects. Then,
-# using only this filtered set of conditions, multiclass LDA is performed to remove
-# effects attributable to the batch id. The user specifies the maximum number of LDA
-# components to remove.
+# Then, it rotates the coordinate space of the data to find the axes of greatest
+# variation, based on a subset of profiles (typically everything except for positive
+# and negative controls), and successively removes these "components" from the dataset.
+# This is typically used to remove the largest source of variation observed in the
+# dataset, which is not immediately attributable to meaningful biological factors. The
+# output is a stacked matrix with 0, 1, 2, etc. components removed, depending on the
+# max number of components to remove specified by the user.
 import pandas as pd
 import numpy as np
 import scipy
@@ -31,8 +31,6 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 from cg_common_functions import read_sample_table
-
-sys.path.append(os.path.join(barseq_path, 'lib/python2.7/site-packages'))
 
 #def read_sample_table(tab_filename):
 #
@@ -117,67 +115,6 @@ def get_svd_components_filename(output_folder):
 
 def get_corrected_data_info_filename(output_folder):
     return os.path.join(output_folder, 'batch_corrected_datasets_info.txt')
-
-def LDA_batch_normalization(dataset, sample_table, batch_col, output_folder, ncomps): # this is actually the batch normalization method
-   
-    tmp_output_folder = os.path.join(output_folder, 'tmp')
-
-    if not os.path.isdir(tmp_output_folder):
-        os.makedirs(tmp_output_folder)
-    
-    barcodes, filtered_conditions, filtered_matrix, conditions, matrix = dataset
-    
-    # Remove any remaining NaNs and Infs from the filtered matrix - they would screw
-    # up the LDA. 
-    filtered_matrix[scipy.isnan(filtered_matrix)] = 0
-    filtered_matrix[scipy.isinf(filtered_matrix)] = 0
-
-    # For full matrix, also eliminate NaNs and Infs, BUT preserve the indices and values
-    # so they can be added back into the matrix later (not implemented yet, and may never
-    # be - there should no longer be NaNs and Infs in the dataset)
-    # The NaNs and Infs will mess up the final step of the MATLAB LDA script, which uses
-    # matrix multiplication to remove the specified number of components!
-    matrix_nan_inds = scipy.isnan(matrix)
-    matrix_nan_vals = matrix[matrix_nan_inds]
-    matrix_inf_inds = scipy.isinf(matrix)
-    matrix_inf_vals = matrix[matrix_inf_inds]
-
-    matrix[matrix_nan_inds] = 0
-    matrix[matrix_inf_inds] = 0
-
-    # Save both the small matrix (for determining the components to remove) and the 
-    # full matrix for the matlab script
-    filtered_matrix_tmp_filename = os.path.join(tmp_output_folder, 'nonreplicating_matrix.txt')
-    full_matrix_tmp_filename = os.path.join(tmp_output_folder, 'full_matrix.txt')
-    
-    np.savetxt(filtered_matrix_tmp_filename, filtered_matrix)
-    np.savetxt(full_matrix_tmp_filename, matrix)
-
-    # Map the batch to integers for matlab, and write out to a file so matlab can read
-    # Note that yes, the batch_classes should match up with the filtered matrix, not
-    # the full matrix
-    batch_classes = get_batch_classes(dataset = [barcodes, filtered_conditions, filtered_matrix], sample_table = sample_table, batch_col = batch_col)
-    class_tmp_filename = os.path.join(tmp_output_folder, 'classes.txt')
-    writeList(batch_classes, class_tmp_filename)
-   
-    output_tmp_filename = os.path.join(tmp_output_folder, 'full_matrix_lda_normalized.txt')
-    runLDAMatlabFunc(filtered_matrix_filename = filtered_matrix_tmp_filename, \
-            matrix_filename = full_matrix_tmp_filename, \
-            class_filename = class_tmp_filename, \
-            ncomps = ncomps, \
-            output_filename = output_tmp_filename)
-    # The X norm that is returned is the full matrix. In the future, we could add in
-    # returning the components to remove so they can be visualized or applied to other
-    # one-off datasets
-    Xnorm =  scipy.genfromtxt(output_tmp_filename)
-
-    ## Dump the dataset out!
-    #output_filename = os.path.join(mtag_effect_folder, 'scaleddeviation_full_mtag_lda_{}.dump.gz'.format(ncomps))
-    #of = gzip.open(output_filename, 'wb')
-    #cPickle.dump([barcodes, conditions, Xnorm], of)
-    #of.close()
-
-    return [barcodes, conditions, Xnorm]
 
 def svd_correction(matrix, filtered_matrix, n, verbosity):
     '''
@@ -407,7 +344,7 @@ def main(dataset, sample_table, max_comps, include_column, output_folder, input_
     # Perform the SVD correction
     # Remove 0 components up to and including the max number of comps specified by the user
     if verbosity >= 1:
-        print "Performing batch effect correction and removing up to and including {} components".format(max_comps_remove)
+        print "Performing SVD correction and removing up to and including {} components".format(max_comps_remove)
     components_removed, all_svd_matrices, removed_component_matrices = svd_correction(matrix, filtered_matrix, max_comps, verbosity)
 
     # Put all the pieces of data together
@@ -433,7 +370,7 @@ if __name__ == '__main__':
     # Get arguments
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('dataset_file', help = 'The dataset on which to perform batch correction.')
+    parser.add_argument('dataset_file', help = 'The dataset on which to perform SVD correction.')
     parser.add_argument('sample_table', help = 'The sample table corresponding to the dataset.')
     parser.add_argument('max_components', type = int, help = 'The maximum number of SVD components to remove.')
     parser.add_argument('output_folder', help = 'The folder to which results are exported.')
