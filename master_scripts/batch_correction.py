@@ -182,6 +182,56 @@ def scikit_lda(small_x, full_x, classes, n_comps):
         mats.append(norm_mat.transpose())
     #mats.append(np.matmul(full_x, np.matmul(lda.scalings_, lda.scalings_.transpose())))
     return mats
+	
+def inner_python_lda(small_x, full_x, classes, n_comps):
+
+    # Gets boolean index variables
+    classes = np.asarray(classes)
+    X = np.transpose(small_x)
+    a = np.sum(np.absolute(small_x), axis=0)
+    b = np.sum(np.absolute(small_x), axis=1)
+    X = X[np.ix_(a > 0, b > 0)]
+
+    # Indexes classes and initializes scatter vectors
+    classes = classes[a > 0]
+    class_labels = np.unique(classes)
+    dataMean = np.nanmean(X, 0)     # Column means
+    Sw = np.zeros((X.shape[1], X.shape[1]))       # Empty n*n within-class scatter vector
+    Sb = np.zeros((X.shape[1], X.shape[1]))       # Empty n*n between-class scatter vector
+
+    # Computes scatter vectors for all classes
+    for i in range(len(class_labels)):
+        ind = np.where(classes == class_labels[i])[0]  # Finds all columns for a given class
+        if ind.size == 0:
+            continue
+        # Just swapped to X[:, ind] from X[ind, :], since the latter threw an error
+        classMean = np.nanmean(X[ind, :])   # Take mean of all columns in the class AND ALSO CHECK THIS OUT LATER!!!
+        Sw = Sw + np.cov(X[ind, :], bias=1, rowvar=0)      # Find covariance of all columns in the class
+        Sb = Sb + ind.size*np.transpose(classMean - dataMean)*(classMean - dataMean)    # CHECK THIS OUT LATER!!!
+        # FOR REAL!!!
+
+    # Gets matrix to decompose, and decomposes it
+    eig_mat = np.linalg.pinv(Sw)*Sb
+    U, D, V = np.linalg.svd(eig_mat)
+    #a = np.diag(D)/max(np.diag(D))
+    stopind = n_comps
+
+    N = V[:, 0:stopind]
+    Xnorm = np.transpose(full_x)
+    a = np.sum(np.absolute(Xnorm), axis=0)
+    b = np.sum(np.absolute(Xnorm), axis=1)
+
+    Xnorm[np.ix_(b > 0, a > 0)] = Xnorm[np.ix_(b > 0, a > 0)] - np.matmul(Xnorm[np.ix_(b > 0, a > 0)], np.matmul(N, np.transpose(N)))
+    Xnorm = Xnorm - np.matmul(Xnorm, np.matmul(N, np.transpose(N)))
+    Xnorm = np.transpose(Xnorm)
+
+    return Xnorm
+	
+def outer_python_lda(small_x, full_x, classes, n_comps):
+    mats = [full_x]
+    for i in range(1, n_comps+1):
+        mats.append(inner_python_lda(small_x, full_x, classes, n_comps))
+    return mats
 
 def LDA_batch_normalization(dataset, sample_table, batch_col, output_folder, n_comps): # this is actually the batch normalization method
    
@@ -232,8 +282,9 @@ def LDA_batch_normalization(dataset, sample_table, batch_col, output_folder, n_c
         print "Fewer classes, " + str(n_classes) + ", than components. Setting components to " + str(n_classes-1)
         n_comps = n_classes-1
 
-    # Runs scikit LDA
-    Xnorm = scikit_lda(filtered_matrix, matrix, batch_classes, n_comps)
+    # Runs LDA
+    #Xnorm = scikit_lda(filtered_matrix, matrix, batch_classes, n_comps)
+    Xnorm = outer_python_lda(filtered_matrix, matrix, batch_classes, n_comps)
 
     return [barcodes, conditions, Xnorm, n_comps]
 
