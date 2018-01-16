@@ -26,7 +26,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
-from cg_common_functions import get_verbosity, get_sample_table, get_screen_config_params, read_barcode_table, parse_yaml
+from cg_common_functions import get_verbosity, get_sample_table, get_amplicon_struct_params, read_barcode_table, parse_yaml
 
 def get_lane_location_table(config_params):
 
@@ -71,7 +71,7 @@ def get_barcode_to_gene(config_params):
     # Need to update for paired-end configuration
     #barseq_path = os.getenv('BARSEQ_PATH')
 
-    screen_config_params = get_screen_config_params(config_params)
+    amplicon_struct_params = get_amplicon_struct_params(config_params)
     
     filename = config_params['gene_barcode_file']
     #full_path = os.path.join(barseq_path, 'data', 'barcodes', filename)
@@ -79,12 +79,12 @@ def get_barcode_to_gene(config_params):
 
     # Get all possible common primer/index tag/barcode parameters, then determine
     # how to proceed.
-    read_1_params = get_seq_params(screen_config_params, 'read_1')
-    read_2_params = get_seq_params(screen_config_params, 'read_2')
+    read_1_params = get_seq_params(amplicon_struct_params, 'read_1')
+    read_2_params = get_seq_params(amplicon_struct_params, 'read_2')
     read_type_dict = determine_read_type(read_1_params, read_2_params)
 
     # Which barcode columns are required?
-    barcode_cols = [screen_config_params[x]['genetic_barcode']['barcode_file_column'] for x in read_type_dict['barcode']]
+    barcode_cols = [amplicon_struct_params[x]['genetic_barcode']['barcode_file_column'] for x in read_type_dict['barcode']]
     assert all([x in barcode_tab.columns for x in barcode_cols]), 'Not all specified barcode columns are in the barcode table.\nRequired columns: {}\nBarcode table: {}'.format(barcode_cols, filename)
 
     # Check for duplicates in the barcodes
@@ -115,14 +115,14 @@ def get_index_tag_to_condition(config_params, lane_id):
 
     # Get all possible common primer/index tag/barcode parameters, then determine
     # how to proceed.
-    screen_config_params = get_screen_config_params(config_params)
-    read_1_params = get_seq_params(screen_config_params, 'read_1')
-    read_2_params = get_seq_params(screen_config_params, 'read_2')
+    amplicon_struct_params = get_amplicon_struct_params(config_params)
+    read_1_params = get_seq_params(amplicon_struct_params, 'read_1')
+    read_2_params = get_seq_params(amplicon_struct_params, 'read_2')
     read_type_dict = determine_read_type(read_1_params, read_2_params)
 
     # Which index tag columns are required?
-    index_tag_cols = [screen_config_params[x]['index_tag']['sample_table_column'] for x in ['read_1', 'read_2'] if x in screen_config_params]
-    index_tag_reads = [x for x in ['read_1', 'read_2'] if x in screen_config_params]
+    index_tag_cols = [amplicon_struct_params[x]['index_tag']['sample_table_column'] for x in ['read_1', 'read_2'] if x in amplicon_struct_params]
+    index_tag_reads = [x for x in ['read_1', 'read_2'] if x in amplicon_struct_params]
     assert all([x in sample_table_lane.columns for x in index_tag_cols]), 'Not all specified index_tag columns are in the sample table.\nRequired columns: {}\nSample table: {}'.format(index_tag_cols, config_params['sample_table_file'])
 
     # Check for duplicates in the index tags
@@ -192,24 +192,24 @@ def is_fastq_filename(filename):
     else:
         return False
 
-def get_seq_params(screen_config_params, read):
+def get_seq_params(amplicon_struct_params, read):
     try:
-        common_primer_start = int(screen_config_params[read]['common_primer']['start'])
-        common_primer_seq = screen_config_params[read]['common_primer']['sequence']
+        common_primer_start = int(amplicon_struct_params[read]['common_primer']['start'])
+        common_primer_seq = amplicon_struct_params[read]['common_primer']['sequence']
         common_primer_end = common_primer_start + len(common_primer_seq)
     except (KeyError, TypeError):
         common_primer_start = -1
         common_primer_seq = ''
         common_primer_end = -1
     try:
-        index_tag_start = int(screen_config_params[read]['index_tag']['start'])
-        index_tag_end = index_tag_start + int(screen_config_params[read]['index_tag']['length'])
+        index_tag_start = int(amplicon_struct_params[read]['index_tag']['start'])
+        index_tag_end = index_tag_start + int(amplicon_struct_params[read]['index_tag']['length'])
     except (KeyError, TypeError):
         index_tag_start = -1
         index_tag_end = -1
     try:
-        barcode_start = int(screen_config_params[read]['genetic_barcode']['start'])
-        barcode_end = barcode_start + int(screen_config_params[read]['genetic_barcode']['length'])
+        barcode_start = int(amplicon_struct_params[read]['genetic_barcode']['start'])
+        barcode_end = barcode_start + int(amplicon_struct_params[read]['genetic_barcode']['length'])
     except (KeyError, TypeError):
         barcode_start = -1
         barcode_end = -1
@@ -234,7 +234,7 @@ def determine_read_type(read_1_params, read_2_params):
     elif required_read_1_present and barcode_read_1_present and required_read_2_present and barcode_read_2_present:
         return {'type': 'paired', 'barcode': ['read_1', 'read_2']}
         pass # paired end, both barcode
-    assert False, 'Required "read_1" and/or "read_2" parameters were not supplied. Please check the "screen_config_file"'
+    assert False, 'Required "read_1" and/or "read_2" parameters were not supplied. Please check the "amplicon_struct_file"'
 
 def get_fastq_filename_list(folder, read_type, barcode_reads):
     if read_type == 'single' and barcode_reads == ['read_1']:
@@ -265,12 +265,12 @@ def get_fastq_filename_list(folder, read_type, barcode_reads):
 
 def read_fastq(config_params, folder, out_path, lane_id):
 
-    screen_config_params = get_screen_config_params(config_params)
+    amplicon_struct_params = get_amplicon_struct_params(config_params)
 
     # Get all possible common primer/index tag/barcode parameters, then determine
     # how to proceed.
-    read_1_params = get_seq_params(screen_config_params, 'read_1')
-    read_2_params = get_seq_params(screen_config_params, 'read_2')
+    read_1_params = get_seq_params(amplicon_struct_params, 'read_1')
+    read_2_params = get_seq_params(amplicon_struct_params, 'read_2')
 
     read_type_dict = determine_read_type(read_1_params, read_2_params)
 
@@ -524,7 +524,7 @@ def dump_count_matrix(config_params, lane_id, barcodes, conditions, matrix):
 def main(config_file, lane_id):
 
     config_params = parse_yaml(config_file)
-    screen_config_params = get_screen_config_params(config_params)
+    amplicon_struct_params = get_amplicon_struct_params(config_params)
 
     # Get maps of barcode to barcode_gene (keeps the strains unique/traceable), and index tag to condition
     if get_verbosity(config_params) >= 1:

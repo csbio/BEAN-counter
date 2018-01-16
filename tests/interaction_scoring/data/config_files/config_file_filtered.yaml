@@ -18,10 +18,10 @@ lane_location_file: config_files/lane_locations.txt
 # Contains the information on the structure of the sequenced
 # PCR product(s), which is required for correctly parsing
 # the sequencing data. Also points to the barcode file.
-screen_config_file: config_files/screen_config.yaml
+amplicon_struct_file: config_files/amplicon_struct.yaml
 
 # Gene barcode file
-gene_barcode_file: 
+gene_barcode_file: barcodes/barcodes_filtered.txt
 
 
 ###### Automatic removal of conditions
@@ -48,8 +48,6 @@ verbosity: 2
 
 ##### ADVANCED OPTIONS
 ##### DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING :-)
-#
-tmp_output_dir: /export/scratch/BEAN-counter_tests/protocol_processing
 
 # Number of cores to use
 num_cores : 1

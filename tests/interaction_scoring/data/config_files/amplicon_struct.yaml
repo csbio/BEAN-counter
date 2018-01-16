@@ -1,4 +1,5 @@
 ---
+# Original filename: Sc_hap_MP-WG-HET_ix10.yaml
 # For single-read sequencing, only "read 1" parameters are required.
 # For paired-end sequencing, an index tag and common primer are required
 # for the forward and reverse read, but a barcode

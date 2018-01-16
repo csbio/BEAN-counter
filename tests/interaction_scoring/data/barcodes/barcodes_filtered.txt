@@ -1,3 +1,4 @@
+# Original filename: Sc_hap_del_mp_hs_v1.txt
 Barcode	Strain_ID	include?	Original_ORF	ORF	Gene_name
 ATACTGACAGCACGCATGGC	Sc_hap_del_hs_2	TRUE	YAL002W	YAL002W	VPS8
 CTGCCATGCGAACAAGAGCA	Sc_hap_del_hs_24	TRUE	YAL023C	YAL023C	PMT2
