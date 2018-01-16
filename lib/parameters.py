@@ -245,7 +245,7 @@ lane_location_file = Param(
 
 sample_table_file = Param(
         name = 'sample_table_file',
-        value = os.path.join('sample_table_files', 'sample_table.txt'),
+        value = os.path.join('sample_table', 'sample_table.txt'),
         type = str,
         help = 'File that contains all sample information, including unique IDs, '\
                 'negative control status, the sequence ' \
