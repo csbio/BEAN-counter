@@ -64,12 +64,12 @@ def tf_string_to_bool(x):
 #assert len(arg_name_idx) == len(arg_list), "One or more arguments have the same name."
 
 # Define some parameter sets
-loc_list = ['config_file', 'output_directory', 'lane_location_file', 'sample_table_file', 'gene_barcode_file', 'screen_config_file']
-loc_list_noconfig = ['output_directory', 'lane_location_file', 'sample_table_file', 'gene_barcode_file', 'screen_config_file']
+loc_list = ['config_file', 'output_directory', 'lane_location_file', 'sample_table_file', 'gene_barcode_file', 'amplicon_struct_file']
+loc_list_noconfig = ['output_directory', 'lane_location_file', 'sample_table_file', 'gene_barcode_file', 'amplicon_struct_file']
 raw_dat_list = ['num_lanes']
 sample_tab_list = ['new_sample_table', 'screen_name', 'plate_size', 'plates_per_lane', 'extra_columns']
 bas_list = ['verbosity', 'sub_screen_column']
-adv_list = ['remove_barcode_specific_conditions', 'barcode_specific_template_correlation_cutoff',
+adv_list = ['num_cores', 'remove_barcode_specific_conditions', 'barcode_specific_template_correlation_cutoff',
         'remove_correlated_index_tags', 'index_tag_correlation_cutoff', 'common_primer_tolerance',
         'barcode_tolerance', 'control_detection_limit', 'sample_detection_limit', 'strain_pass_read_count',
         'strain_pass_fraction', 'condition_pass_read_count', 'condition_pass_fraction']
@@ -106,6 +106,7 @@ args = parser.parse_args()
 # Remainder of imports
 import textwrap
 import shutil
+from copy import copy
 
 # Interactive mode!
 if args.interactive:
@@ -232,9 +233,8 @@ for param in loc_list:
     if par_obj.name == 'gene_barcode_file':
         gene_barcode_folder = os.path.join(working_dir, 'barcodes')
         par_obj.value = os.path.join(gene_barcode_folder, par_obj.value)
-    elif par_obj.name == 'screen_config_file':
-        config_folder = os.path.join(working_dir, 'config_files')
-        par_obj.value = os.path.join(config_folder, par_obj.value)
+    elif par_obj.name == 'amplicon_struct_file':
+        par_obj.value = os.path.join(working_dir, 'config_files', par_obj.value)
     else:
         par_obj.value = os.path.join(working_dir, par_obj.value)
 
@@ -267,10 +267,16 @@ if not p.clobber.value:
                 '"--clobber True" is specified: {}'.format('\n' + '\n'.join(f_exists_strings) + '\n')
 
 # Config file-writing function
+def change_filename(x, new):
+    return x.replace(os.path.basename(x), new)
+
 def write_config_file(params, location_list, basic_list, advanced_list):
 
-    working_dir = os.getcwd()
+    #working_dir = os.getcwd()
     fname = params.config_file.value
+    parent_dir = os.path.dirname(fname)
+    if not os.path.isdir(parent_dir):
+        os.makedirs(parent_dir)
     with open(fname, 'wt') as f:
 
         f.write('---\n\n')
@@ -280,7 +286,16 @@ def write_config_file(params, location_list, basic_list, advanced_list):
         f.write('\n')
 
         for param in location_list:
-            getattr(params, param).write_config(f)
+            if param == 'amplicon_struct_file':
+                par_obj = copy(getattr(params, param))
+                par_obj.value = change_filename(par_obj.value, 'amplicon_struct.yaml')
+                par_obj.write_config(f)
+            elif param == 'gene_barcode_file':
+                par_obj = copy(getattr(params, param))
+                par_obj.value = change_filename(par_obj.value, 'barcodes.txt')
+                par_obj.write_config(f)
+            else:
+                getattr(params, param).write_config(f)
             f.write('\n')
 
         f.write('\n\n')
@@ -323,6 +338,9 @@ def write_raw_dirs(params):
 def write_lane_location_file(params):
     lanes = get_formatted_lanes(params.num_lanes.value)
     fname = params.lane_location_file.value
+    parent_dir = os.path.dirname(fname)
+    if not os.path.isdir(parent_dir):
+        os.makedirs(parent_dir)
     raw_dir = get_raw_dir()
     with open(fname, 'wt') as f:
         f.write('lane\tlocation\n')
@@ -331,67 +349,71 @@ def write_lane_location_file(params):
     return None
 
 def write_sample_table(params):
-    
-    n_lns = params.num_lanes.value
-    plts_p_ln = params.plates_per_lane.value
-    plt_sz = params.plate_size.value
-
-    lns = get_formatted_lanes(n_lns)
-
-    n_smpls = plt_sz * plts_p_ln * n_lns
-    max_digits = len(str(n_smpls)) + 2
-
-    columns = ['screen_name', 'expt_id', 'name', 'include?', 'control?', 'lane']
-    # First properly format the list of extra columns
-    n_ex_cols = 0
-    if p.extra_columns.value is not None:
-        ex_cols_raw = p.extra_columns.value.split(',')
-        # Remove flanking whitespace, and replace any internal spaces
-        # with underscores instead of skipping or throwing an error
-        ex_cols = [x.strip().replace(' ', '_') for x in ex_cols_raw]
-    else:
-        ex_cols = []
-
-    # Add sub_screen_column to set of extra columns (replace any spaces)
-    #print 'sub_screen_column: ', p.sub_screen_column.value
-    if p.sub_screen_column.value is not None:
-        ex_cols.append(p.sub_screen_column.value.replace(' ', '_'))
-
-    # Now add extra columns that are unique
-    for col in ex_cols:
-        if col not in columns:
-            columns.append(col)
-
-    #print columns
-
+   
+    # Since a sample table filename will be specified, still create a directory
+    # in which to deposit the sample table if it is not created by this script.
     fname = params.sample_table_file.value
-    fname_parent = os.path.dirname(fname)
-    if not os.path.isdir(fname_parent):
-        os.makedirs(fname_parent)
-    with open(fname, 'wt') as f:
-        f.write('\t'.join(columns) + '\n')
-        n = 0
-        for i in range(n_lns):
-            for j in range(plts_p_ln):
-                for k in range(plt_sz):
-                    n += 1
-                    line = [params.screen_name.value,
-                            '1{:0{dig}}'.format(n, dig = max_digits),
-                            '',
-                            'True',
-                            'False',
-                            lns[i]] + [''] * len(ex_cols)
-                    f.write('\t'.join(line) + '\n')
+    parent_dir = os.path.dirname(fname)
+    if not os.path.isdir(parent_dir):
+        os.makedirs(parent_dir)
     
-    #print params.screen_name.value
-    #print n
+    if params.new_sample_table.value is True:
+        n_lns = params.num_lanes.value
+        plts_p_ln = params.plates_per_lane.value
+        plt_sz = params.plate_size.value
+
+        lns = get_formatted_lanes(n_lns)
+
+        n_smpls = plt_sz * plts_p_ln * n_lns
+        max_digits = len(str(n_smpls)) + 2
+
+        columns = ['screen_name', 'expt_id', 'name', 'include?', 'control?', 'lane']
+        # First properly format the list of extra columns
+        n_ex_cols = 0
+        if p.extra_columns.value is not None:
+            ex_cols_raw = p.extra_columns.value.split(',')
+            # Remove flanking whitespace, and replace any internal spaces
+            # with underscores instead of skipping or throwing an error
+            ex_cols = [x.strip().replace(' ', '_') for x in ex_cols_raw]
+        else:
+            ex_cols = []
+
+        # Add sub_screen_column to set of extra columns (replace any spaces)
+        #print 'sub_screen_column: ', p.sub_screen_column.value
+        if p.sub_screen_column.value is not None:
+            ex_cols.append(p.sub_screen_column.value.replace(' ', '_'))
+
+        # Now add extra columns that are unique
+        for col in ex_cols:
+            if col not in columns:
+                columns.append(col)
+
+        #print columns
+
+        with open(fname, 'wt') as f:
+            f.write('\t'.join(columns) + '\n')
+            n = 0
+            for i in range(n_lns):
+                for j in range(plts_p_ln):
+                    for k in range(plt_sz):
+                        n += 1
+                        line = [params.screen_name.value,
+                                '1{:0{dig}}'.format(n, dig = max_digits),
+                                '',
+                                'True',
+                                'False',
+                                lns[i]] + [''] * len(ex_cols)
+                        f.write('\t'.join(line) + '\n')
+        
+        #print params.screen_name.value
+        #print n
     
     return None
 
 
-#def copy_screen_config(params):
-#    sc_root_dir = os.path.join(barseq_path, 'data', 'screen_configs')
-#    final_dir = params.screen_config_folder.value
+#def copy_amplicon_struct(params):
+#    sc_root_dir = os.path.join(barseq_path, 'data', 'amplicon_structs')
+#    final_dir = params.amplicon_struct_folder.value
 #    dir_basename = os.path.basename(final_dir)
 #    orig_dir = os.path.join(sc_root_dir, dir_basename)
 #
@@ -409,30 +431,47 @@ def copy_gene_barcode_file(params):
     barseq_path = os.getenv('BARSEQ_PATH')
     bc_root_dir = os.path.join(barseq_path, 'data', 'gene_barcode_files')
     final_path = params.gene_barcode_file.value
+    parent_dir = os.path.dirname(final_path)
+    if not os.path.isdir(parent_dir):
+        os.makedirs(parent_dir)
     basename = os.path.basename(final_path)
     orig_path = os.path.join(bc_root_dir, basename)
+    # Change the filename of the gene barcode file right here.
+    final_path = change_filename(final_path, 'barcodes.txt')
     # Check to see if there is an "include?" column. If not, add it in!
     tab = read_barcode_table(orig_path)
     if 'include?' not in tab:
         tab['include?'] = True
-    tab.to_csv(final_path, sep = '\t', header = True, index = False)
+    with open(final_path, 'wt') as of:
+        of.write('# Original filename: {}\n'.format(basename))
+        tab.to_csv(of, sep = '\t', header = True, index = False)
+    return None
 
-def copy_screen_config_file(params):
+def copy_amplicon_struct_file(params):
     barseq_path = os.getenv('BARSEQ_PATH')
-    sc_root_dir = os.path.join(barseq_path, 'data', 'screen_config_files')
-    final_path = params.screen_config_file.value
+    sc_root_dir = os.path.join(barseq_path, 'data', 'amplicon_struct_files')
+    final_path = params.amplicon_struct_file.value
+    parent_dir = os.path.dirname(final_path)
+    if not os.path.isdir(parent_dir):
+        os.makedirs(parent_dir)
     basename = os.path.basename(final_path)
     orig_path = os.path.join(sc_root_dir, basename)
-    shutil.copy(orig_path, final_path)
+    # Change the filename of the amplicon struct file right here.
+    final_path = change_filename(final_path, 'amplicon_struct.yaml')
+    with open(final_path, 'wt') as of:
+        of.write('# Original filename: {}\n'.format(basename))
+        with open(orig_path, 'rt') as f:
+            of.write(f.read())
+    #shutil.copy(orig_path, final_path)
 
 ######  Final directory creation and file writing steps!!!  ######
 
 # Create directory structure and generate necessary files
-if not os.path.isdir('config_files'):
-    os.makedirs('config_files')
+#if not os.path.isdir('config_files'):
+#    os.makedirs('config_files')
 
-if not os.path.isdir(gene_barcode_folder):
-    os.makedirs(gene_barcode_folder)
+#if not os.path.isdir(gene_barcode_folder):
+#    os.makedirs(gene_barcode_folder)
 
 # Write config file
 write_config_file(p, loc_list_noconfig, bas_list, adv_list)
@@ -446,12 +485,13 @@ write_lane_location_file(p)
 write_raw_dirs(p)
 
 # Write sample table file, but only if specified
-if p.new_sample_table.value is True:
-    write_sample_table(p)
+#if p.new_sample_table.value is True:
+#    write_sample_table(p)
+write_sample_table(p)
 
 # Copy screen config and gene barcode files over
 copy_gene_barcode_file(p)
-copy_screen_config_file(p)
+copy_amplicon_struct_file(p)
 
 def wrap_with_newlines(x, width):
     return '\n'.join(['\n'.join(textwrap.wrap(line, width, break_long_words = False,

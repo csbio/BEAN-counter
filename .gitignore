@@ -10,7 +10,7 @@ __pycache__
 
 # BEAN-counter stuff
 data/screen_configs/
-data/screen_config_files/*
+data/amplicon_struct_files/*
 data/gene_barcode_files/*
 !.dummy
 #tests/parsing/data/

@@ -18,10 +18,10 @@ lane_location_file: config_files/lane_locations.txt
 # Contains the information on the structure of the sequenced
 # PCR product(s), which is required for correctly parsing
 # the sequencing data. Also points to the barcode file.
-screen_config_file: config_files/screen_config.yaml
+amplicon_struct_file: config_files/amplicon_struct.yaml
 
 # Gene barcode file
-gene_barcode_file: barcodes/S-cerevisiae_minipool_information.txt
+gene_barcode_file: barcodes/barcodes.txt
 
 
 ###### Automatic removal of conditions

@@ -4,7 +4,7 @@
 
 import os
 import textwrap
-from cg_common_functions import read_screen_config_params, read_barcode_table
+from cg_common_functions import read_amplicon_struct_params, read_barcode_table
 
 # Contains all default parameter values for filling in the
 # config file.
@@ -164,63 +164,26 @@ class Param:
     # Function to spit param out to config file
     def write_config(self, f):
         f.writelines(['# {}\n'.format(x) for x in textwrap.wrap(self.help, width = 60)])
-        f.write('{}: {}\n'.format(self.name, self.value))
+        if self.value is None:
+            f.write('{}: {}\n'.format(self.name, ''))
+        else:
+            f.write('{}: {}\n'.format(self.name, self.value))
 
-
-
-# Detection of valid screen_config directories in the
-# 'data/screen_config/' directory.
-def is_valid_screen_config_dir(folder):
-
-    files = os.listdir(folder)
-    #print 'files:', files
-    if 'screen_config.yaml' in files:
-        sc_params = read_screen_config_params(os.path.join(folder, 'screen_config.yaml'))
-        if 'gene_barcode_file' in sc_params:
-            #print 'gene barcode file:', sc_params['gene_barcode_file']
-            try:
-                read_barcode_table(sc_params['gene_barcode_file'])
-            except Exception as e:
-                #print 'Assertion failed'
-                pass
-            else:
-                #print 'Assertion passed'
-                pass
-
-            # If no exception was raised, then return True!
-            if 'e' not in locals():
-                #print 'returning True...'
-                return True
-
-    # If anything fails, return False
-    return False
-
-def list_valid_screen_config_dirs():
+def list_valid_amplicon_struct_files():
     barseq_path = os.getenv('BARSEQ_PATH')
     assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
-    sc_root_dir = os.path.join(barseq_path, 'data', 'screen_configs')
-    #print 'root dir:', sc_root_dir
-    sc_dirs = [x for x in os.listdir(sc_root_dir) if os.path.isdir(os.path.join(sc_root_dir, x))]
-    #print 'screen config dirs:', sc_dirs
-    valid_sc_dirs = [x for x in sc_dirs if is_valid_screen_config_dir(os.path.join(sc_root_dir, x))]
-    #print 'valid screen config dirs:', valid_sc_dirs
-    return valid_sc_dirs
-
-def list_valid_screen_config_files():
-    barseq_path = os.getenv('BARSEQ_PATH')
-    assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
-    sc_root_dir = os.path.join(barseq_path, 'data', 'screen_config_files')
-    sc_files = [x for x in os.listdir(sc_root_dir) if x.endswith('.yaml')]
-    valid_sc_files = []
-    for sc_file in sc_files:
+    as_root_dir = os.path.join(barseq_path, 'data', 'amplicon_struct_files')
+    as_files = [x for x in os.listdir(as_root_dir) if x.endswith('.yaml')]
+    valid_as_files = []
+    for as_file in as_files:
         try:
-            read_screen_config_params(os.path.join(sc_root_dir, sc_file))
+            read_amplicon_struct_params(os.path.join(as_root_dir, as_file))
         except Exception as e:
             pass
         else:
-            valid_sc_files.append(sc_file)
+            valid_as_files.append(as_file)
 
-    return valid_sc_files
+    return valid_as_files
 
 def list_valid_gene_barcode_files():
     barseq_path = os.getenv('BARSEQ_PATH')
@@ -239,7 +202,7 @@ def list_valid_gene_barcode_files():
     return valid_bc_files
 
 
-#print list_valid_screen_config_dirs()
+#print list_valid_amplicon_struct_dirs()
 
 
 #########################
@@ -294,25 +257,20 @@ gene_barcode_file = Param(
         name = 'gene_barcode_file',
         value = None,
         type = str,
-        help = 'Tab-delimited text file in $BARSEQ_PATH/data/gene_barcode_files '\
+        help = 'Tab-delimited text file in $BARSEQ_PATH/data/gene_barcode_files/ '\
                 'that maps barcodes to strains and their identifiers. '\
-                'Suggested format: <my-mutant-library>_barcodes.txt. '\
                 'Must contain unique "Strain_ID" column.',
         options = list_valid_gene_barcode_files())
 
-screen_config_file = Param(
-        name = 'screen_config_file',
+amplicon_struct_file = Param(
+        name = 'amplicon_struct_file',
         value = None,
         type = str,
-        help = 'YAML-formatted file in "$BARSEQ_PATH/data/screen_configs/" that ' \
-                'defines the structure of the sequenced PCR product(s). This is '\
+        help = 'YAML-formatted file in $BARSEQ_PATH/data/amplicon_struct_files/ that ' \
+                'defines the structure of the sequenced PCR amplicons. This is '\
                 'required for correctly parsing the sequencing data.',
-        options = list_valid_screen_config_files())
+        options = list_valid_amplicon_struct_files())
                 
-
-'the file that maps barcodes '\
-                'to strains and their identifiers (<my-mutant-library>_barcodes.txt).',
-
 ###############################
 ##  Sample table parameters  ##
 ###############################
@@ -393,6 +351,17 @@ verbosity = Param(
 ###########################
 ##  Advanced parameters  ##
 ###########################
+
+num_cores = Param(
+        name = 'num_cores',
+        value = None,
+        type = str,
+        help = 'Number of cores to use for processes spread across multiple cores. ' \
+                'Defaults to the number of cores detected divided by 2. Can be ' \
+                'specified as an integer number of cores (num_cores >= 1), as a fraction of the ' \
+                'number of available cores (0 < num_cores < 1), or as "all" to run on all cores. '\
+                'Note that "all" may not have much or any speed boost over 0.5.',
+        options = '_any_')
 
 remove_barcode_specific_conditions = Param(
         name = 'remove_barcode_specific_conditions',
