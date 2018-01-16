@@ -1,0 +1,17 @@
+# Python stuff
+*.py[cod]
+
+# Vim stuff
+*.sw[mnop]
+
+# Pytest stuff
+.cache
+__pycache__
+
+# BEAN-counter stuff
+data/screen_configs/
+data/screen_config_files/*
+data/gene_barcode_files/*
+!.dummy
+#tests/parsing/data/
+test_results/
