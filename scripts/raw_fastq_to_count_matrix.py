@@ -305,9 +305,9 @@ def read_fastq(config_params, folder, out_path, lane_id):
             if line_count % 4 == 1:
                 #string = line.strip()
                 common_primer_1 = line_1[read_1_params[0]:read_1_params[2]]
-                common_primer_dist_1 = jf.hamming_distance(common_primer_1, read_1_params[1])
+                common_primer_dist_1 = jf.hamming_distance(unicode(common_primer_1), unicode(read_1_params[1]))
                 common_primer_2 = line_2[read_2_params[0]:read_2_params[2]]
-                common_primer_dist_2 = jf.hamming_distance(common_primer_2, read_2_params[1])
+                common_primer_dist_2 = jf.hamming_distance(unicode(common_primer_2), unicode(read_2_params[1]))
                 if get_verbosity(config_params) >= 3:
                     print common_primer_1, read_1_params[1], common_primer_dist_1
                     print common_primer_2, read_2_params[1], common_primer_dist_2
@@ -359,7 +359,7 @@ def correct_barcode_map(config_params, barcodes_in_data, barcode_to_gene):
         unmatched_barcodes = observed_barcodes.difference(orig_barcodes)
         for orig_barcode in orig_barcodes:
             for unmatched_barcode in unmatched_barcodes:
-                barcode_dist = jf.hamming_distance(orig_barcode, unmatched_barcode)
+                barcode_dist = jf.hamming_distance(unicode(orig_barcode), unicode(unmatched_barcode))
                 if barcode_dist <= barcode_tolerance:
                     if get_verbosity(config_params) >= 3:
                         print 'bad : corrected --> {0} : {1}'.format(unmatched_barcode, orig_barcode)
