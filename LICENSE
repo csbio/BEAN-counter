@@ -1,0 +1,6 @@
+All code in this repository falls under the license at
+http://z.umn.edu/beanctr, EXCEPT for that found in lib/lowess.py, which was
+derived from https://gist.github.com/agramfort/850437 and licensed under the
+BSD 3-clause license (included in lib/lowess.py). To obtain a license for the
+use of the entire software package, please head over to
+http://z.umn.edu/beanctr and sign up. Thanks!
