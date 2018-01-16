@@ -55,8 +55,8 @@ def get_barcode_table(config_params):
     tab = read_barcode_table(config_params['gene_barcode_file'], required_columns = ['Strain_ID', 'include?'])
     return tab
 
-def read_barcode_table(tab_filename, required_columns = ['Strain_ID']):
-    tab = pd.read_table(tab_filename, dtype = 'S', comment = '#')
+def read_barcode_table(tab_filename, required_columns = ['Strain_ID'], comment = '#'):
+    tab = pd.read_table(tab_filename, dtype = 'S', comment = comment)
     assert all([x in tab.columns for x in required_columns]), 'One or more of the required columns were not found in the barcode table. If it looks like all of the columns are there, check for unwanted spaces in the column names.\nThe missing required columns are: {}\nThe barcode table is here: {}'.format([x for x in required_columns if x not in tab.columns], tab_filename)
     # This will happen at some point, but not ready for prime time yet
     # until I get the strain identifier thing worked out (aka not
