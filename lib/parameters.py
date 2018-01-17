@@ -228,8 +228,8 @@ config_file = Param(
         help = 'File that coordinates all aspects of interaction scoring.',
         options = None)
 
-output_directory = Param(
-        name = 'output_directory',
+output_folder = Param(
+        name = 'output_folder',
         value = 'output',
         type = str,
         help = 'Directory to which output is written',
