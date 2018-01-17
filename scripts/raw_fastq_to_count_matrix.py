@@ -422,23 +422,30 @@ def get_barseq_matrix(config_params, lane_id, parsed_coords, barcode_to_gene, ba
         
         matrix[row, col] += 1
 
-    # Here is where I implement the "dumb filter," as Justin called it,
-    # to automatically remove any strains or conditions that have zero
-    # counts. Raamesh's version originally did this, and I removed it
-    # for some reason.
-    nonzero_count_barcodes = np.sum(matrix, axis = 1) > 0
-    nonzero_count_tags = np.sum(matrix, axis = 0) > 0
+    # Here is where I implement the "dumb filter," as Justin called it, to
+    # automatically remove any strains or conditions that have zero counts.
+    # Raamesh's version originally did this with a threshold of >0, and I
+    # removed it for some reason. However, this filter was not necessarily
+    # stringent enough, as I accidentally told someone to test the code using
+    # the full genome barcode file instead of the minipool file, leading to
+    # ~183 strains that averaged less then 0.4 counts per condition and
+    # exposing a bug in the new python lowess implementation. I will set this
+    # so that each strain must average >= 1 count in each condition, for added
+    # stringency.
+    mean_thresh = 1
+    sufficient_count_barcodes = np.mean(matrix, axis = 1) > mean_thresh
+    sufficient_count_tags = np.mean(matrix, axis = 0) > mean_thresh
 
     if get_verbosity(config_params) >= 1:
-        print "number of barcodes with zero counts: {}".format(sum(np.invert(nonzero_count_barcodes)))
-        print "number of index tags with zero counts: {}".format(sum(np.invert(nonzero_count_tags)))
+        print "number of barcodes with mean counts per condition > {}: {}".format(mean_thresh, sum(np.invert(sufficient_count_barcodes)))
+        print "number of index tags with mean counts per strain > {}: {}".format(mean_thresh, sum(np.invert(sufficient_count_tags)))
+    
+    matrix = matrix[np.ix_(sufficient_count_barcodes, sufficient_count_tags)]
+    barcodes = [x for i,x in enumerate(barcodes) if sufficient_count_barcodes[i]]
+    index_tags = [x for i,x in enumerate(index_tags) if sufficient_count_tags[i]]
 
-    matrix = matrix[np.ix_(nonzero_count_barcodes, nonzero_count_tags)]
-    barcodes = [x for i,x in enumerate(barcodes) if nonzero_count_barcodes[i]]
-    index_tags = [x for i,x in enumerate(index_tags) if nonzero_count_tags[i]]
-
-    assert len(barcodes) == matrix.shape[0], "number of barcodes does not match number of rows in matrix after zero-count filtering."
-    assert len(index_tags) == matrix.shape[1], "number of index tags does not match number of columns in matrix after zero-count filtering."
+    assert len(barcodes) == matrix.shape[0], "number of barcodes does not match number of rows in matrix after sufficient-count filtering."
+    assert len(index_tags) == matrix.shape[1], "number of index tags does not match number of columns in matrix after sufficient-count filtering."
 
     f.close()
 
