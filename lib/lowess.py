@@ -124,7 +124,7 @@ def span_inds(x, h, r):
     start = 0
     stop = r
     for i,foc_x in enumerate(x):
-        while abs(foc_x - x[start]) > h[i]:
+        while abs(foc_x - x[start]) >= h[i]:
             start += 1
         if stop < n:
             while abs(foc_x - x[stop]) < h[i]:
