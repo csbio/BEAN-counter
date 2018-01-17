@@ -26,7 +26,7 @@
 ## Define the file/folder locations
 #loc_list = []
 #loc_list.append(
-#        Arg(name = 'output_directory',
+#        Arg(name = 'output_folder',
 #            value = 'output',
 #            type = str,
 #            help = 'Directory to which output is written',
@@ -64,8 +64,8 @@ def tf_string_to_bool(x):
 #assert len(arg_name_idx) == len(arg_list), "One or more arguments have the same name."
 
 # Define some parameter sets
-loc_list = ['config_file', 'output_directory', 'lane_location_file', 'sample_table_file', 'gene_barcode_file', 'amplicon_struct_file']
-loc_list_noconfig = ['output_directory', 'lane_location_file', 'sample_table_file', 'gene_barcode_file', 'amplicon_struct_file']
+loc_list = ['config_file', 'output_folder', 'lane_location_file', 'sample_table_file', 'gene_barcode_file', 'amplicon_struct_file']
+loc_list_noconfig = ['output_folder', 'lane_location_file', 'sample_table_file', 'gene_barcode_file', 'amplicon_struct_file']
 raw_dat_list = ['num_lanes']
 sample_tab_list = ['new_sample_table', 'screen_name', 'plate_size', 'plates_per_lane', 'extra_columns']
 bas_list = ['verbosity', 'sub_screen_column']
@@ -477,8 +477,8 @@ def copy_amplicon_struct_file(params):
 write_config_file(p, loc_list_noconfig, bas_list, adv_list)
 
 # Create output directory
-if not os.path.isdir(p.output_directory.value):
-    os.makedirs(p.output_directory.value)
+if not os.path.isdir(p.output_folder.value):
+    os.makedirs(p.output_folder.value)
 
 # Write lane location file and raw data directory
 write_lane_location_file(p)
