@@ -260,6 +260,9 @@ def get_fastq_filename_list(folder, read_type, barcode_reads):
         assert len(base_filenames) == 2 * len(no_r1_r2_filenames_dict), 'Did not detect an equal number of "R1" and "R2" files in this raw data directory:\n{}'.format(folder)
         filenames = [[os.path.join(folder, y) for y in x] for x in no_r1_r2_filenames_dict.values()]
 
+    assert len(filenames) > 0, '\nDid not detect any fastq files for lane: {}.\n' \
+            'Please move/copy/symlink your raw data to this folder:\n{}\n'.format(os.path.basename(folder), folder)
+
     return filenames
 
 
