@@ -36,7 +36,7 @@ def get_lane_location_table(config_params):
 
 def get_lane_folder(lane_id, lane_location_tab):
 
-    lane_location_tab = lane_location_tab.set_index('lane_id')
+    lane_location_tab = lane_location_tab.set_index('lane')
     lane_folder = lane_location_tab.loc[lane_id, 'location']
     return lane_folder
 
