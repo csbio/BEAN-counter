@@ -1,2 +1,2 @@
-lane_id	location
+lane	location
 lane01	raw/lane01
