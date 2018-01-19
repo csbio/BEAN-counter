@@ -1,769 +1,769 @@
-screen_name	expt_id	name	include?	control?	lane	index_tag	index_tag_plate	index_tag_well	concentration	units	not_pos_control	not_pos_neg_control	sub_screen_name	chem_id	tech_rep_id	bio_rep_id	fdr_sample_type
-RIKEN	000001	DMSO	True	True	lane01	AATAGGCGCT	2	A1			TRUE	FALSE	spring_2013			DMSO_000001	
-RIKEN	000002	DMSO	True	True	lane01	TACAGTTGCG	2	A2			TRUE	FALSE	spring_2013			DMSO_000002	
-RIKEN	000003	DMSO	True	True	lane01	ATCCTAGCAG	2	A3			TRUE	FALSE	spring_2013			DMSO_000003	
-RIKEN	000004	DMSO	True	True	lane01	GATTAGCCTC	2	A4			TRUE	FALSE	spring_2013			DMSO_000004	
-RIKEN	000005	DMSO	True	True	lane01	AATGAGCCGT	2	A5			TRUE	FALSE	spring_2013			DMSO_000005	
-RIKEN	000006	DMSO	True	True	lane01	ACGCGGATTA	2	A6			TRUE	FALSE	spring_2013			DMSO_000006	
-RIKEN	000007	DMSO	True	True	lane01	GCTTACGGAA	2	A7			TRUE	FALSE	spring_2013			DMSO_000007	
-RIKEN	000008	DMSO	True	True	lane01	CGGTAGACTA	2	A8			TRUE	FALSE	spring_2013			DMSO_000008	
-RIKEN	000009	DMSO	True	True	lane01	ATTGCCGGAA	2	A9			TRUE	FALSE	spring_2013			DMSO_000009	
-RIKEN	000010	DMSO	True	True	lane01	GACATGCTAG	2	A10			TRUE	FALSE	spring_2013			DMSO_000010	
-RIKEN	000011	DMSO	True	True	lane01	TACGCTGCAT	2	A11			TRUE	FALSE	spring_2013			DMSO_000011	
-RIKEN	000012	DMSO	True	True	lane01	GTCAAGCACT	2	A12			TRUE	FALSE	spring_2013			DMSO_000012	
-RIKEN	000013	DMSO	True	True	lane01	AGCGTATGTC	2	B1			TRUE	FALSE	spring_2013			DMSO_000013	
-RIKEN	000014	DMSO	True	True	lane01	GCGGATTAAC	2	B2			TRUE	FALSE	spring_2013			DMSO_000014	
-RIKEN	000015	DMSO	True	True	lane01	ATACCTCGGA	2	B3			TRUE	FALSE	spring_2013			DMSO_000015	
-RIKEN	000016	DMSO	True	True	lane01	GGTAGACATC	2	B4			TRUE	FALSE	spring_2013			DMSO_000016	
-RIKEN	000017	DMSO	True	True	lane01	AGGTACCTAC	2	B5			TRUE	FALSE	spring_2013			DMSO_000017	
-RIKEN	000018	DMSO	True	True	lane01	CGATAACGCT	2	B6			TRUE	FALSE	spring_2013			DMSO_000018	
-RIKEN	000019	DMSO	True	True	lane01	TACCGGAATG	2	B7			TRUE	FALSE	spring_2013			DMSO_000019	
-RIKEN	000020	DMSO	True	True	lane01	TAGGACCAGT	2	B8			TRUE	FALSE	spring_2013			DMSO_000020	
-RIKEN	000021	DMSO	True	True	lane01	CTGCAAGTTC	2	B9			TRUE	FALSE	spring_2013			DMSO_000021	
-RIKEN	000022	DMSO	True	True	lane01	TCGCGATTCA	2	B10			TRUE	FALSE	spring_2013			DMSO_000022	
-RIKEN	000023	DMSO	True	True	lane01	GGTAACGTAC	2	B11			TRUE	FALSE	spring_2013			DMSO_000023	
-RIKEN	000024	DMSO	True	True	lane01	AAGACCTGTG	2	B12			TRUE	FALSE	spring_2013			DMSO_000024	
-RIKEN	000025	DMSO	True	True	lane01	AGTATGCACC	2	C1			TRUE	FALSE	spring_2013			DMSO_000025	
-RIKEN	000026	DMSO	True	True	lane01	GCTAGCAGTA	2	C2			TRUE	FALSE	spring_2013			DMSO_000026	
-RIKEN	000027	DMSO	True	True	lane01	TAATGGCTGC	2	C3			TRUE	FALSE	spring_2013			DMSO_000027	
-RIKEN	000028	DMSO	True	True	lane01	CATCTGGTAG	2	C4			TRUE	FALSE	spring_2013			DMSO_000028	
-RIKEN	000029	DMSO	True	True	lane01	TGCTGAATGC	2	C5			TRUE	FALSE	spring_2013			DMSO_000029	
-RIKEN	000030	DMSO	True	True	lane01	AGAGCGTTCT	2	C6			TRUE	FALSE	spring_2013			DMSO_000030	
-RIKEN	000031	DMSO	True	True	lane01	TGCGAGCATT	2	C7			TRUE	FALSE	spring_2013			DMSO_000031	
-RIKEN	000032	DMSO	True	True	lane01	GTACGGCATT	2	C8			TRUE	FALSE	spring_2013			DMSO_000032	
-RIKEN	000033	DMSO	True	True	lane01	TAAGATCCGG	2	C9			TRUE	FALSE	spring_2013			DMSO_000033	
-RIKEN	000034	DMSO	True	True	lane01	CGGTACAACT	2	C10			TRUE	FALSE	spring_2013			DMSO_000034	
-RIKEN	000035	DMSO	True	True	lane01	ATTGGTCCGA	2	C11			TRUE	FALSE	spring_2013			DMSO_000035	
-RIKEN	000036	DMSO	True	True	lane01	ATTAGGACCG	2	C12			TRUE	FALSE	spring_2013			DMSO_000036	
-RIKEN	000037	DMSO	True	True	lane01	CTTAAGAGCG	2	D1			TRUE	FALSE	spring_2013			DMSO_000037	
-RIKEN	000038	DMSO	True	True	lane01	ATGGCATGCA	2	D2			TRUE	FALSE	spring_2013			DMSO_000038	
-RIKEN	000039	DMSO	True	True	lane01	CGTATCATGG	2	D3			TRUE	FALSE	spring_2013			DMSO_000039	
-RIKEN	000040	DMSO	True	True	lane01	CCGTCGATTA	2	D4			TRUE	FALSE	spring_2013			DMSO_000040	
-RIKEN	000041	DMSO	True	True	lane01	TAACTGGCAC	2	D5			TRUE	FALSE	spring_2013			DMSO_000041	
-RIKEN	000042	DMSO	True	True	lane01	CATTGGAACG	2	D6			TRUE	FALSE	spring_2013			DMSO_000042	
-RIKEN	000043	DMSO	True	True	lane01	GTACATCCGA	2	D7			TRUE	FALSE	spring_2013			DMSO_000043	
-RIKEN	000044	DMSO	True	True	lane01	ACTGACGAGT	2	D8			TRUE	FALSE	spring_2013			DMSO_000044	
-RIKEN	000045	DMSO	True	True	lane01	GTATCGAACC	2	D9			TRUE	FALSE	spring_2013			DMSO_000045	
-RIKEN	000046	DMSO	True	True	lane01	AACCGATTGC	2	D10			TRUE	FALSE	spring_2013			DMSO_000046	
-RIKEN	000047	DMSO	True	True	lane01	TCAGCATGAG	2	D11			TRUE	FALSE	spring_2013			DMSO_000047	
-RIKEN	000048	DMSO	True	True	lane01	GATGCCTTGA	2	D12			TRUE	FALSE	spring_2013			DMSO_000048	
-RIKEN	000049	DMSO	True	True	lane01	TATCGGAAGC	2	E1			TRUE	FALSE	spring_2013			DMSO_000049	
-RIKEN	000050	DMSO	True	True	lane01	GGAATCCACT	2	E2			TRUE	FALSE	spring_2013			DMSO_000050	
-RIKEN	000051	DMSO	True	True	lane01	AGCTAAGTGC	2	E3			TRUE	FALSE	spring_2013			DMSO_000051	
-RIKEN	000052	DMSO	True	True	lane01	TTGCATGAGC	2	E4			TRUE	FALSE	spring_2013			DMSO_000052	
-RIKEN	000053	DMSO	True	True	lane01	CAGTTCACGT	2	E5			TRUE	FALSE	spring_2013			DMSO_000053	
-RIKEN	000054	DMSO	True	True	lane01	TGTCTCGAGA	2	E6			TRUE	FALSE	spring_2013			DMSO_000054	
-RIKEN	000055	DMSO	True	True	lane01	AGGAATCTCC	2	E7			TRUE	FALSE	spring_2013			DMSO_000055	
-RIKEN	000056	DMSO	True	True	lane01	CTGTGGAACA	2	E8			TRUE	FALSE	spring_2013			DMSO_000056	
-RIKEN	000057	DMSO	True	True	lane01	TAACAGCGCT	2	E9			TRUE	FALSE	spring_2013			DMSO_000057	
-RIKEN	000058	DMSO	True	True	lane01	CACCGATTAG	2	E10			TRUE	FALSE	spring_2013			DMSO_000058	
-RIKEN	000059	DMSO	True	True	lane01	CACAAGGTTG	2	E11			TRUE	FALSE	spring_2013			DMSO_000059	
-RIKEN	000060	DMSO	False	True	lane01	CTCAAGGTGT	2	E12			TRUE	FALSE	spring_2013			DMSO_000060	
-RIKEN	000061	DMSO	True	True	lane01	TCAGCAGGTA	2	F1			TRUE	FALSE	spring_2013			DMSO_000061	
-RIKEN	000062	DMSO	True	True	lane01	CATAGTCTGG	2	F2			TRUE	FALSE	spring_2013			DMSO_000062	
-RIKEN	000063	DMSO	True	True	lane01	ACACGTATGC	2	F3			TRUE	FALSE	spring_2013			DMSO_000063	
-RIKEN	000064	DMSO	True	True	lane01	GCTATAGCGA	2	F4			TRUE	FALSE	spring_2013			DMSO_000064	
-RIKEN	000065	DMSO	True	True	lane01	TTGTCGAACG	2	F5			TRUE	FALSE	spring_2013			DMSO_000065	
-RIKEN	000066	DMSO	True	True	lane01	CCGATCAGTT	2	F6			TRUE	FALSE	spring_2013			DMSO_000066	
-RIKEN	000067	DMSO	True	True	lane01	TGAATCCGCA	2	F7			TRUE	FALSE	spring_2013			DMSO_000067	
-RIKEN	000068	DMSO	True	True	lane01	ATGCCATGAG	2	F8			TRUE	FALSE	spring_2013			DMSO_000068	
-RIKEN	000069	DMSO	True	True	lane01	ATCAGTGAGC	2	F9			TRUE	FALSE	spring_2013			DMSO_000069	
-RIKEN	000070	DMSO	True	True	lane01	CATCGGTGAA	2	F10			TRUE	FALSE	spring_2013			DMSO_000070	
-RIKEN	000071	DMSO	True	True	lane01	ATGGTCACAG	2	F11			TRUE	FALSE	spring_2013			DMSO_000071	
-RIKEN	000072	DMSO	False	True	lane01	ACCAGGTACT	2	F12			TRUE	FALSE	spring_2013			DMSO_000072	
-RIKEN	000073	DMSO	True	True	lane01	GGCTACTAAC	2	G1			TRUE	FALSE	spring_2013			DMSO_000073	
-RIKEN	000074	DMSO	True	True	lane01	AGAATGGCCT	2	G2			TRUE	FALSE	spring_2013			DMSO_000074	
-RIKEN	000075	DMSO	True	True	lane01	CGACGTTAGT	2	G3			TRUE	FALSE	spring_2013			DMSO_000075	
-RIKEN	000076	DMSO	True	True	lane01	CATAGGTGTC	2	G4			TRUE	FALSE	spring_2013			DMSO_000076	
-RIKEN	000077	DMSO	True	True	lane01	AACTGGTCTG	2	G5			TRUE	FALSE	spring_2013			DMSO_000077	
-RIKEN	000078	DMSO	True	True	lane01	ATGACACGTC	2	G6			TRUE	FALSE	spring_2013			DMSO_000078	
-RIKEN	000079	DMSO	True	True	lane01	CAGTCAGATC	2	G7			TRUE	FALSE	spring_2013			DMSO_000079	
-RIKEN	000080	DMSO	True	True	lane01	TTCCGGAACA	2	G8			TRUE	FALSE	spring_2013			DMSO_000080	
-RIKEN	000081	DMSO	True	True	lane01	AGCTGGACTA	2	G9			TRUE	FALSE	spring_2013			DMSO_000081	
-RIKEN	000082	DMSO	True	True	lane01	ATAGACGTCC	2	G10			TRUE	FALSE	spring_2013			DMSO_000082	
-RIKEN	000083	DMSO	True	True	lane01	ACTCAAGTCG	2	G11			TRUE	FALSE	spring_2013			DMSO_000083	
-RIKEN	000084	DMSO	False	True	lane01	ATCGAGTCGA	2	G12			TRUE	FALSE	spring_2013			DMSO_000084	
-RIKEN	000085	DMSO	True	True	lane01	TGCAGATACC	2	H1			TRUE	FALSE	spring_2013			DMSO_000085	
-RIKEN	000086	DMSO	True	True	lane01	GACAGTTGAC	2	H2			TRUE	FALSE	spring_2013			DMSO_000086	
-RIKEN	000087	DMSO	True	True	lane01	TCCGGTAGAA	2	H3			TRUE	FALSE	spring_2013			DMSO_000087	
-RIKEN	000088	DMSO	True	True	lane01	ACCAGTAGTC	2	H4			TRUE	FALSE	spring_2013			DMSO_000088	
-RIKEN	000089	DMSO	True	True	lane01	CAGTGAATCC	2	H5			TRUE	FALSE	spring_2013			DMSO_000089	
-RIKEN	000090	DMSO	True	True	lane01	GAAGCCATCT	2	H6			TRUE	FALSE	spring_2013			DMSO_000090	
-RIKEN	000091	DMSO	True	True	lane01	GTGGCAATCT	2	H7			TRUE	FALSE	spring_2013			DMSO_000091	
-RIKEN	000092	DMSO	True	True	lane01	ATTAACCGCG	2	H8			TRUE	FALSE	spring_2013			DMSO_000092	
-RIKEN	000093	DMSO	True	True	lane01	GGCCTATAAG	2	H9			TRUE	FALSE	spring_2013			DMSO_000093	
-RIKEN	000094	DMSO	True	True	lane01	CGCACAATTG	2	H10			TRUE	FALSE	spring_2013			DMSO_000094	
-RIKEN	000095	DMSO	True	True	lane01	AGTCATCAGG	2	H11			TRUE	FALSE	spring_2013			DMSO_000095	
-RIKEN	000096	DMSO	False	True	lane01	CACATGTCGA	2	H12			TRUE	FALSE	spring_2013			DMSO_000096	
-RIKEN	000097	(-)-Bicuculline methobromide	True	False	lane01	GCTGAACTAG	3	A1			TRUE	TRUE	spring_2013			(-)-Bicuculline methobromide___spring_2013	
-RIKEN	000098	(R)-(-)-Epinephrine	True	False	lane01	CTCGGATTAC	3	A2			TRUE	TRUE	spring_2013			(R)-(-)-Epinephrine___spring_2013	
-RIKEN	000099	17alpha-Estradiol	True	False	lane01	TGCAAGATGC	3	A3			TRUE	TRUE	spring_2013			17alpha-Estradiol___spring_2013	
-RIKEN	000100	Acesulfame K	True	False	lane01	GCGCAATTGT	3	A4			TRUE	TRUE	spring_2013			Acesulfame K___spring_2013	
-RIKEN	000101	Acetohexamide	True	False	lane01	TCTGGCGTAA	3	A5			TRUE	TRUE	spring_2013			Acetohexamide___spring_2013	
-RIKEN	000102	alpha-Tocopherol nicotinate	True	False	lane01	CGTGTGATCA	3	A6			TRUE	TRUE	spring_2013			alpha-Tocopherol nicotinate___spring_2013	
-RIKEN	000103	Baclofen	True	False	lane01	TACAGAGGCT	3	A7			TRUE	TRUE	spring_2013			Baclofen___spring_2013	
-RIKEN	000104	Betamethasone	True	False	lane01	GCAAGGTCTT	3	A8			TRUE	TRUE	spring_2013			Betamethasone___spring_2013	
-RIKEN	000105	Biperiden	True	False	lane01	GCAATATCGG	3	A9			TRUE	TRUE	spring_2013			Biperiden___spring_2013	
-RIKEN	000106	Bucetin	True	False	lane01	AGACTCGTTG	3	A10			TRUE	TRUE	spring_2013			Bucetin___spring_2013	
-RIKEN	000107	Clonidine	True	False	lane01	ATGAGCATCC	3	A11			TRUE	TRUE	spring_2013			Clonidine___spring_2013	
-RIKEN	000108	DMSO	True	True	lane01	TGGCCATGAA	3	A12			TRUE	FALSE	spring_2013			DMSO_000108	
-RIKEN	000109	Cortisone	True	False	lane01	AAGTCAGCCT	3	B1			TRUE	TRUE	spring_2013			Cortisone___spring_2013	
-RIKEN	000110	Desipramine	True	False	lane01	TGGATCCTAG	3	B2			TRUE	TRUE	spring_2013			Desipramine___spring_2013	
-RIKEN	000111	Dexamethasone	True	False	lane01	AGCTTGGTCA	3	B3			TRUE	TRUE	spring_2013			Dexamethasone___spring_2013	
-RIKEN	000112	Dextromethorphan	True	False	lane01	CAGTACTACG	3	B4			TRUE	TRUE	spring_2013			Dextromethorphan___spring_2013	
-RIKEN	000113	Dibucaine	True	False	lane01	TAGTCCGAAC	3	B5			TRUE	TRUE	spring_2013			Dibucaine___spring_2013	
-RIKEN	000114	Estriol	True	False	lane01	TAGTGCACGA	3	B6			TRUE	TRUE	spring_2013			Estriol___spring_2013	
-RIKEN	000115	Estrone	True	False	lane01	AGGCACTGTA	3	B7			TRUE	TRUE	spring_2013			Estrone___spring_2013	
-RIKEN	000116	Ethinylestradiol	True	False	lane01	TAGACGCTAC	3	B8			TRUE	TRUE	spring_2013			Ethinylestradiol___spring_2013	
-RIKEN	000117	Etizolam	True	False	lane01	TAGCGCTTGA	3	B9			TRUE	TRUE	spring_2013			Etizolam___spring_2013	
-RIKEN	000118	Etodolac	True	False	lane01	CAGGTCATAC	3	B10			TRUE	TRUE	spring_2013			Etodolac___spring_2013	
-RIKEN	000119	Fluorometholone	True	False	lane01	CCTCTAGAGA	3	B11			TRUE	TRUE	spring_2013			Fluorometholone___spring_2013	
-RIKEN	000120	DMSO	True	True	lane01	GAGACTCCAT	3	B12			TRUE	FALSE	spring_2013			DMSO_000120	
-RIKEN	000121	Histamine	True	False	lane01	CAGGTACTGT	3	C1			TRUE	TRUE	spring_2013			Histamine___spring_2013	
-RIKEN	000122	Hydrocortisone	True	False	lane01	TGTTAAGCGC	3	C2			TRUE	TRUE	spring_2013			Hydrocortisone___spring_2013	
-RIKEN	000123	Ibuprofen	True	False	lane01	ATGTTCCGGA	3	C3			TRUE	TRUE	spring_2013			Ibuprofen___spring_2013	
-RIKEN	000124	Imipramine	True	False	lane01	ATGGCGCATA	3	C4			TRUE	TRUE	spring_2013			Imipramine___spring_2013	
-RIKEN	000125	Indomethacin	True	False	lane01	ATATGAGGCC	3	C5			TRUE	TRUE	spring_2013			Indomethacin___spring_2013	
-RIKEN	000126	Ketoprofen	True	False	lane01	TCACAGTGAC	3	C6			TRUE	TRUE	spring_2013			Ketoprofen___spring_2013	
-RIKEN	000127	Lidocaine	True	False	lane01	ACTGATCGGA	3	C7			TRUE	TRUE	spring_2013			Lidocaine___spring_2013	
-RIKEN	000128	Mefenamic acid	True	False	lane01	GACTTGGACT	3	C8			TRUE	TRUE	spring_2013			Mefenamic acid___spring_2013	
-RIKEN	000129	Mestranol	True	False	lane01	AGAGCCTGAT	3	C9			TRUE	TRUE	spring_2013			Mestranol___spring_2013	
-RIKEN	000130	Nikethamide	True	False	lane01	AGACTATCGG	3	C10			TRUE	TRUE	spring_2013			Nikethamide___spring_2013	
-RIKEN	000131	Norethisterone	True	False	lane01	GATGCTCTAG	3	C11			TRUE	TRUE	spring_2013			Norethisterone___spring_2013	
-RIKEN	000132	DMSO	True	True	lane01	GTATACGGAC	3	C12			TRUE	FALSE	spring_2013			DMSO_000132	
-RIKEN	000133	Pheniramin	True	False	lane01	TACCTAGGAG	3	D1			TRUE	TRUE	spring_2013			Pheniramin___spring_2013	
-RIKEN	000134	Phenytoin	True	False	lane01	AGATGCTGAC	3	D2			TRUE	TRUE	spring_2013			Phenytoin___spring_2013	
-RIKEN	000135	Picrotoxinin	True	False	lane01	CTACAAGCTG	3	D3			TRUE	TRUE	spring_2013			Picrotoxinin___spring_2013	
-RIKEN	000136	Pilocarpine	True	False	lane01	AGAGTGCTTC	3	D4			TRUE	TRUE	spring_2013			Pilocarpine___spring_2013	
-RIKEN	000137	Pimozide	True	False	lane01	GGAGTTACAC	3	D5			TRUE	TRUE	spring_2013			Pimozide___spring_2013	
-RIKEN	000138	Pindolol	True	False	lane01	CCGTAGATAG	3	D6			TRUE	TRUE	spring_2013			Pindolol___spring_2013	
-RIKEN	000139	Piperidolate	True	False	lane01	TGGTCAGTCA	3	D7			TRUE	TRUE	spring_2013			Piperidolate___spring_2013	
-RIKEN	000140	Prazosin	True	False	lane01	GGTTCCTACA	3	D8			TRUE	TRUE	spring_2013			Prazosin___spring_2013	
-RIKEN	000141	Prednisolone	True	False	lane01	CCTCTGGAAT	3	D9			TRUE	TRUE	spring_2013			Prednisolone___spring_2013	
-RIKEN	000142	Primidone	True	False	lane01	ATGATCAGGC	3	D10			TRUE	TRUE	spring_2013			Primidone___spring_2013	
-RIKEN	000143	Procaine	True	False	lane01	CGAATTCAGG	3	D11			TRUE	TRUE	spring_2013			Procaine___spring_2013	
-RIKEN	000144	DMSO	True	True	lane01	CAGTATGGAC	3	D12			TRUE	FALSE	spring_2013			DMSO_000144	
-RIKEN	000145	Raubasine	True	False	lane01	TCGTACGTCA	3	E1			TRUE	TRUE	spring_2013			Raubasine___spring_2013	
-RIKEN	000146	Rauwolscine	True	False	lane01	CCGGTACATT	3	E2			TRUE	TRUE	spring_2013			Rauwolscine___spring_2013	
-RIKEN	000147	Reserpine	True	False	lane01	TAGAGTCCGA	3	E3			TRUE	TRUE	spring_2013			Reserpine___spring_2013	
-RIKEN	000148	Salbutamol	True	False	lane01	GCCATTAAGG	3	E4			TRUE	TRUE	spring_2013			Salbutamol___spring_2013	
-RIKEN	000149	Scopolamine	True	False	lane01	GCCAATCTGA	3	E5			TRUE	TRUE	spring_2013			Scopolamine___spring_2013	
-RIKEN	000150	Serotonine	True	False	lane01	AAGATTGCGC	3	E6			TRUE	TRUE	spring_2013			Serotonine___spring_2013	
-RIKEN	000151	Spironolactone	True	False	lane01	GCGATATGAC	3	E7			TRUE	TRUE	spring_2013			Spironolactone___spring_2013	
-RIKEN	000152	Timolol	True	False	lane01	AAGTTCCGAG	3	E8			TRUE	TRUE	spring_2013			Timolol___spring_2013	
-RIKEN	000153	Tipepidine	True	False	lane01	GCACTCATGT	3	E9			TRUE	TRUE	spring_2013			Tipepidine___spring_2013	
-RIKEN	000154	Tolperisone	True	False	lane01	CCAGCGTATA	3	E10			TRUE	TRUE	spring_2013			Tolperisone___spring_2013	
-RIKEN	000155	Triamcinolone acetonide	True	False	lane01	AACATGGCGT	3	E11			TRUE	TRUE	spring_2013			Triamcinolone acetonide___spring_2013	
-RIKEN	000156	Benomyl	True	False	lane01	TGACGACATG	3	E12			FALSE	FALSE	spring_2013			Benomyl___spring_2013	
-RIKEN	000157	Valproic acid	True	False	lane01	TCATGACAGG	3	F1			TRUE	TRUE	spring_2013			Valproic acid___spring_2013	
-RIKEN	000158	NPE943	True	False	lane01	ATGGACATCG	3	F2			TRUE	TRUE	spring_2013			NPE943___spring_2013	
-RIKEN	000159	Carbetapentane	True	False	lane01	CAAGGACGTT	3	F3			TRUE	TRUE	spring_2013			Carbetapentane___spring_2013	
-RIKEN	000160	Naloxone	True	False	lane01	TTCGAAGGCT	3	F4			TRUE	TRUE	spring_2013			Naloxone___spring_2013	
-RIKEN	000161	Resveratrol	True	False	lane01	TCACATCAGG	3	F5			TRUE	TRUE	spring_2013			Resveratrol___spring_2013	
-RIKEN	000162	Neomycin B	True	False	lane01	GATCATCGCA	3	F6			TRUE	TRUE	spring_2013			Neomycin B___spring_2013	
-RIKEN	000163	Erythromycin	True	False	lane01	ATTGGAGACC	3	F7			TRUE	TRUE	spring_2013			Erythromycin___spring_2013	
-RIKEN	000164	Penicillin G	True	False	lane01	GTGAGCACAT	3	F8			TRUE	TRUE	spring_2013			Penicillin G___spring_2013	
-RIKEN	000165	Mitomycin C	True	False	lane01	TGTACACGGT	3	F9			TRUE	TRUE	spring_2013			Mitomycin C___spring_2013	
-RIKEN	000166	Valinomycin	True	False	lane01	TCAGAATGGC	3	F10			TRUE	TRUE	spring_2013			Valinomycin___spring_2013	
-RIKEN	000167	Actinomycin D	True	False	lane01	TAGGATTCGC	3	F11			TRUE	TRUE	spring_2013			Actinomycin D___spring_2013	
-RIKEN	000168	Bortezomib	True	False	lane01	ATGTTGGCAC	3	F12			FALSE	FALSE	spring_2013			Bortezomib___spring_2013	
-RIKEN	000169	Novobiocin	True	False	lane01	TCGAGCAATG	3	G1			TRUE	TRUE	spring_2013			Novobiocin___spring_2013	
-RIKEN	000170	Kanamycin A	True	False	lane01	ATCGGAGCAT	3	G2			TRUE	TRUE	spring_2013			Kanamycin A___spring_2013	
-RIKEN	000171	Spectinomycin	True	False	lane01	TCTGGAGACA	3	G3			TRUE	TRUE	spring_2013			Spectinomycin___spring_2013	
-RIKEN	000172	Streptomycin	True	False	lane01	AGGATCAGCT	3	G4			TRUE	TRUE	spring_2013			Streptomycin___spring_2013	
-RIKEN	000173	Butirosin A	True	False	lane01	ATAAGCTGCC	3	G5			TRUE	TRUE	spring_2013			Butirosin A___spring_2013	
-RIKEN	000174	Rifampicin	True	False	lane01	AATCGGTCGT	3	G6			TRUE	TRUE	spring_2013			Rifampicin___spring_2013	
-RIKEN	000175	Nystatin Al	True	False	lane01	AACATCGTGG	3	G7			TRUE	TRUE	spring_2013			Nystatin Al___spring_2013	
-RIKEN	000176	Gramicidin S	True	False	lane01	AAGGCGTACT	3	G8			TRUE	TRUE	spring_2013			Gramicidin S___spring_2013	
-RIKEN	000177	Bacitracin Al	True	False	lane01	CAGGATCCAT	3	G9			TRUE	TRUE	spring_2013			Bacitracin Al___spring_2013	
-RIKEN	000178	Chloramphenicol	True	False	lane01	TCCGATCGTA	3	G10			TRUE	TRUE	spring_2013			Chloramphenicol___spring_2013	
-RIKEN	000179	Cycloheximide	True	False	lane01	TCCAGTAGGT	3	G11			TRUE	TRUE	spring_2013			Cycloheximide___spring_2013	
-RIKEN	000180	Micafungin	True	False	lane01	TGGCTGACAA	3	G12			FALSE	FALSE	spring_2013			Micafungin___spring_2013	
-RIKEN	000181	UK-2A	True	False	lane01	CGTGCAATAG	3	H1			TRUE	TRUE	spring_2013			UK-2A___spring_2013	
-RIKEN	000182	Amphotericin B	True	False	lane01	ACTTATGCGC	3	H2			TRUE	TRUE	spring_2013			Amphotericin B___spring_2013	
-RIKEN	000183	Monensin	True	False	lane01	TGGACATCAC	3	H3			TRUE	TRUE	spring_2013			Monensin___spring_2013	
-RIKEN	000184	Streptozocin	True	False	lane01	CTGAGTAGAC	3	H4			TRUE	TRUE	spring_2013			Streptozocin___spring_2013	
-RIKEN	000185	Spiramycin I	True	False	lane01	AATCTAGGCG	3	H5			TRUE	TRUE	spring_2013			Spiramycin I___spring_2013	
-RIKEN	000186	Cephalosporin C	True	False	lane01	AAGTTAGGCC	3	H6			TRUE	TRUE	spring_2013			Cephalosporin C___spring_2013	
-RIKEN	000187	Doxorubicin	True	False	lane01	TATAAGCGGC	3	H7			TRUE	TRUE	spring_2013			Doxorubicin___spring_2013	
-RIKEN	000188	Vancomycin	True	False	lane01	CTTCGGAAGT	3	H8			TRUE	TRUE	spring_2013			Vancomycin___spring_2013	
-RIKEN	000189	Oligomycin A	True	False	lane01	TAAGCCGAGT	3	H9			TRUE	TRUE	spring_2013			Oligomycin A___spring_2013	
-RIKEN	000190	Antimycin A3	True	False	lane01	TGTCACGTAG	3	H10			TRUE	TRUE	spring_2013			Antimycin A3___spring_2013	
-RIKEN	000191	Filipin III	True	False	lane01	TACTTCGGCA	3	H11			TRUE	TRUE	spring_2013			Filipin III___spring_2013	
-RIKEN	000192	MMS	True	False	lane01	AATGCAGGCT	3	H12			FALSE	FALSE	spring_2013			MMS___spring_2013	
-RIKEN	000193	4,4'-Dithiodimorpholine	True	False	lane01	CGTTCTCGAA	4	A1			TRUE	TRUE	spring_2013			4,4'-Dithiodimorpholine___spring_2013	
-RIKEN	000194	5-Fluorocytosine	True	False	lane01	CCATTAGACG	4	A2			TRUE	TRUE	spring_2013			5-Fluorocytosine___spring_2013	
-RIKEN	000195	Acivicin	True	False	lane01	CGAGCTGATT	4	A3			TRUE	TRUE	spring_2013			Acivicin___spring_2013	
-RIKEN	000196	Acriflavine	True	False	lane01	TCTGCGGAAT	4	A4			TRUE	TRUE	spring_2013			Acriflavine___spring_2013	
-RIKEN	000197	Alendronate	True	False	lane01	GCGACTTAAG	4	A5			TRUE	TRUE	spring_2013			Alendronate___spring_2013	
-RIKEN	000198	Allopurinol	True	False	lane01	AAGTCCGGTT	4	A6			TRUE	TRUE	spring_2013			Allopurinol___spring_2013	
-RIKEN	000199	Alloxan Monohydrate	True	False	lane01	CAGACTGTGT	4	A7			TRUE	TRUE	spring_2013			Alloxan Monohydrate___spring_2013	
-RIKEN	000200	alpha-Glucosylrutin	True	False	lane01	GCCTTAATCG	4	A8			TRUE	TRUE	spring_2013			alpha-Glucosylrutin___spring_2013	
-RIKEN	000201	Amikacin	True	False	lane01	TTGCGACCAT	4	A9			TRUE	TRUE	spring_2013			Amikacin___spring_2013	
-RIKEN	000202	Amoxicillin	True	False	lane01	TCATCAGTCG	4	A10			TRUE	TRUE	spring_2013			Amoxicillin___spring_2013	
-RIKEN	000203	Apigenin	True	False	lane01	CCATGTGTGA	4	A11			TRUE	TRUE	spring_2013			Apigenin___spring_2013	
-RIKEN	000204	DMSO	True	True	lane01	CGTCGGATAA	4	A12			TRUE	FALSE	spring_2013			DMSO_000204	
-RIKEN	000205	Baicalin	True	False	lane01	CCATACAGGT	4	B1			TRUE	TRUE	spring_2013			Baicalin___spring_2013	
-RIKEN	000206	Bekanamycin	True	False	lane01	GTCTTAAGCC	4	B2			TRUE	TRUE	spring_2013			Bekanamycin___spring_2013	
-RIKEN	000207	Benzthiazide	True	False	lane01	TTGGCCATAG	4	B3			TRUE	TRUE	spring_2013			Benzthiazide___spring_2013	
-RIKEN	000208	Benzylpenicillin	True	False	lane01	CGAGAGATCT	4	B4			TRUE	TRUE	spring_2013			Benzylpenicillin___spring_2013	
-RIKEN	000209	Carbazochrome	True	False	lane01	GTGTGTCCAA	4	B5			TRUE	TRUE	spring_2013			Carbazochrome___spring_2013	
-RIKEN	000210	Carbenicillin	True	False	lane01	TGACTCCAGT	4	B6			TRUE	TRUE	spring_2013			Carbenicillin___spring_2013	
-RIKEN	000211	Carboplatin	True	False	lane01	GACCTCAATG	4	B7			TRUE	TRUE	spring_2013			Carboplatin___spring_2013	
-RIKEN	000212	Cefalexin	True	False	lane01	CAATACGTGG	4	B8			TRUE	TRUE	spring_2013			Cefalexin___spring_2013	
-RIKEN	000213	Cefalotin	True	False	lane01	GGTCCATAAC	4	B9			TRUE	TRUE	spring_2013			Cefalotin___spring_2013	
-RIKEN	000214	Cefazolin	True	False	lane01	CTAGTTACGC	4	B10			TRUE	TRUE	spring_2013			Cefazolin___spring_2013	
-RIKEN	000215	Cefotaxime	True	False	lane01	AAGACTCCTG	4	B11			TRUE	TRUE	spring_2013			Cefotaxime___spring_2013	
-RIKEN	000216	DMSO	True	True	lane01	CGATACTGTG	4	B12			TRUE	FALSE	spring_2013			DMSO_000216	
-RIKEN	000217	Cimetidine	True	False	lane01	TAAGGTCAGC	4	C1			TRUE	TRUE	spring_2013			Cimetidine___spring_2013	
-RIKEN	000218	Clarithromycin	True	False	lane01	TGTTCACAGG	4	C2			TRUE	TRUE	spring_2013			Clarithromycin___spring_2013	
-RIKEN	000219	Clofibrate	True	False	lane01	TTAGCGCGAT	4	C3			TRUE	TRUE	spring_2013			Clofibrate___spring_2013	
-RIKEN	000220	Clotrimazole	True	False	lane01	ACTAGGCGTA	4	C4			TRUE	TRUE	spring_2013			Clotrimazole___spring_2013	
-RIKEN	000221	Colistin	True	False	lane01	GACGAACTTG	4	C5			TRUE	TRUE	spring_2013			Colistin___spring_2013	
-RIKEN	000222	Compactin	True	False	lane01	TGGACTTAGC	4	C6			TRUE	TRUE	spring_2013			Compactin___spring_2013	
-RIKEN	000223	Conessin	True	False	lane01	TGCGACGTAT	4	C7			TRUE	TRUE	spring_2013			Conessin___spring_2013	
-RIKEN	000224	CV-6209	True	False	lane01	TCCATGACTG	4	C8			TRUE	TRUE	spring_2013			CV-6209___spring_2013	
-RIKEN	000225	Cyclandelate	True	False	lane01	GCTAATGGCA	4	C9			TRUE	TRUE	spring_2013			Cyclandelate___spring_2013	
-RIKEN	000226	Daunorubicin(Daunomycin)	True	False	lane01	GTTGCTACAC	4	C10			TRUE	TRUE	spring_2013			Daunorubicin(Daunomycin)___spring_2013	
-RIKEN	000227	Diazoxide	True	False	lane01	GACATAGCTC	4	C11			TRUE	TRUE	spring_2013			Diazoxide___spring_2013	
-RIKEN	000228	DMSO	True	True	lane01	GATTAGGCCA	4	C12			TRUE	FALSE	spring_2013			DMSO_000228	
-RIKEN	000229	Diethylstilbesterol	True	False	lane01	TATGCCTAGC	4	D1			TRUE	TRUE	spring_2013			Diethylstilbesterol___spring_2013	
-RIKEN	000230	Difenidol	True	False	lane01	ATAGCCTTCG	4	D2			TRUE	TRUE	spring_2013			Difenidol___spring_2013	
-RIKEN	000231	Difurazone	True	False	lane01	TTCAGCCTAG	4	D3			TRUE	TRUE	spring_2013			Difurazone___spring_2013	
-RIKEN	000232	Ellagic acid dihydrate	True	False	lane01	GTTGCACGAA	4	D4			TRUE	TRUE	spring_2013			Ellagic acid dihydrate___spring_2013	
-RIKEN	000233	Etacrynic acid	True	False	lane01	CCTGGTAACT	4	D5			TRUE	TRUE	spring_2013			Etacrynic acid___spring_2013	
-RIKEN	000234	Etidronate	True	False	lane01	ATACCGCATG	4	D6			TRUE	TRUE	spring_2013			Etidronate___spring_2013	
-RIKEN	000235	Etoposide	True	False	lane01	TATACTCGCG	4	D7			TRUE	TRUE	spring_2013			Etoposide___spring_2013	
-RIKEN	000236	Fosfomycin	True	False	lane01	GACGAGTCTA	4	D8			TRUE	TRUE	spring_2013			Fosfomycin___spring_2013	
-RIKEN	000237	G-418	True	False	lane01	TGAGTAGCTC	4	D9			TRUE	TRUE	spring_2013			G-418___spring_2013	
-RIKEN	000238	gamma-Oryzanol	True	False	lane01	AATGGCCTTG	4	D10			TRUE	TRUE	spring_2013			gamma-Oryzanol___spring_2013	
-RIKEN	000239	Geniposidic acid	True	False	lane01	GGCGCATAAT	4	D11			TRUE	TRUE	spring_2013			Geniposidic acid___spring_2013	
-RIKEN	000240	DMSO	True	True	lane01	TAGACTACGC	4	D12			TRUE	FALSE	spring_2013			DMSO_000240	
-RIKEN	000241	Glibenclamide	True	False	lane01	GACCGTGTTA	4	E1			TRUE	TRUE	spring_2013			Glibenclamide___spring_2013	
-RIKEN	000242	Gliclazide	True	False	lane01	CGTTATAGCC	4	E2			TRUE	TRUE	spring_2013			Gliclazide___spring_2013	
-RIKEN	000243	Harmol	True	False	lane01	TGGACTGCAT	4	E3			TRUE	TRUE	spring_2013			Harmol___spring_2013	
-RIKEN	000244	Idebenone	True	False	lane01	TGCCGGTAAT	4	E4			TRUE	TRUE	spring_2013			Idebenone___spring_2013	
-RIKEN	000245	Ifenprodil	True	False	lane01	GAGAAGCTTC	4	E5			TRUE	TRUE	spring_2013			Ifenprodil___spring_2013	
-RIKEN	000246	Indapamide	True	False	lane01	CCTTAGGAAG	4	E6			TRUE	TRUE	spring_2013			Indapamide___spring_2013	
-RIKEN	000247	Ipriflavone	True	False	lane01	AGGATTCCAC	4	E7			TRUE	TRUE	spring_2013			Ipriflavone___spring_2013	
-RIKEN	000248	Irsogladine	True	False	lane01	ATCATGGACG	4	E8			TRUE	TRUE	spring_2013			Irsogladine___spring_2013	
-RIKEN	000249	Josamycin	True	False	lane01	GCACAGTATG	4	E9			TRUE	TRUE	spring_2013			Josamycin___spring_2013	
-RIKEN	000250	Ketotifen	True	False	lane01	CTTCTAGGCA	4	E10			TRUE	TRUE	spring_2013			Ketotifen___spring_2013	
-RIKEN	000251	L-Buthionine-(S,R)-sulfoximine	True	False	lane01	ACTGCTTGAC	4	E11			TRUE	TRUE	spring_2013			L-Buthionine-(S,R)-sulfoximine___spring_2013	
-RIKEN	000252	Benomyl	True	False	lane01	TGCAGTACGA	4	E12			FALSE	FALSE	spring_2013			Benomyl___spring_2013	
-RIKEN	000253	Lovastatin	True	False	lane01	TGACGGACTA	4	F1			TRUE	TRUE	spring_2013			Lovastatin___spring_2013	
-RIKEN	000254	Meclizine	True	False	lane01	ACTATCGAGG	4	F2			TRUE	TRUE	spring_2013			Meclizine___spring_2013	
-RIKEN	000255	Menatetrenone	True	False	lane01	TCAGGATGCA	4	F3			TRUE	TRUE	spring_2013			Menatetrenone___spring_2013	
-RIKEN	000256	Methotrexate	True	False	lane01	GACAACGCTT	4	F4			TRUE	TRUE	spring_2013			Methotrexate___spring_2013	
-RIKEN	000257	Metolazone	True	False	lane01	TAGGACTGAC	4	F5			TRUE	TRUE	spring_2013			Metolazone___spring_2013	
-RIKEN	000258	Miconazole	True	False	lane01	TGGATCTCGA	4	F6			TRUE	TRUE	spring_2013			Miconazole___spring_2013	
-RIKEN	000259	Mycophenolic acid	True	False	lane01	CCAAGTAGTG	4	F7			TRUE	TRUE	spring_2013			Mycophenolic acid___spring_2013	
-RIKEN	000260	Norfloxacin	True	False	lane01	GTCTAGAAGC	4	F8			TRUE	TRUE	spring_2013			Norfloxacin___spring_2013	
-RIKEN	000261	Paeoniflorin	True	False	lane01	TACAGGTCCA	4	F9			TRUE	TRUE	spring_2013			Paeoniflorin___spring_2013	
-RIKEN	000262	Picrotoxin	True	False	lane01	CAAGCTTAGG	4	F10			TRUE	TRUE	spring_2013			Picrotoxin___spring_2013	
-RIKEN	000263	Podophyllotoxin	True	False	lane01	GTTGCCTAAG	4	F11			TRUE	TRUE	spring_2013			Podophyllotoxin___spring_2013	
-RIKEN	000264	Bortezomib	True	False	lane01	TGAACCTGAC	4	F12			FALSE	FALSE	spring_2013			Bortezomib___spring_2013	
-RIKEN	000265	Quinidine	True	False	lane01	AAGTGTTCCG	4	G1			TRUE	TRUE	spring_2013			Quinidine___spring_2013	
-RIKEN	000266	Ranitidine	True	False	lane01	AACTCTGGAG	4	G2			TRUE	TRUE	spring_2013			Ranitidine___spring_2013	
-RIKEN	000267	Sennoside A	True	False	lane01	CAAGCCAGTT	4	G3			TRUE	TRUE	spring_2013			Sennoside A___spring_2013	
-RIKEN	000268	Sennoside B	True	False	lane01	GCATAGTTCG	4	G4			TRUE	TRUE	spring_2013			Sennoside B___spring_2013	
-RIKEN	000269	Simvastatin	True	False	lane01	TGGTGCATAC	4	G5			TRUE	TRUE	spring_2013			Simvastatin___spring_2013	
-RIKEN	000270	Suramin	True	False	lane01	TGACCGTCAT	4	G6			TRUE	TRUE	spring_2013			Suramin___spring_2013	
-RIKEN	000271	Tamoxifen	True	False	lane01	GATATGGACC	4	G7			TRUE	TRUE	spring_2013			Tamoxifen___spring_2013	
-RIKEN	000272	Timosaponin A-III	True	False	lane01	CAACTGTGAG	4	G8			TRUE	TRUE	spring_2013			Timosaponin A-III___spring_2013	
-RIKEN	000273	Tolazamide	True	False	lane01	ACTAGCATGG	4	G9			TRUE	TRUE	spring_2013			Tolazamide___spring_2013	
-RIKEN	000274	Tolbutamide	True	False	lane01	CTTAGCAGGT	4	G10			TRUE	TRUE	spring_2013			Tolbutamide___spring_2013	
-RIKEN	000275	Triamterene	True	False	lane01	CAAGGATCTG	4	G11			TRUE	TRUE	spring_2013			Triamterene___spring_2013	
-RIKEN	000276	Micafungin	True	False	lane01	CACCTAAGTG	4	G12			FALSE	FALSE	spring_2013			Micafungin___spring_2013	
-RIKEN	000277	Ursodesoxycholic acid	True	False	lane01	CTGACCTAGA	4	H1			TRUE	TRUE	spring_2013			Ursodesoxycholic acid___spring_2013	
-RIKEN	000278	Vinblastine	True	False	lane01	TACAGCGTTG	4	H2			TRUE	TRUE	spring_2013			Vinblastine___spring_2013	
-RIKEN	000279	Anisomycin	True	False	lane01	GCTCAGAATC	4	H3			TRUE	TRUE	spring_2013			Anisomycin___spring_2013	
-RIKEN	000280	Brefeldin A	True	False	lane01	TCAGCTAGTG	4	H4			TRUE	TRUE	spring_2013			Brefeldin A___spring_2013	
-RIKEN	000281	Cerulenin	True	False	lane01	AGCTGATCAG	4	H5			TRUE	TRUE	spring_2013			Cerulenin___spring_2013	
-RIKEN	000282	Cyclosporin A	True	False	lane01	TAACGTAGCC	4	H6			TRUE	TRUE	spring_2013			Cyclosporin A___spring_2013	
-RIKEN	000283	Cytochalasin B	True	False	lane01	ACAAGCGTTC	4	H7			TRUE	TRUE	spring_2013			Cytochalasin B___spring_2013	
-RIKEN	000284	CV-3988	True	False	lane01	CGGTACGTTA	4	H8			TRUE	TRUE	spring_2013			CV-3988___spring_2013	
-RIKEN	000285	Ibandronate	True	False	lane01	ACACGTGGTA	4	H9			TRUE	TRUE	spring_2013			Ibandronate___spring_2013	
-RIKEN	000286	Midecamycin	True	False	lane01	AGCTGTATCC	4	H10			TRUE	TRUE	spring_2013			Midecamycin___spring_2013	
-RIKEN	000287	Omeprazole	True	False	lane01	AATACGTCCG	4	H11			TRUE	TRUE	spring_2013			Omeprazole___spring_2013	
-RIKEN	000288	MMS	True	False	lane01	CATGTGAGAC	4	H12			FALSE	FALSE	spring_2013			MMS___spring_2013	
-RIKEN	000289	(-)-Ouabain	True	False	lane01	CTTGGCGATA	5	A1			TRUE	TRUE	spring_2013			(-)-Ouabain___spring_2013	
-RIKEN	000290	Amiloride monohydrochloride dihydrate	True	False	lane01	GATAGCCAGT	5	A2			TRUE	TRUE	spring_2013			Amiloride monohydrochloride dihydrate___spring_2013	
-RIKEN	000291	Benzamidine	True	False	lane01	CTATCGAGCA	5	A3			TRUE	TRUE	spring_2013			Benzamidine___spring_2013	
-RIKEN	000292	Berberine chloride	True	False	lane01	TTGAGCAGCA	5	A4			TRUE	TRUE	spring_2013			Berberine chloride___spring_2013	
-RIKEN	000293	Cholesterol	True	False	lane01	CGCGATATTG	5	A5			TRUE	TRUE	spring_2013			Cholesterol___spring_2013	
-RIKEN	000294	cis-Androsterone	True	False	lane01	TATACACCGG	5	A6			TRUE	TRUE	spring_2013			cis-Androsterone___spring_2013	
-RIKEN	000295	L(-)-Mimosine	True	False	lane01	TAGTCAACCG	5	A7			TRUE	TRUE	spring_2013			L(-)-Mimosine___spring_2013	
-RIKEN	000296	Lactoferrin, from Bovin Milk	True	False	lane01	GGTCTAAGTC	5	A8			TRUE	TRUE	spring_2013			Lactoferrin, from Bovin Milk___spring_2013	
-RIKEN	000297	Limonin, from Grapefruit	True	False	lane01	AAGCGGTTAC	5	A9			TRUE	TRUE	spring_2013			Limonin, from Grapefruit___spring_2013	
-RIKEN	000298	L-Lobeline hydrochloride	True	False	lane01	ACGCGACATT	5	A10			TRUE	TRUE	spring_2013			L-Lobeline hydrochloride___spring_2013	
-RIKEN	000299	Morantel citrate monohydrate	True	False	lane01	ACTCAGTGTG	5	A11			TRUE	TRUE	spring_2013			Morantel citrate monohydrate___spring_2013	
-RIKEN	000300	DMSO	True	True	lane01	TAGGCTTCCA	5	A12			TRUE	FALSE	spring_2013			DMSO_000300	
-RIKEN	000301	Niflumic acid	True	False	lane01	TTGAAGACCG	5	B1			TRUE	TRUE	spring_2013			Niflumic acid___spring_2013	
-RIKEN	000302	Olaquindox	True	False	lane01	TCGACTTGAC	5	B2			TRUE	TRUE	spring_2013			Olaquindox___spring_2013	
-RIKEN	000303	Oleandomycin	True	False	lane01	TGCAAGGCTA	5	B3			TRUE	TRUE	spring_2013			Oleandomycin___spring_2013	
-RIKEN	000304	Oxacillin	True	False	lane01	GTAGCTAAGC	5	B4			TRUE	TRUE	spring_2013			Oxacillin___spring_2013	
-RIKEN	000305	Oxytetracycline	True	False	lane01	TCAGGACGAT	5	B5			TRUE	TRUE	spring_2013			Oxytetracycline___spring_2013	
-RIKEN	000306	Phenethicillin	True	False	lane01	GCTAAGATCG	5	B6			TRUE	TRUE	spring_2013			Phenethicillin___spring_2013	
-RIKEN	000307	Piroxicam	True	False	lane01	AAGTGGCCTA	5	B7			TRUE	TRUE	spring_2013			Piroxicam___spring_2013	
-RIKEN	000308	Procaterol hydrochloride hemihydrate	True	False	lane01	ACGCTTACAG	5	B8			TRUE	TRUE	spring_2013			Procaterol hydrochloride hemihydrate___spring_2013	
-RIKEN	000309	Riluzole hydrochloride	True	False	lane01	GGTCATTACG	5	B9			TRUE	TRUE	spring_2013			Riluzole hydrochloride___spring_2013	
-RIKEN	000310	Sulindac	True	False	lane01	TGATGGATCC	5	B10			TRUE	TRUE	spring_2013			Sulindac___spring_2013	
-RIKEN	000311	Tiothixene	True	False	lane01	TCGTAGGCTA	5	B11			TRUE	TRUE	spring_2013			Tiothixene___spring_2013	
-RIKEN	000312	DMSO	True	True	lane01	ATAGGCACTG	5	B12			TRUE	FALSE	spring_2013			DMSO_000312	
-RIKEN	000313	Z-Capsaicin	True	False	lane01	CTTATGGCAG	5	C1			TRUE	TRUE	spring_2013			Z-Capsaicin___spring_2013	
-RIKEN	000314	NPE797	True	False	lane01	GTTCCGATAC	5	C2			TRUE	TRUE	spring_2013			NPE797___spring_2013	
-RIKEN	000315	Aclacinomycin A	True	False	lane01	GCTCGAACTT	5	C3			TRUE	TRUE	spring_2013			Aclacinomycin A___spring_2013	
-RIKEN	000316	Aminoguanidine, HCl	True	False	lane01	CATGACCTGT	5	C4			TRUE	TRUE	spring_2013			Aminoguanidine, HCl___spring_2013	
-RIKEN	000317	Aristolochic acid	True	False	lane01	CATAGGTCAG	5	C5			TRUE	TRUE	spring_2013			Aristolochic acid___spring_2013	
-RIKEN	000318	Aspirin	True	False	lane01	GAACCAGTTC	5	C6			TRUE	TRUE	spring_2013			Aspirin___spring_2013	
-RIKEN	000319	Camptothecin	True	False	lane01	TCCGCAATTG	5	C7			TRUE	TRUE	spring_2013			Camptothecin___spring_2013	
-RIKEN	000320	Chlorpromazine, HCl	True	False	lane01	GCGAGTATTC	5	C8			TRUE	TRUE	spring_2013			Chlorpromazine, HCl___spring_2013	
-RIKEN	000321	Cisplatin	True	False	lane01	ACAGCTTGCT	5	C9			TRUE	TRUE	spring_2013			Cisplatin___spring_2013	
-RIKEN	000322	Cyclophosphamide	True	False	lane01	ACTTAGCGAG	5	C10			TRUE	TRUE	spring_2013			Cyclophosphamide___spring_2013	
-RIKEN	000323	DFMO	True	False	lane01	CCAGTTGCAT	5	C11			TRUE	TRUE	spring_2013			DFMO___spring_2013	
-RIKEN	000324	DMSO	True	True	lane01	ATAACGTCGG	5	C12			TRUE	FALSE	spring_2013			DMSO_000324	
-RIKEN	000325	Flutamide	True	False	lane01	GATCGACTCA	5	D1			TRUE	TRUE	spring_2013			Flutamide___spring_2013	
-RIKEN	000326	L-NAME	True	False	lane01	GTCCTAACGA	5	D2			TRUE	TRUE	spring_2013			L-NAME___spring_2013	
-RIKEN	000327	N-Acetyl-L-cysteine	True	False	lane01	AGAGCACGTT	5	D3			TRUE	TRUE	spring_2013			N-Acetyl-L-cysteine___spring_2013	
-RIKEN	000328	NDGA	True	False	lane01	ATGGCCGTTA	5	D4			TRUE	TRUE	spring_2013			NDGA___spring_2013	
-RIKEN	000329	N-Phenylanthranilic acid	True	False	lane01	TGTTGCAAGC	5	D5			TRUE	TRUE	spring_2013			N-Phenylanthranilic acid___spring_2013	
-RIKEN	000330	Papaverine	True	False	lane01	CCTAAGGACT	5	D6			TRUE	TRUE	spring_2013			Papaverine___spring_2013	
-RIKEN	000331	Pentoxifylline	True	False	lane01	GGACGTAATC	5	D7			TRUE	TRUE	spring_2013			Pentoxifylline___spring_2013	
-RIKEN	000332	NPE1246	True	False	lane01	CGCTTCGAAT	5	D8			TRUE	TRUE	spring_2013			NPE1246___spring_2013	
-RIKEN	000333	Quercetin	True	False	lane01	ATATACGGCG	5	D9			TRUE	TRUE	spring_2013			Quercetin___spring_2013	
-RIKEN	000334	Rolipram	True	False	lane01	AGACGTGTAC	5	D10			TRUE	TRUE	spring_2013			Rolipram___spring_2013	
-RIKEN	000335	Salicylate	True	False	lane01	TTACGACTGG	5	D11			TRUE	TRUE	spring_2013			Salicylate___spring_2013	
-RIKEN	000336	DMSO	True	True	lane01	GCGTATCTAG	5	D12			TRUE	FALSE	spring_2013			DMSO_000336	
-RIKEN	000337	Theophylline	True	False	lane01	TTAACACGGC	5	E1			TRUE	TRUE	spring_2013			Theophylline___spring_2013	
-RIKEN	000338	Azacytidine	True	False	lane01	GGCTATATGC	5	E2			TRUE	TRUE	spring_2013			Azacytidine___spring_2013	
-RIKEN	000339	NPE1206	True	False	lane01	TCGCAGTACT	5	E3			TRUE	TRUE	spring_2013			NPE1206___spring_2013	
-RIKEN	000340	NPE1198	True	False	lane01	CGCTTGACAA	5	E4			TRUE	TRUE	spring_2013			NPE1198___spring_2013	
-RIKEN	000341	NPE1199	True	False	lane01	TGCTTCAGAG	5	E5			TRUE	TRUE	spring_2013			NPE1199___spring_2013	
-RIKEN	000342	1400W	True	False	lane01	AATGGATCCG	5	E6			TRUE	TRUE	spring_2013			1400W___spring_2013	
-RIKEN	000343	NPE769	True	False	lane01	TACGTCATCG	5	E7			TRUE	TRUE	spring_2013			NPE769___spring_2013	
-RIKEN	000344	7-Nitroindazole	True	False	lane01	ATTCTGGACC	5	E8			TRUE	TRUE	spring_2013			7-Nitroindazole___spring_2013	
-RIKEN	000345	Arphamenine A	True	False	lane01	CTGATCAAGG	5	E9			TRUE	TRUE	spring_2013			Arphamenine A___spring_2013	
-RIKEN	000346	AZT	True	False	lane01	GCTTGAAGAC	5	E10			TRUE	TRUE	spring_2013			AZT___spring_2013	
-RIKEN	000347	Cantharidin	True	False	lane01	CGTTGCATGA	5	E11			TRUE	TRUE	spring_2013			Cantharidin___spring_2013	
-RIKEN	000348	Benomyl	True	False	lane01	TGGATCGACA	5	E12			FALSE	FALSE	spring_2013			Benomyl___spring_2013	
-RIKEN	000349	Emodin	True	False	lane01	TTCGAGGTCA	5	F1			TRUE	TRUE	spring_2013			Emodin___spring_2013	
-RIKEN	000350	Flurbiprofen	True	False	lane01	TTGGACATGC	5	F2			TRUE	TRUE	spring_2013			Flurbiprofen___spring_2013	
-RIKEN	000351	Fluvastatin	True	False	lane01	ATCGGATACG	5	F3			TRUE	TRUE	spring_2013			Fluvastatin___spring_2013	
-RIKEN	000352	IBMX	True	False	lane01	TTCCAGAGGA	5	F4			TRUE	TRUE	spring_2013			IBMX___spring_2013	
-RIKEN	000353	Ro 20-1724	True	False	lane01	CACTGTGGAA	5	F5			TRUE	TRUE	spring_2013			Ro 20-1724___spring_2013	
-RIKEN	000354	Rottlerin	True	False	lane01	CTTATCGGAC	5	F6			TRUE	TRUE	spring_2013			Rottlerin___spring_2013	
-RIKEN	000355	Zaprinast	True	False	lane01	GCTAACAGCT	5	F7			TRUE	TRUE	spring_2013			Zaprinast___spring_2013	
-RIKEN	000356	Bestatin	True	False	lane01	CTACTGGACA	5	F8			TRUE	TRUE	spring_2013			Bestatin___spring_2013	
-RIKEN	000357	Genistein	True	False	lane01	GGCAGAATCT	5	F9			TRUE	TRUE	spring_2013			Genistein___spring_2013	
-RIKEN	000358	N-Acetyl-S-farnesyl-L-cysteine	True	False	lane01	ACAGAGTTGC	5	F10			TRUE	TRUE	spring_2013			N-Acetyl-S-farnesyl-L-cysteine___spring_2013	
-RIKEN	000359	Nocodazole	True	False	lane01	CGAACATGGT	5	F11			TRUE	TRUE	spring_2013			Nocodazole___spring_2013	
-RIKEN	000360	Bortezomib	True	False	lane01	ACGGTTCCAA	5	F12			FALSE	FALSE	spring_2013			Bortezomib___spring_2013	
-RIKEN	000361	Puromycin	True	False	lane01	CTGACATCAG	5	G1			TRUE	TRUE	spring_2013			Puromycin___spring_2013	
-RIKEN	000362	Bacitracin A	True	False	lane01	TAACGTTCCG	5	G2			TRUE	TRUE	spring_2013			Bacitracin A___spring_2013	
-RIKEN	000363	Blasticidin S	True	False	lane01	AGCAGTAGCT	5	G3			TRUE	TRUE	spring_2013			Blasticidin S___spring_2013	
-RIKEN	000364	Cathomycin	True	False	lane01	AGCCTGTAAC	5	G4			TRUE	TRUE	spring_2013			Cathomycin___spring_2013	
-RIKEN	000365	Cellocidin	True	False	lane01	CACGGAATTG	5	G5			TRUE	TRUE	spring_2013			Cellocidin___spring_2013	
-RIKEN	000366	D-cycloserine	True	False	lane01	ACGGTTAGCT	5	G6			TRUE	TRUE	spring_2013			D-cycloserine___spring_2013	
-RIKEN	000367	Moenomycin	True	False	lane01	TAGAGCATCG	5	G7			TRUE	TRUE	spring_2013			Moenomycin___spring_2013	
-RIKEN	000368	O-carbamyl-D-serine	True	False	lane01	CACTTGGCAT	5	G8			TRUE	TRUE	spring_2013			O-carbamyl-D-serine___spring_2013	
-RIKEN	000369	Penicillin G	True	False	lane01	CCGATGTCTA	5	G9			TRUE	TRUE	spring_2013			Penicillin G___spring_2013	
-RIKEN	000370	Polyoxin A	True	False	lane01	AGAAGTCGTC	5	G10			TRUE	TRUE	spring_2013			Polyoxin A___spring_2013	
-RIKEN	000371	Polyoxin D	True	False	lane01	ACGTGAGTAC	5	G11			TRUE	TRUE	spring_2013			Polyoxin D___spring_2013	
-RIKEN	000372	Micafungin	True	False	lane01	GTGATCCTCA	5	G12			FALSE	FALSE	spring_2013			Micafungin___spring_2013	
-RIKEN	000373	Riboflavin	True	False	lane01	ATGACGATGC	5	H1			TRUE	TRUE	spring_2013			Riboflavin___spring_2013	
-RIKEN	000374	Streptomycin	True	False	lane01	TACGCGATAG	5	H2			TRUE	TRUE	spring_2013			Streptomycin___spring_2013	
-RIKEN	000375	Tetracycline	True	False	lane01	TGGCCACTAT	5	H3			TRUE	TRUE	spring_2013			Tetracycline___spring_2013	
-RIKEN	000376	Viomycin	True	False	lane01	CTGGCTAGAA	5	H4			TRUE	TRUE	spring_2013			Viomycin___spring_2013	
-RIKEN	000377	Minomycin	True	False	lane01	ATGCGCCAAT	5	H5			TRUE	TRUE	spring_2013			Minomycin___spring_2013	
-RIKEN	000378	Sigmamycin(Oleandomycin)	True	False	lane01	GACCATGCAT	5	H6			TRUE	TRUE	spring_2013			Sigmamycin(Oleandomycin)___spring_2013	
-RIKEN	000379	Tuberin	True	False	lane01	CGAATAGGCT	5	H7			TRUE	TRUE	spring_2013			Tuberin___spring_2013	
-RIKEN	000380	Tyrocidine B	True	False	lane01	AGTGTACCGA	5	H8			TRUE	TRUE	spring_2013			Tyrocidine B___spring_2013	
-RIKEN	000381	Hydroxymycin	True	False	lane01	TATAGGAGCC	5	H9			TRUE	TRUE	spring_2013			Hydroxymycin___spring_2013	
-RIKEN	000382	Oxytetracycline	True	False	lane01	AGTCTACGGT	5	H10			TRUE	TRUE	spring_2013			Oxytetracycline___spring_2013	
-RIKEN	000383	Colistin A	True	False	lane01	CAGTTGACAG	5	H11			TRUE	TRUE	spring_2013			Colistin A___spring_2013	
-RIKEN	000384	MMS	True	False	lane01	AGCTCATTGG	5	H12			FALSE	FALSE	spring_2013			MMS___spring_2013	
-RIKEN	000385	(-)-Cotinine	True	False	lane01	TTGCCGAAGA	7	A1			TRUE	TRUE	spring_2013			(-)-Cotinine___spring_2013	
-RIKEN	000386	Epinephrine(+/-)	True	False	lane01	TGGCATCCAA	7	A2			TRUE	TRUE	spring_2013			Epinephrine(+/-)___spring_2013	
-RIKEN	000387	Norepinephrine bitartrate	True	False	lane01	GCGTAATACG	7	A3			TRUE	TRUE	spring_2013			Norepinephrine bitartrate___spring_2013	
-RIKEN	000388	D-(+)-Catechin hydrate	True	False	lane01	AACACTTGGC	7	A4			TRUE	TRUE	spring_2013			D-(+)-Catechin hydrate___spring_2013	
-RIKEN	000389	(+)-cis-Diltiazem hydrocholoride	True	False	lane01	CTACGCGTAT	7	A5			TRUE	TRUE	spring_2013			(+)-cis-Diltiazem hydrocholoride___spring_2013	
-RIKEN	000390	Miconazole nitrate	True	False	lane01	TAATAGGCCG	7	A6			TRUE	TRUE	spring_2013			Miconazole nitrate___spring_2013	
-RIKEN	000391	(+/-)-SKF-38393 hydrochloride	True	False	lane01	CATGGCGAAT	7	A7			TRUE	TRUE	spring_2013			(+/-)-SKF-38393 hydrochloride___spring_2013	
-RIKEN	000392	(+/-)-Sulpiride	True	False	lane01	TAGACCGTGA	7	A8			TRUE	TRUE	spring_2013			(+/-)-Sulpiride___spring_2013	
-RIKEN	000393	Thalidomide	True	False	lane01	GACGATTGTC	7	A9			TRUE	TRUE	spring_2013			Thalidomide___spring_2013	
-RIKEN	000394	(+/-)-Vesamicol hydrochloride	True	False	lane01	AGTGTCCAAG	7	A10			TRUE	TRUE	spring_2013			(+/-)-Vesamicol hydrochloride___spring_2013	
-RIKEN	000395	(S)-(-)-Propranolol hydrochloride	True	False	lane01	TAGGCACTCA	7	A11			TRUE	TRUE	spring_2013			(S)-(-)-Propranolol hydrochloride___spring_2013	
-RIKEN	000396	DMSO	True	True	lane01	GATGCACATC	7	A12			TRUE	FALSE	spring_2013			DMSO_000396	
-RIKEN	000397	NPE272	True	False	lane01	GGTAACACGT	7	B1			TRUE	TRUE	spring_2013			NPE272___spring_2013	
-RIKEN	000398	Bromocriptine mesylate	True	False	lane01	ACATGGAGTC	7	B2			TRUE	TRUE	spring_2013			Bromocriptine mesylate___spring_2013	
-RIKEN	000399	3-Hydroxy-DL-kynurenine	True	False	lane01	TAGAAGGCTC	7	B3			TRUE	TRUE	spring_2013			3-Hydroxy-DL-kynurenine___spring_2013	
-RIKEN	000400	NPE759	True	False	lane01	GGCATACTTG	7	B4			TRUE	TRUE	spring_2013			NPE759___spring_2013	
-RIKEN	000401	NPE779	True	False	lane01	GGCCTTATAC	7	B5			TRUE	TRUE	spring_2013			NPE779___spring_2013	
-RIKEN	000402	NPE959	True	False	lane01	TAAGTCCGCT	7	B6			TRUE	TRUE	spring_2013			NPE959___spring_2013	
-RIKEN	000403	NPE1241	True	False	lane01	CAGCGTAATC	7	B7			TRUE	TRUE	spring_2013			NPE1241___spring_2013	
-RIKEN	000404	5-Bromo-2'-deoxyuridine	True	False	lane01	AGGAGTCCTA	7	B8			TRUE	TRUE	spring_2013			5-Bromo-2'-deoxyuridine___spring_2013	
-RIKEN	000405	Bergapten	True	False	lane01	TGGACCAACT	7	B9			TRUE	TRUE	spring_2013			Bergapten___spring_2013	
-RIKEN	000406	6-Azauridine	True	False	lane01	GGCACAGTTA	7	B10			TRUE	TRUE	spring_2013			6-Azauridine___spring_2013	
-RIKEN	000407	Xanthotoxin	True	False	lane01	TGAAGTCACC	7	B11			TRUE	TRUE	spring_2013			Xanthotoxin___spring_2013	
-RIKEN	000408	DMSO	True	True	lane01	TTGGCTCAGA	7	B12			TRUE	FALSE	spring_2013			DMSO_000408	
-RIKEN	000409	Alizarin red S	True	False	lane01	AAGCGCATGT	7	C1			TRUE	TRUE	spring_2013			Alizarin red S___spring_2013	
-RIKEN	000410	NPE1008	True	False	lane01	GACAGACTTC	7	C2			TRUE	TRUE	spring_2013			NPE1008___spring_2013	
-RIKEN	000411	Aminopterin	True	False	lane01	AGTCGTCCAT	7	C3			TRUE	TRUE	spring_2013			Aminopterin___spring_2013	
-RIKEN	000412	Amitriptyline hydrochloride	True	False	lane01	ATGACACTGG	7	C4			TRUE	TRUE	spring_2013			Amitriptyline hydrochloride___spring_2013	
-RIKEN	000413	Apomorphine hydrochloride hemihydrate	True	False	lane01	TGAGTGAACC	7	C5			TRUE	TRUE	spring_2013			Apomorphine hydrochloride hemihydrate___spring_2013	
-RIKEN	000414	Argininosuccinic acid disodium salt	True	False	lane01	TCATAGAGGC	7	C6			TRUE	TRUE	spring_2013			Argininosuccinic acid disodium salt___spring_2013	
-RIKEN	000415	Atenolol	True	False	lane01	AGATCCGCAT	7	C7			TRUE	TRUE	spring_2013			Atenolol___spring_2013	
-RIKEN	000416	Atropine	True	False	lane01	GGACAATCTC	7	C8			TRUE	TRUE	spring_2013			Atropine___spring_2013	
-RIKEN	000417	Auramine O	True	False	lane01	GCATGTTGCA	7	C9			TRUE	TRUE	spring_2013			Auramine O___spring_2013	
-RIKEN	000418	Azlocillin sodium salt	True	False	lane01	GAACTGGCTT	7	C10			TRUE	TRUE	spring_2013			Azlocillin sodium salt___spring_2013	
-RIKEN	000419	Azocarmine G	True	False	lane01	TAGCCGTATC	7	C11			TRUE	TRUE	spring_2013			Azocarmine G___spring_2013	
-RIKEN	000420	DMSO	True	True	lane01	CGATTATCGC	7	C12			TRUE	FALSE	spring_2013			DMSO_000420	
-RIKEN	000421	Beclomethasone	True	False	lane01	GATGACGCAT	7	D1			TRUE	TRUE	spring_2013			Beclomethasone___spring_2013	
-RIKEN	000422	Benomyl	True	False	lane01	AGTACTAGGC	7	D2			FALSE	FALSE	spring_2013			Benomyl___spring_2013	
-RIKEN	000423	NPE1010	True	False	lane01	AATCTGACGG	7	D3			TRUE	TRUE	spring_2013			NPE1010___spring_2013	
-RIKEN	000424	Bicinchoninc acid disodium salt	True	False	lane01	ACAAGGCTCT	7	D4			TRUE	TRUE	spring_2013			Bicinchoninc acid disodium salt___spring_2013	
-RIKEN	000425	Bisbenzimide H 33258	True	False	lane01	AGCCTAGTGA	7	D5			TRUE	TRUE	spring_2013			Bisbenzimide H 33258___spring_2013	
-RIKEN	000426	Brilliant blue G	True	False	lane01	CGTTGATACG	7	D6			TRUE	TRUE	spring_2013			Brilliant blue G___spring_2013	
-RIKEN	000427	Bromocresol purple	True	False	lane01	CATCAGTAGG	7	D7			TRUE	TRUE	spring_2013			Bromocresol purple___spring_2013	
-RIKEN	000428	Cefazolin sodium salt	True	False	lane01	TGAACGTGCT	7	D8			TRUE	TRUE	spring_2013			Cefazolin sodium salt___spring_2013	
-RIKEN	000429	Cefoxitin sodium salt	True	False	lane01	CGTCTAATCG	7	D9			TRUE	TRUE	spring_2013			Cefoxitin sodium salt___spring_2013	
-RIKEN	000430	Cephalothin sodium salt	True	False	lane01	TAATGCAGCG	7	D10			TRUE	TRUE	spring_2013			Cephalothin sodium salt___spring_2013	
-RIKEN	000431	Cephapirin sodium salt	True	False	lane01	TGCGCATATG	7	D11			TRUE	TRUE	spring_2013			Cephapirin sodium salt___spring_2013	
-RIKEN	000432	DMSO	True	True	lane01	ACTACTGCAG	7	D12			TRUE	FALSE	spring_2013			DMSO_000432	
-RIKEN	000433	Chenodeoxycholic acid	True	False	lane01	GTAGCTTCGA	7	E1			TRUE	TRUE	spring_2013			Chenodeoxycholic acid___spring_2013	
-RIKEN	000434	Chlorhexidine dihydrochloride	True	False	lane01	TGAAGCTTGC	7	E2			TRUE	TRUE	spring_2013			Chlorhexidine dihydrochloride___spring_2013	
-RIKEN	000435	Chlorophyllin sodium copper salt	True	False	lane01	GTCTGGCATA	7	E3			TRUE	TRUE	spring_2013			Chlorophyllin sodium copper salt___spring_2013	
-RIKEN	000436	Chromeazurol B	True	False	lane01	AGCCGAATTC	7	E4			TRUE	TRUE	spring_2013			Chromeazurol B___spring_2013	
-RIKEN	000437	Clebopride maleate salt	True	False	lane01	CCGGCATTAT	7	E5			TRUE	TRUE	spring_2013			Clebopride maleate salt___spring_2013	
-RIKEN	000438	Coenzyme B12	True	False	lane01	TGACAACCGT	7	E6			TRUE	TRUE	spring_2013			Coenzyme B12___spring_2013	
-RIKEN	000439	Colchicine	True	False	lane01	CCTAGAATGC	7	E7			TRUE	TRUE	spring_2013			Colchicine___spring_2013	
-RIKEN	000440	Colistin sulfate salt	True	False	lane01	TATAGCGCCT	7	E8			TRUE	TRUE	spring_2013			Colistin sulfate salt___spring_2013	
-RIKEN	000441	Coprostane	True	False	lane01	GCACGGTTAA	7	E9			TRUE	TRUE	spring_2013			Coprostane___spring_2013	
-RIKEN	000442	Cromolyn sodium salt	True	False	lane01	TACGTGCAAG	7	E10			TRUE	TRUE	spring_2013			Cromolyn sodium salt___spring_2013	
-RIKEN	000443	Crystal violet	True	False	lane01	AGGTATGCCT	7	E11			TRUE	TRUE	spring_2013			Crystal violet___spring_2013	
-RIKEN	000444	Benomyl	True	False	lane01	CGTAGTAACC	7	E12			FALSE	FALSE	spring_2013			Benomyl___spring_2013	
-RIKEN	000445	Cyproheptadine hydrochloride	True	False	lane01	ATCGAGGTTC	7	F1			TRUE	TRUE	spring_2013			Cyproheptadine hydrochloride___spring_2013	
-RIKEN	000446	Cystathionine	True	False	lane01	GGAGCATTAC	7	F2			TRUE	TRUE	spring_2013			Cystathionine___spring_2013	
-RIKEN	000447	D-Glucoheptose	True	False	lane01	TAGATCGAGC	7	F3			TRUE	TRUE	spring_2013			D-Glucoheptose___spring_2013	
-RIKEN	000448	DL-Panthenol	True	False	lane01	ACGAGTCATC	7	F4			TRUE	TRUE	spring_2013			DL-Panthenol___spring_2013	
-RIKEN	000449	Eosin B	True	False	lane01	ACGTAGGACT	7	F5			TRUE	TRUE	spring_2013			Eosin B___spring_2013	
-RIKEN	000450	Flavone	True	False	lane01	GGATTACGCA	7	F6			TRUE	TRUE	spring_2013			Flavone___spring_2013	
-RIKEN	000451	Florfenicol	True	False	lane01	ATAGTCGGCA	7	F7			TRUE	TRUE	spring_2013			Florfenicol___spring_2013	
-RIKEN	000452	Flumethasone pivalate	True	False	lane01	AGGCATCTAG	7	F8			TRUE	TRUE	spring_2013			Flumethasone pivalate___spring_2013	
-RIKEN	000453	Fluorescamine	True	False	lane01	ACCATGTGGT	7	F9			TRUE	TRUE	spring_2013			Fluorescamine___spring_2013	
-RIKEN	000454	Folic acid	True	False	lane01	CGCTTAATGG	7	F10			TRUE	TRUE	spring_2013			Folic acid___spring_2013	
-RIKEN	000455	Ginkgolide A from Ginkgo leaves	True	False	lane01	TACGGCAGTA	7	F11			TRUE	TRUE	spring_2013			Ginkgolide A from Ginkgo leaves___spring_2013	
-RIKEN	000456	Bortezomib	True	False	lane01	CCAGTCTGAA	7	F12			FALSE	FALSE	spring_2013			Bortezomib___spring_2013	
-RIKEN	000457	Guanabenz acetate salt	True	False	lane01	TGACTCATGG	7	G1			TRUE	TRUE	spring_2013			Guanabenz acetate salt___spring_2013	
-RIKEN	000458	Hematoporphyrin dihydrochloride	True	False	lane01	CCTTCGTGAA	7	G2			TRUE	TRUE	spring_2013			Hematoporphyrin dihydrochloride___spring_2013	
-RIKEN	000459	Heptakis(2, 6-di-O-methyl)-beta-cyclodextrin	True	False	lane01	GAGGATCTAC	7	G3			TRUE	TRUE	spring_2013			Heptakis(2, 6-di-O-methyl)-beta-cyclodextrin___spring_2013	
-RIKEN	000460	Hyodeoxycholic acid	True	False	lane01	ACCACTGGAT	7	G4			TRUE	TRUE	spring_2013			Hyodeoxycholic acid___spring_2013	
-RIKEN	000461	Hypotaurine	True	False	lane01	TGACGTTCGA	7	G5			TRUE	TRUE	spring_2013			Hypotaurine___spring_2013	
-RIKEN	000462	Idazoxan hydrochloride	True	False	lane01	AGCGACTGTT	7	G6			TRUE	TRUE	spring_2013			Idazoxan hydrochloride___spring_2013	
-RIKEN	000463	L-Canavanine sulfate salt	True	False	lane01	GGCGTCTTAA	7	G7			TRUE	TRUE	spring_2013			L-Canavanine sulfate salt___spring_2013	
-RIKEN	000464	Leukomisine	True	False	lane01	GCTACAATGG	7	G8			TRUE	TRUE	spring_2013			Leukomisine___spring_2013	
-RIKEN	000465	L-Kynurenine	True	False	lane01	TCGTTCGAAG	7	G9			TRUE	TRUE	spring_2013			L-Kynurenine___spring_2013	
-RIKEN	000466	L-Mimosine from Koa hoale seeds	True	False	lane01	AAGTCGACGT	7	G10			TRUE	TRUE	spring_2013			L-Mimosine from Koa hoale seeds___spring_2013	
-RIKEN	000467	Loxapine succinate salt	True	False	lane01	ACAGGCAGTT	7	G11			TRUE	TRUE	spring_2013			Loxapine succinate salt___spring_2013	
-RIKEN	000468	Micafungin	True	False	lane01	CTACATGTGC	7	G12			FALSE	FALSE	spring_2013			Micafungin___spring_2013	
-RIKEN	000469	LY-165,163	True	False	lane01	AAGTCTGTCG	7	H1			TRUE	TRUE	spring_2013			LY-165,163___spring_2013	
-RIKEN	000470	D-(+)-Melibiose, Monohydrate	True	False	lane01	TGAACACCTG	7	H2			TRUE	TRUE	spring_2013			D-(+)-Melibiose, Monohydrate___spring_2013	
-RIKEN	000471	Moxisylyte hydrochloride	True	False	lane01	CTGTAGAGTC	7	H3			TRUE	TRUE	spring_2013			Moxisylyte hydrochloride___spring_2013	
-RIKEN	000472	NPE1197	True	False	lane01	GATTGCGCAA	7	H4			TRUE	TRUE	spring_2013			NPE1197___spring_2013	
-RIKEN	000473	NPE1200	True	False	lane01	TTCGATGACC	7	H5			TRUE	TRUE	spring_2013			NPE1200___spring_2013	
-RIKEN	000474	N-Acetyl-D-mannosamine	True	False	lane01	GACCGCTTAA	7	H6			TRUE	TRUE	spring_2013			N-Acetyl-D-mannosamine___spring_2013	
-RIKEN	000475	Naphthol AS-BI phosphate	True	False	lane01	AGGCTACATG	7	H7			TRUE	TRUE	spring_2013			Naphthol AS-BI phosphate___spring_2013	
-RIKEN	000476	NPE1214	True	False	lane01	GCCTATAGAC	7	H8			TRUE	TRUE	spring_2013			NPE1214___spring_2013	
-RIKEN	000477	Nialamide	True	False	lane01	CGGCTTGATA	7	H9			TRUE	TRUE	spring_2013			Nialamide___spring_2013	
-RIKEN	000478	Nifuroxazide	True	False	lane01	AGTTGGTACC	7	H10			TRUE	TRUE	spring_2013			Nifuroxazide___spring_2013	
-RIKEN	000479	NPE1244	True	False	lane01	TTGACAAGCC	7	H11			TRUE	TRUE	spring_2013			NPE1244___spring_2013	
-RIKEN	000480	MMS	True	False	lane01	AAGCGACTTC	7	H12			FALSE	FALSE	spring_2013			MMS___spring_2013	
-RIKEN	000481	Phenosafranin	True	False	lane01	CAATCTCGGA	8	A1			TRUE	TRUE	spring_2013			Phenosafranin___spring_2013	
-RIKEN	000482	Phosphomycin disodium salt	True	False	lane01	CACTGGACTT	8	A2			TRUE	TRUE	spring_2013			Phosphomycin disodium salt___spring_2013	
-RIKEN	000483	Pramoxine hydrochloride	True	False	lane01	AAGCCTTGCA	8	A3			TRUE	TRUE	spring_2013			Pramoxine hydrochloride___spring_2013	
-RIKEN	000484	Prednisone	True	False	lane01	AGTGCGCTTA	8	A4			TRUE	TRUE	spring_2013			Prednisone___spring_2013	
-RIKEN	000485	Progesterone	True	False	lane01	CTTGAGCTCA	8	A5			TRUE	TRUE	spring_2013			Progesterone___spring_2013	
-RIKEN	000486	Propidium iodide	True	False	lane01	AGAATCTGGC	8	A6			TRUE	TRUE	spring_2013			Propidium iodide___spring_2013	
-RIKEN	000487	Protriptyline hydrochloride	True	False	lane01	TCCACTGTAG	8	A7			TRUE	TRUE	spring_2013			Protriptyline hydrochloride___spring_2013	
-RIKEN	000488	Silibinin	True	False	lane01	ACGTGAATCG	8	A8			TRUE	TRUE	spring_2013			Silibinin___spring_2013	
-RIKEN	000489	Sulconazole nitrate salt	True	False	lane01	AGGCTGAATC	8	A9			TRUE	TRUE	spring_2013			Sulconazole nitrate salt___spring_2013	
-RIKEN	000490	Sulfaquinoxaline sodium salt	True	False	lane01	TCATGGTCGA	8	A10			TRUE	TRUE	spring_2013			Sulfaquinoxaline sodium salt___spring_2013	
-RIKEN	000491	Sulforhodamine 101	True	False	lane01	GCTGACATAC	8	A11			TRUE	TRUE	spring_2013			Sulforhodamine 101___spring_2013	
-RIKEN	000492	DMSO	True	True	lane01	TTCCTGCAGA	8	A12			TRUE	FALSE	spring_2013			DMSO_000492	
-RIKEN	000493	Thiacetazone	True	False	lane01	AATTCAGCGG	8	B1			TRUE	TRUE	spring_2013			Thiacetazone___spring_2013	
-RIKEN	000494	Thiamine hydrochloride	True	False	lane01	TGCATTCCAG	8	B2			TRUE	TRUE	spring_2013			Thiamine hydrochloride___spring_2013	
-RIKEN	000495	Trypan blue	True	False	lane01	AGTATCTCGG	8	B3			TRUE	TRUE	spring_2013			Trypan blue___spring_2013	
-RIKEN	000496	Vitamin K2 (20)	True	False	lane01	GCCGATATAG	8	B4			TRUE	TRUE	spring_2013			Vitamin K2 (20)___spring_2013	
-RIKEN	000497	Xanthosine	True	False	lane01	GTACACGATC	8	B5			TRUE	TRUE	spring_2013			Xanthosine___spring_2013	
-RIKEN	000498	Berberine chloride	True	False	lane01	TAACGCATGC	8	B6			TRUE	TRUE	spring_2013			Berberine chloride___spring_2013	
-RIKEN	000499	Lividomycin A sulfate salt	True	False	lane01	TAACGGTGTC	8	B7			TRUE	TRUE	spring_2013			Lividomycin A sulfate salt___spring_2013	
-RIKEN	000500	Luteolin	True	False	lane01	CTGTGAACTG	8	B8			TRUE	TRUE	spring_2013			Luteolin___spring_2013	
-RIKEN	000501	Forskolin	True	False	lane01	GATCACTGAC	8	B9			TRUE	TRUE	spring_2013			Forskolin___spring_2013	
-RIKEN	000502	(+/-)Amethopterin	True	False	lane01	GCTAGTGCAA	8	B10			TRUE	TRUE	spring_2013			(+/-)Amethopterin___spring_2013	
-RIKEN	000503	NPE958	True	False	lane01	AGTAGTGTCC	8	B11			TRUE	TRUE	spring_2013			NPE958___spring_2013	
-RIKEN	000504	DMSO	True	True	lane01	GCCAAGTGTT	8	B12			TRUE	FALSE	spring_2013			DMSO_000504	
-RIKEN	000505	L-Anserine nitrate salt	True	False	lane01	AGAACGTTGC	8	C1			TRUE	TRUE	spring_2013			L-Anserine nitrate salt___spring_2013	
-RIKEN	000506	Kaempferol	True	False	lane01	ACGACCTTGA	8	C2			TRUE	TRUE	spring_2013			Kaempferol___spring_2013	
-RIKEN	000507	Betamethasone	True	False	lane01	ACTCGCTGAA	8	C3			TRUE	TRUE	spring_2013			Betamethasone___spring_2013	
-RIKEN	000508	Flecainide acetate salt	True	False	lane01	TTCAAGCGGT	8	C4			TRUE	TRUE	spring_2013			Flecainide acetate salt___spring_2013	
-RIKEN	000509	2'-Hydroxyflavanone	True	False	lane01	AACTGCCGTA	8	C5			TRUE	TRUE	spring_2013			2'-Hydroxyflavanone___spring_2013	
-RIKEN	000510	Bathophenanthroline	True	False	lane01	CGAGATATGC	8	C6			TRUE	TRUE	spring_2013			Bathophenanthroline___spring_2013	
-RIKEN	000511	Norethindrone	True	False	lane01	TAGCCTAACG	8	C7			TRUE	TRUE	spring_2013			Norethindrone___spring_2013	
-RIKEN	000512	Octyl beta-D-glucopyranoside	True	False	lane01	TTACCGAGTG	8	C8			TRUE	TRUE	spring_2013			Octyl beta-D-glucopyranoside___spring_2013	
-RIKEN	000513	Fluoresceinamine isomer I	True	False	lane01	AGCAATGCGT	8	C9			TRUE	TRUE	spring_2013			Fluoresceinamine isomer I___spring_2013	
-RIKEN	000514	Perseitol diformal	True	False	lane01	CCTATGAGGA	8	C10			TRUE	TRUE	spring_2013			Perseitol diformal___spring_2013	
-RIKEN	000515	O-Acetyl-L-carnitine chloride	True	False	lane01	TAATACGCGC	8	C11			TRUE	TRUE	spring_2013			O-Acetyl-L-carnitine chloride___spring_2013	
-RIKEN	000516	DMSO	True	True	lane01	TTAACGGCCA	8	C12			TRUE	FALSE	spring_2013			DMSO_000516	
-RIKEN	000517	Oxybutynin chloride	True	False	lane01	GACATGCGTT	8	D1			TRUE	TRUE	spring_2013			Oxybutynin chloride___spring_2013	
-RIKEN	000518	L-Homocystine	True	False	lane01	TTCAGCGATC	8	D2			TRUE	TRUE	spring_2013			L-Homocystine___spring_2013	
-RIKEN	000519	all trans-Retinal	True	False	lane01	GTGAACGTTC	8	D3			TRUE	TRUE	spring_2013			all trans-Retinal___spring_2013	
-RIKEN	000520	Aces	True	False	lane01	TTCGAACGGA	8	D4			TRUE	TRUE	spring_2013			Aces___spring_2013	
-RIKEN	000521	Hypoxanthine	True	False	lane01	CCAGCTAGAT	8	D5			TRUE	TRUE	spring_2013			Hypoxanthine___spring_2013	
-RIKEN	000522	Naringenin	True	False	lane01	ACAACTGGTG	8	D6			TRUE	TRUE	spring_2013			Naringenin___spring_2013	
-RIKEN	000523	NPE1243	True	False	lane01	CTACGTTGGA	8	D7			TRUE	TRUE	spring_2013			NPE1243___spring_2013	
-RIKEN	000524	Sulfonazo III	True	False	lane01	CAAGATGTCG	8	D8			TRUE	TRUE	spring_2013			Sulfonazo III___spring_2013	
-RIKEN	000525	(+)-Camphorquinone	True	False	lane01	TTATAGCGCG	8	D9			TRUE	TRUE	spring_2013			(+)-Camphorquinone___spring_2013	
-RIKEN	000526	Cholecalciferol	True	False	lane01	TGAGCGATAC	8	D10			TRUE	TRUE	spring_2013			Cholecalciferol___spring_2013	
-RIKEN	000527	Dithranol	True	False	lane01	GGACCTACAT	8	D11			TRUE	TRUE	spring_2013			Dithranol___spring_2013	
-RIKEN	000528	DMSO	True	True	lane01	ATTACCGAGC	8	D12			TRUE	FALSE	spring_2013			DMSO_000528	
-RIKEN	000529	Terbutaline	True	False	lane01	AGCTCATGCA	8	E1			TRUE	TRUE	spring_2013			Terbutaline___spring_2013	
-RIKEN	000530	Chlormadinone acetate	True	False	lane01	TCAGTCACAG	8	E2			TRUE	TRUE	spring_2013			Chlormadinone acetate___spring_2013	
-RIKEN	000531	N-Acetyl-D-glucosamine	True	False	lane01	GTACAGGACT	8	E3			TRUE	TRUE	spring_2013			N-Acetyl-D-glucosamine___spring_2013	
-RIKEN	000532	Mepirizole	True	False	lane01	AGCTAACCTG	8	E4			TRUE	TRUE	spring_2013			Mepirizole___spring_2013	
-RIKEN	000533	5-Methoxytryptamine	True	False	lane01	CATATGGCCT	8	E5			TRUE	TRUE	spring_2013			5-Methoxytryptamine___spring_2013	
-RIKEN	000534	Ceftazidime	True	False	lane01	CGGCAATTCT	8	E6			TRUE	TRUE	spring_2013			Ceftazidime___spring_2013	
-RIKEN	000535	Bromophenol blue	True	False	lane01	GTTCTCAGGA	8	E7			TRUE	TRUE	spring_2013			Bromophenol blue___spring_2013	
-RIKEN	000536	NPE955	True	False	lane01	GGTGTAATCC	8	E8			TRUE	TRUE	spring_2013			NPE955___spring_2013	
-RIKEN	000537	D-(-)-Salicin	True	False	lane01	AACGTTGTGC	8	E9			TRUE	TRUE	spring_2013			D-(-)-Salicin___spring_2013	
-RIKEN	000538	Thioflavin T	True	False	lane01	TGCAAGCCAT	8	E10			TRUE	TRUE	spring_2013			Thioflavin T___spring_2013	
-RIKEN	000539	Phenolphthalin	True	False	lane01	CTCAGGACTA	8	E11			TRUE	TRUE	spring_2013			Phenolphthalin___spring_2013	
-RIKEN	000540	Benomyl	True	False	lane01	TAACTCGAGG	8	E12			FALSE	FALSE	spring_2013			Benomyl___spring_2013	
-RIKEN	000541	Pyrocatechol violet	True	False	lane01	ATGGAGTCTC	8	F1			TRUE	TRUE	spring_2013			Pyrocatechol violet___spring_2013	
-RIKEN	000542	Crystalponceau 6R	True	False	lane01	TGTGGCTAAC	8	F2			TRUE	TRUE	spring_2013			Crystalponceau 6R___spring_2013	
-RIKEN	000543	Naproxen sodium salt	True	False	lane01	CGATAGTCGA	8	F3			TRUE	TRUE	spring_2013			Naproxen sodium salt___spring_2013	
-RIKEN	000544	Nafcillin sodium salt monohydrate	True	False	lane01	TTGCACACAG	8	F4			TRUE	TRUE	spring_2013			Nafcillin sodium salt monohydrate___spring_2013	
-RIKEN	000545	Naphthylazoxine S disodium salt	True	False	lane01	TAAGTCGCCA	8	F5			TRUE	TRUE	spring_2013			Naphthylazoxine S disodium salt___spring_2013	
-RIKEN	000546	3beta-Cholestanol	True	False	lane01	GTAACTCGTG	8	F6			TRUE	TRUE	spring_2013			3beta-Cholestanol___spring_2013	
-RIKEN	000547	Diloxanide furoate	True	False	lane01	TAACGGACGT	8	F7			TRUE	TRUE	spring_2013			Diloxanide furoate___spring_2013	
-RIKEN	000548	Trimebutine	True	False	lane01	CTCGAAGTGA	8	F8			TRUE	TRUE	spring_2013			Trimebutine___spring_2013	
-RIKEN	000549	ACID RED 1	True	False	lane01	AGGCATAGTC	8	F9			TRUE	TRUE	spring_2013			ACID RED 1___spring_2013	
-RIKEN	000550	Phloxine B	True	False	lane01	CTGGTGTACA	8	F10			TRUE	TRUE	spring_2013			Phloxine B___spring_2013	
-RIKEN	000551	Neutral red	True	False	lane01	TGAGGCATTC	8	F11			TRUE	TRUE	spring_2013			Neutral red___spring_2013	
-RIKEN	000552	Bortezomib	True	False	lane01	GTCGTTAGCA	8	F12			FALSE	FALSE	spring_2013			Bortezomib___spring_2013	
-RIKEN	000553	AMPSO	True	False	lane01	ATCATCCGAG	8	G1			TRUE	TRUE	spring_2013			AMPSO___spring_2013	
-RIKEN	000554	Hematoxylin	True	False	lane01	AAGGTACCTG	8	G2			TRUE	TRUE	spring_2013			Hematoxylin___spring_2013	
-RIKEN	000555	Fast green FCF	True	False	lane01	AGTGGTTCCA	8	G3			TRUE	TRUE	spring_2013			Fast green FCF___spring_2013	
-RIKEN	000556	Acebutolol hydrochloride	True	False	lane01	TGCATGCAGT	8	G4			TRUE	TRUE	spring_2013			Acebutolol hydrochloride___spring_2013	
-RIKEN	000557	Acemetacin	True	False	lane01	CAGAGCGTTA	8	G5			TRUE	TRUE	spring_2013			Acemetacin___spring_2013	
-RIKEN	000558	Acetazolamide	True	False	lane01	AACTGCTTGG	8	G6			TRUE	TRUE	spring_2013			Acetazolamide___spring_2013	
-RIKEN	000559	Amoxapine	True	False	lane01	AATGTAGCGC	8	G7			TRUE	TRUE	spring_2013			Amoxapine___spring_2013	
-RIKEN	000560	Cyclocytidine HCl	True	False	lane01	GGTACGATCT	8	G8			TRUE	TRUE	spring_2013			Cyclocytidine HCl___spring_2013	
-RIKEN	000561	Bendroflumethiazide	True	False	lane01	TATGAACCGC	8	G9			TRUE	TRUE	spring_2013			Bendroflumethiazide___spring_2013	
-RIKEN	000562	Beclomethasone dipropionate	True	False	lane01	TGTCCAAGAC	8	G10			TRUE	TRUE	spring_2013			Beclomethasone dipropionate___spring_2013	
-RIKEN	000563	Biochanin a	True	False	lane01	GGATACATCG	8	G11			TRUE	TRUE	spring_2013			Biochanin a___spring_2013	
-RIKEN	000564	Micafungin	True	False	lane01	CGGATCATTC	8	G12			FALSE	FALSE	spring_2013			Micafungin___spring_2013	
-RIKEN	000565	Bumetanide	True	False	lane01	AAGATCGGTC	8	H1			TRUE	TRUE	spring_2013			Bumetanide___spring_2013	
-RIKEN	000566	Chlorogenic acid	True	False	lane01	ATAGCTCGAC	8	H2			TRUE	TRUE	spring_2013			Chlorogenic acid___spring_2013	
-RIKEN	000567	Cholic acid	True	False	lane01	AGTCCTGTCA	8	H3			TRUE	TRUE	spring_2013			Cholic acid___spring_2013	
-RIKEN	000568	Clobetasol propionate	True	False	lane01	TCAAGTGCCT	8	H4			TRUE	TRUE	spring_2013			Clobetasol propionate___spring_2013	
-RIKEN	000569	Dequalinium chloride	True	False	lane01	TTCGCGTGAA	8	H5			TRUE	TRUE	spring_2013			Dequalinium chloride___spring_2013	
-RIKEN	000570	Digitoxin	True	False	lane01	GTCGCTAGAT	8	H6			TRUE	TRUE	spring_2013			Digitoxin___spring_2013	
-RIKEN	000571	Dipyridamole	True	False	lane01	TGTCCTAGCA	8	H7			TRUE	TRUE	spring_2013			Dipyridamole___spring_2013	
-RIKEN	000572	Dirithromycin	True	False	lane01	CGAAGTTCAC	8	H8			TRUE	TRUE	spring_2013			Dirithromycin___spring_2013	
-RIKEN	000573	Domperidone	True	False	lane01	TCCAACGTGT	8	H9			TRUE	TRUE	spring_2013			Domperidone___spring_2013	
-RIKEN	000574	Eserine	True	False	lane01	TCTATGCACG	8	H10			TRUE	TRUE	spring_2013			Eserine___spring_2013	
-RIKEN	000575	Estradiol	True	False	lane01	GATCAACGTC	8	H11			TRUE	TRUE	spring_2013			Estradiol___spring_2013	
-RIKEN	000576	MMS	True	False	lane01	TGCTGATCGA	8	H12			FALSE	FALSE	spring_2013			MMS___spring_2013	
-RIKEN	000577	Flumequine	True	False	lane01	TGCGAACTGT	9	A1			TRUE	TRUE	spring_2013			Flumequine___spring_2013	
-RIKEN	000578	Flunarizine hydrochloride	True	False	lane01	ATGCACCTGA	9	A2			TRUE	TRUE	spring_2013			Flunarizine hydrochloride___spring_2013	
-RIKEN	000579	Furazolidone	True	False	lane01	AGATTCGGCT	9	A3			TRUE	TRUE	spring_2013			Furazolidone___spring_2013	
-RIKEN	000580	Gemfibrozil	True	False	lane01	CCAGTAGCTA	9	A4			TRUE	TRUE	spring_2013			Gemfibrozil___spring_2013	
-RIKEN	000581	Gibberellin A3	True	False	lane01	ACCGTTGATC	9	A5			TRUE	TRUE	spring_2013			Gibberellin A3___spring_2013	
-RIKEN	000582	Hematein	True	False	lane01	AGCGATTGCA	9	A6			TRUE	TRUE	spring_2013			Hematein___spring_2013	
-RIKEN	000583	Hesperetin	True	False	lane01	TTAATCGGCG	9	A7			TRUE	TRUE	spring_2013			Hesperetin___spring_2013	
-RIKEN	000584	Ketoconazole	True	False	lane01	TAGTCCAAGG	9	A8			TRUE	TRUE	spring_2013			Ketoconazole___spring_2013	
-RIKEN	000585	Khellin	True	False	lane01	AAGCTCAGTG	9	A9			TRUE	TRUE	spring_2013			Khellin___spring_2013	
-RIKEN	000586	Kinetin riboside	True	False	lane01	AACGGTCCTA	9	A10			TRUE	TRUE	spring_2013			Kinetin riboside___spring_2013	
-RIKEN	000587	Lanatoside c	True	False	lane01	GCACTAGACT	9	A11			TRUE	TRUE	spring_2013			Lanatoside c___spring_2013	
-RIKEN	000588	DMSO	True	True	lane01	CTAGCTTGCA	9	A12			TRUE	FALSE	spring_2013			DMSO_000588	
-RIKEN	000589	Mebendazole	True	False	lane01	GACTGGCAAT	9	B1			TRUE	TRUE	spring_2013			Mebendazole___spring_2013	
-RIKEN	000590	Melphalan	True	False	lane01	AACGTGATCC	9	B2			TRUE	TRUE	spring_2013			Melphalan___spring_2013	
-RIKEN	000591	Morin	True	False	lane01	TTAGGCTAGC	9	B3			TRUE	TRUE	spring_2013			Morin___spring_2013	
-RIKEN	000592	Nadolol	True	False	lane01	AGGAACCTTG	9	B4			TRUE	TRUE	spring_2013			Nadolol___spring_2013	
-RIKEN	000593	Nalidixic acid	True	False	lane01	AACAGGCCTT	9	B5			TRUE	TRUE	spring_2013			Nalidixic acid___spring_2013	
-RIKEN	000594	Naringin	True	False	lane01	GAGTCGTACA	9	B6			TRUE	TRUE	spring_2013			Naringin___spring_2013	
-RIKEN	000595	Nicergoline	True	False	lane01	GTGCCATTCA	9	B7			TRUE	TRUE	spring_2013			Nicergoline___spring_2013	
-RIKEN	000596	Nifenazone	True	False	lane01	GGACCTGTAA	9	B8			TRUE	TRUE	spring_2013			Nifenazone___spring_2013	
-RIKEN	000597	Nitrendipine	True	False	lane01	GCTGGTCTAA	9	B9			TRUE	TRUE	spring_2013			Nitrendipine___spring_2013	
-RIKEN	000598	Nitrofurantoin	True	False	lane01	GCACTAGGTA	9	B10			TRUE	TRUE	spring_2013			Nitrofurantoin___spring_2013	
-RIKEN	000599	Oleandomycin phosphate	True	False	lane01	ATGACTTGCG	9	B11			TRUE	TRUE	spring_2013			Oleandomycin phosphate___spring_2013	
-RIKEN	000600	DMSO	True	True	lane01	AGTTGAGCCT	9	B12			TRUE	FALSE	spring_2013			DMSO_000600	
-RIKEN	000601	Peruvoside	True	False	lane01	TAAGCCATGG	9	C1			TRUE	TRUE	spring_2013			Peruvoside___spring_2013	
-RIKEN	000602	Phenolphthalein	True	False	lane01	AGGATCCTGT	9	C2			TRUE	TRUE	spring_2013			Phenolphthalein___spring_2013	
-RIKEN	000603	Phentolamine hydrochloride	True	False	lane01	ATGACTCCGA	9	C3			TRUE	TRUE	spring_2013			Phentolamine hydrochloride___spring_2013	
-RIKEN	000604	Phloretin	True	False	lane01	CAGCAGGATT	9	C4			TRUE	TRUE	spring_2013			Phloretin___spring_2013	
-RIKEN	000605	Pipemidic acid	True	False	lane01	TGCATAACGG	9	C5			TRUE	TRUE	spring_2013			Pipemidic acid___spring_2013	
-RIKEN	000606	Strychnine	True	False	lane01	AGTCCGATTG	9	C6			TRUE	TRUE	spring_2013			Strychnine___spring_2013	
-RIKEN	000607	Sulfacetamide	True	False	lane01	GCCGTACAAT	9	C7			TRUE	TRUE	spring_2013			Sulfacetamide___spring_2013	
-RIKEN	000608	Sulfachloropyridazine	True	False	lane01	GCGACCATTA	9	C8			TRUE	TRUE	spring_2013			Sulfachloropyridazine___spring_2013	
-RIKEN	000609	Sulfadimethoxine	True	False	lane01	TCGCTGAAGT	9	C9			TRUE	TRUE	spring_2013			Sulfadimethoxine___spring_2013	
-RIKEN	000610	Sulfamerazine	True	False	lane01	AATGTCGCAG	9	C10			TRUE	TRUE	spring_2013			Sulfamerazine___spring_2013	
-RIKEN	000611	Sulfamethazine	True	False	lane01	CGTGACACTT	9	C11			TRUE	TRUE	spring_2013			Sulfamethazine___spring_2013	
-RIKEN	000612	DMSO	True	True	lane01	TATGCTGGCA	9	C12			TRUE	FALSE	spring_2013			DMSO_000612	
-RIKEN	000613	Sulfamonomethoxine	True	False	lane01	CGAGATTACC	9	D1			TRUE	TRUE	spring_2013			Sulfamonomethoxine___spring_2013	
-RIKEN	000614	Sulfaphenazole	True	False	lane01	AGCAGTTACG	9	D2			TRUE	TRUE	spring_2013			Sulfaphenazole___spring_2013	
-RIKEN	000615	Sulfathiazole	True	False	lane01	CCTGACAGTA	9	D3			TRUE	TRUE	spring_2013			Sulfathiazole___spring_2013	
-RIKEN	000616	Tetracaine hydrochloride	True	False	lane01	AGTCATGCTC	9	D4			TRUE	TRUE	spring_2013			Tetracaine hydrochloride___spring_2013	
-RIKEN	000617	Thiothixene	True	False	lane01	AGATACGCTG	9	D5			TRUE	TRUE	spring_2013			Thiothixene___spring_2013	
-RIKEN	000618	Tolfenamic acid	True	False	lane01	ATGTGCAGCT	9	D6			TRUE	TRUE	spring_2013			Tolfenamic acid___spring_2013	
-RIKEN	000619	Tomatine	True	False	lane01	GGTCGAATAC	9	D7			TRUE	TRUE	spring_2013			Tomatine___spring_2013	
-RIKEN	000620	Trichlormethiazide	True	False	lane01	ACGGATATCC	9	D8			TRUE	TRUE	spring_2013			Trichlormethiazide___spring_2013	
-RIKEN	000621	Xylometazoline hydrochloride	True	False	lane01	GCTCCTATGA	9	D9			TRUE	TRUE	spring_2013			Xylometazoline hydrochloride___spring_2013	
-RIKEN	000622	Picrotin	True	False	lane01	GTTCTGCAAG	9	D10			TRUE	TRUE	spring_2013			Picrotin___spring_2013	
-RIKEN	000623	Ubiquinone-10	True	False	lane01	ATCCGTGAAG	9	D11			TRUE	TRUE	spring_2013			Ubiquinone-10___spring_2013	
-RIKEN	000624	DMSO	True	True	lane01	AGCCTATTCG	9	D12			TRUE	FALSE	spring_2013			DMSO_000624	
-RIKEN	000625	Hycanthone	True	False	lane01	TAGCGCCATA	9	E1			TRUE	TRUE	spring_2013			Hycanthone___spring_2013	
-RIKEN	000626	Atractyloside potassium salt	True	False	lane01	CTGAGCATGA	9	E2			TRUE	TRUE	spring_2013			Atractyloside potassium salt___spring_2013	
-RIKEN	000627	Flunisolide	True	False	lane01	CGAGCACTAT	9	E3			TRUE	TRUE	spring_2013			Flunisolide___spring_2013	
-RIKEN	000628	Convallatoxin	True	False	lane01	AGCACATGTG	9	E4			TRUE	TRUE	spring_2013			Convallatoxin___spring_2013	
-RIKEN	000629	Clozapine	True	False	lane01	ATTCACACGG	9	E5			TRUE	TRUE	spring_2013			Clozapine___spring_2013	
-RIKEN	000630	Kinetin	True	False	lane01	TTGCACTGCA	9	E6			TRUE	TRUE	spring_2013			Kinetin___spring_2013	
-RIKEN	000631	Bretylium tosylate	True	False	lane01	CTTCAGGTGA	9	E7			TRUE	TRUE	spring_2013			Bretylium tosylate___spring_2013	
-RIKEN	000632	Molsidomine	True	False	lane01	ATGTCTCCAG	9	E8			TRUE	TRUE	spring_2013			Molsidomine___spring_2013	
-RIKEN	000633	Cephradine	True	False	lane01	GAATTCAGCC	9	E9			TRUE	TRUE	spring_2013			Cephradine___spring_2013	
-RIKEN	000634	Furosemide	True	False	lane01	CATCGTGTCA	9	E10			TRUE	TRUE	spring_2013			Furosemide___spring_2013	
-RIKEN	000635	Yohimbine hydrochloride	True	False	lane01	AGTCACATGC	9	E11			TRUE	TRUE	spring_2013			Yohimbine hydrochloride___spring_2013	
-RIKEN	000636	Benomyl	True	False	lane01	TATGACGCGA	9	E12			FALSE	FALSE	spring_2013			Benomyl___spring_2013	
-RIKEN	000637	Praziquantel	True	False	lane01	TGCGATTACG	9	F1			TRUE	TRUE	spring_2013			Praziquantel___spring_2013	
-RIKEN	000638	Tolnaftate	True	False	lane01	TGACATCGTG	9	F2			TRUE	TRUE	spring_2013			Tolnaftate___spring_2013	
-RIKEN	000639	Amiodarone hydrochloride	True	False	lane01	CCGGTGATAT	9	F3			TRUE	TRUE	spring_2013			Amiodarone hydrochloride___spring_2013	
-RIKEN	000640	Chlorambucil	True	False	lane01	TGCACTCGTA	9	F4			TRUE	TRUE	spring_2013			Chlorambucil___spring_2013	
-RIKEN	000641	Norcantharidin	True	False	lane01	GTTATCGACG	9	F5			TRUE	TRUE	spring_2013			Norcantharidin___spring_2013	
-RIKEN	000642	Melatonin	True	False	lane01	CACGTGAACT	9	F6			TRUE	TRUE	spring_2013			Melatonin___spring_2013	
-RIKEN	000643	Procyclidine hydrochloride	True	False	lane01	AGCGTGACTT	9	F7			TRUE	TRUE	spring_2013			Procyclidine hydrochloride___spring_2013	
-RIKEN	000644	Sulfamethoxypyridazine	True	False	lane01	TCCAGAGTAC	9	F8			TRUE	TRUE	spring_2013			Sulfamethoxypyridazine___spring_2013	
-RIKEN	000645	3-Hydroxyflavone	True	False	lane01	ACGTCAAGCT	9	F9			TRUE	TRUE	spring_2013			3-Hydroxyflavone___spring_2013	
-RIKEN	000646	Haloperidol	True	False	lane01	GAATACCGCT	9	F10			TRUE	TRUE	spring_2013			Haloperidol___spring_2013	
-RIKEN	000647	Sulfameter	True	False	lane01	AACGCTGTCA	9	F11			TRUE	TRUE	spring_2013			Sulfameter___spring_2013	
-RIKEN	000648	Bortezomib	True	False	lane01	GTGCTAGACA	9	F12			FALSE	FALSE	spring_2013			Bortezomib___spring_2013	
-RIKEN	000649	Benfluorex hydrochloride	True	False	lane01	GGTACTCATG	9	G1			TRUE	TRUE	spring_2013			Benfluorex hydrochloride___spring_2013	
-RIKEN	000650	Loperamide hydrochloride	True	False	lane01	ACTGTACGCT	9	G2			TRUE	TRUE	spring_2013			Loperamide hydrochloride___spring_2013	
-RIKEN	000651	Warfarin	True	False	lane01	GACTAAGGTC	9	G3			TRUE	TRUE	spring_2013			Warfarin___spring_2013	
-RIKEN	000652	Sulfadiazine	True	False	lane01	ATAGCCATGC	9	G4			TRUE	TRUE	spring_2013			Sulfadiazine___spring_2013	
-RIKEN	000653	Sulfapyridine	True	False	lane01	AAGCAGTGTC	9	G5			TRUE	TRUE	spring_2013			Sulfapyridine___spring_2013	
-RIKEN	000654	Sulfabenzamide	True	False	lane01	ACTCTGCGAT	9	G6			TRUE	TRUE	spring_2013			Sulfabenzamide___spring_2013	
-RIKEN	000655	Abietic acid	True	False	lane01	CGGATGTACT	9	G7			TRUE	TRUE	spring_2013			Abietic acid___spring_2013	
-RIKEN	000656	Phenylbutazone	True	False	lane01	ACCTGGATCA	9	G8			TRUE	TRUE	spring_2013			Phenylbutazone___spring_2013	
-RIKEN	000657	niclosamide	True	False	lane01	ACTGTAGACG	9	G9			TRUE	TRUE	spring_2013			niclosamide___spring_2013	
-RIKEN	000658	Achromycin	True	False	lane01	AGACACCTGT	9	G10			TRUE	TRUE	spring_2013			Achromycin___spring_2013	
-RIKEN	000659	Antibiotic A201A	True	False	lane01	TTCAGAGACG	9	G11			TRUE	TRUE	spring_2013			Antibiotic A201A___spring_2013	
-RIKEN	000660	Micafungin	True	False	lane01	GATAACCTGC	9	G12			FALSE	FALSE	spring_2013			Micafungin___spring_2013	
-RIKEN	000661	Bicyclomycin	True	False	lane01	GAACTCCTAG	9	H1			TRUE	TRUE	spring_2013			Bicyclomycin___spring_2013	
-RIKEN	000662	Laurucin	True	False	lane01	ATAGTCCACG	9	H2			TRUE	TRUE	spring_2013			Laurucin___spring_2013	
-RIKEN	000663	Nigericin	True	False	lane01	TACAATGCCG	9	H3			TRUE	TRUE	spring_2013			Nigericin___spring_2013	
-RIKEN	000664	Relomycin	True	False	lane01	ACATGTTGGC	9	H4			TRUE	TRUE	spring_2013			Relomycin___spring_2013	
-RIKEN	000665	Siccanin	True	False	lane01	CTAAGGCTAG	9	H5			TRUE	TRUE	spring_2013			Siccanin___spring_2013	
-RIKEN	000666	Lipoxamycin	True	False	lane01	ACCTGTGCAT	9	H6			TRUE	TRUE	spring_2013			Lipoxamycin___spring_2013	
-RIKEN	000667	ADR	True	False	lane01	GTCTTACCAG	9	H7			TRUE	TRUE	spring_2013			ADR___spring_2013	
-RIKEN	000668	Duamycin	True	False	lane01	TGGTCACACT	9	H8			TRUE	TRUE	spring_2013			Duamycin___spring_2013	
-RIKEN	000669	Polymixin B	True	False	lane01	GTCACGTAAC	9	H9			TRUE	TRUE	spring_2013			Polymixin B___spring_2013	
-RIKEN	000670	Mucopeptin B	True	False	lane01	CCATTGGTCA	9	H10			TRUE	TRUE	spring_2013			Mucopeptin B___spring_2013	
-RIKEN	000671	Mucopeptin C	True	False	lane01	CGCATGATCT	9	H11			TRUE	TRUE	spring_2013			Mucopeptin C___spring_2013	
-RIKEN	000672	MMS	True	False	lane01	ACAACTCTGG	9	H12			FALSE	FALSE	spring_2013			MMS___spring_2013	
-RIKEN	000673	NPE174	True	False	lane01	CGGTATGATC	10	A1			TRUE	TRUE	spring_2013			NPE174___spring_2013	
-RIKEN	000674	NPE1253	True	False	lane01	CGGATTGTCA	10	A2			TRUE	TRUE	spring_2013			NPE1253___spring_2013	
-RIKEN	000675	NPE506	True	False	lane01	AACCAGGTGT	10	A3			TRUE	TRUE	spring_2013			NPE506___spring_2013	
-RIKEN	000676	NPE821	True	False	lane01	GGATGACTTC	10	A4			TRUE	TRUE	spring_2013			NPE821___spring_2013	
-RIKEN	000677	NPE822	True	False	lane01	GTATGCGTCA	10	A5			TRUE	TRUE	spring_2013			NPE822___spring_2013	
-RIKEN	000678	NPE694	True	False	lane01	CCTAGTTCGA	10	A6			TRUE	TRUE	spring_2013			NPE694___spring_2013	
-RIKEN	000679	NPE820	True	False	lane01	GAAGGCTTAC	10	A7			TRUE	TRUE	spring_2013			NPE820___spring_2013	
-RIKEN	000680	NPE692	True	False	lane01	CAGTCTGACT	10	A8			TRUE	TRUE	spring_2013			NPE692___spring_2013	
-RIKEN	000681	NPE690	True	False	lane01	AAGAGGTCTC	10	A9			TRUE	TRUE	spring_2013			NPE690___spring_2013	
-RIKEN	000682	NPE1234	True	False	lane01	CACAGTTAGC	10	A10			TRUE	TRUE	spring_2013			NPE1234___spring_2013	
-RIKEN	000683	NPE803	True	False	lane01	ACCGAGGATT	10	A11			TRUE	TRUE	spring_2013			NPE803___spring_2013	
-RIKEN	000684	DMSO	True	True	lane01	TATGCAGCTC	10	A12			TRUE	FALSE	spring_2013			DMSO_000684	
-RIKEN	000685	NPE687	True	False	lane01	TGGCTCGAAT	10	B1			TRUE	TRUE	spring_2013			NPE687___spring_2013	
-RIKEN	000686	NPE695	True	False	lane01	AAGGTTCGCA	10	B2			TRUE	TRUE	spring_2013			NPE695___spring_2013	
-RIKEN	000687	NPE1257	True	False	lane01	AGCTAGCTAG	10	B3			TRUE	TRUE	spring_2013			NPE1257___spring_2013	
-RIKEN	000688	NPE772	True	False	lane01	CCGTACTAGT	10	B4			TRUE	TRUE	spring_2013			NPE772___spring_2013	
-RIKEN	000689	NPE1003	True	False	lane01	GAGTGCTACT	10	B5			TRUE	TRUE	spring_2013			NPE1003___spring_2013	
-RIKEN	000690	NPE522	True	False	lane01	AGAGCTACTC	10	B6			TRUE	TRUE	spring_2013			NPE522___spring_2013	
-RIKEN	000691	NPE521	True	False	lane01	TCGTCAATGG	10	B7			TRUE	TRUE	spring_2013			NPE521___spring_2013	
-RIKEN	000692	NPE1260	True	False	lane01	ACCATAGGTG	10	B8			TRUE	TRUE	spring_2013			NPE1260___spring_2013	
-RIKEN	000693	NPE279	True	False	lane01	TCCAGAAGTG	10	B9			TRUE	TRUE	spring_2013			NPE279___spring_2013	
-RIKEN	000694	NPE684	True	False	lane01	GTTACCAGTC	10	B10			TRUE	TRUE	spring_2013			NPE684___spring_2013	
-RIKEN	000695	NPE500	True	False	lane01	GTCCAATACG	10	B11			TRUE	TRUE	spring_2013			NPE500___spring_2013	
-RIKEN	000696	DMSO	True	True	lane01	TGACTCAGAC	10	B12			TRUE	FALSE	spring_2013			DMSO_000696	
-RIKEN	000697	NPE277	True	False	lane01	TATGAGCCAG	10	C1			TRUE	TRUE	spring_2013			NPE277___spring_2013	
-RIKEN	000698	NPE102	True	False	lane01	CGTAGCGTAA	10	C2			TRUE	TRUE	spring_2013			NPE102___spring_2013	
-RIKEN	000699	NPE104	True	False	lane01	TAACAGCTGG	10	C3			TRUE	TRUE	spring_2013			NPE104___spring_2013	
-RIKEN	000700	NPE1252	True	False	lane01	TTAACGGAGC	10	C4			TRUE	TRUE	spring_2013			NPE1252___spring_2013	
-RIKEN	000701	NPE280	True	False	lane01	TAGGCATACC	10	C5			TRUE	TRUE	spring_2013			NPE280___spring_2013	
-RIKEN	000702	NPE278	True	False	lane01	GCATTAGCAG	10	C6			TRUE	TRUE	spring_2013			NPE278___spring_2013	
-RIKEN	000703	NPE688	True	False	lane01	CACAGAGTGT	10	C7			TRUE	TRUE	spring_2013			NPE688___spring_2013	
-RIKEN	000704	NPE527	True	False	lane01	ATAGGTCTGC	10	C8			TRUE	TRUE	spring_2013			NPE527___spring_2013	
-RIKEN	000705	NPE691	True	False	lane01	TGACTGCTCA	10	C9			TRUE	TRUE	spring_2013			NPE691___spring_2013	
-RIKEN	000706	NPE25	True	False	lane01	TAGTAACGCC	10	C10			TRUE	TRUE	spring_2013			NPE25___spring_2013	
-RIKEN	000707	NPE1060	True	False	lane01	CTCAGTGGTA	10	C11			TRUE	TRUE	spring_2013			NPE1060___spring_2013	
-RIKEN	000708	DMSO	True	True	lane01	CACGGTCTAT	10	C12			TRUE	FALSE	spring_2013			DMSO_000708	
-RIKEN	000709	NPE824	True	False	lane01	GAGCTTCAAG	10	D1			TRUE	TRUE	spring_2013			NPE824___spring_2013	
-RIKEN	000710	NPE1004	True	False	lane01	CCGGAATTCA	10	D2			TRUE	TRUE	spring_2013			NPE1004___spring_2013	
-RIKEN	000711	NPE1044	True	False	lane01	GACAAGTTCC	10	D3			TRUE	TRUE	spring_2013			NPE1044___spring_2013	
-RIKEN	000712	NPE1248	True	False	lane01	ATCAAGCTGG	10	D4			TRUE	TRUE	spring_2013			NPE1248___spring_2013	
-RIKEN	000713	RSOC0016	True	False	lane01	CACCGTAGTA	10	D5			TRUE	TRUE	spring_2013			RSOC0016___spring_2013	
-RIKEN	000714	NPE189	True	False	lane01	ATCGTCGACT	10	D6			TRUE	TRUE	spring_2013			NPE189___spring_2013	
-RIKEN	000715	RSOC0018	True	False	lane01	CTACACGAGT	10	D7			TRUE	TRUE	spring_2013			RSOC0018___spring_2013	
-RIKEN	000716	NPE201	True	False	lane01	AGAGTCTCAC	10	D8			TRUE	TRUE	spring_2013			NPE201___spring_2013	
-RIKEN	000717	NPE644	True	False	lane01	TCAGGTATCG	10	D9			TRUE	TRUE	spring_2013			NPE644___spring_2013	
-RIKEN	000718	NPE188	True	False	lane01	ACATGTACGG	10	D10			TRUE	TRUE	spring_2013			NPE188___spring_2013	
-RIKEN	000719	NPE186	True	False	lane01	TTATGCAGGC	10	D11			TRUE	TRUE	spring_2013			NPE186___spring_2013	
-RIKEN	000720	DMSO	True	True	lane01	TGCTCAACTG	10	D12			TRUE	FALSE	spring_2013			DMSO_000720	
-RIKEN	000721	NPE216	True	False	lane01	TGATAGCGAC	10	E1			TRUE	TRUE	spring_2013			NPE216___spring_2013	
-RIKEN	000722	NPE210	True	False	lane01	AACATGTGCC	10	E2			TRUE	TRUE	spring_2013			NPE210___spring_2013	
-RIKEN	000723	NPE1263	True	False	lane01	CATGATGTGC	10	E3			TRUE	TRUE	spring_2013			NPE1263___spring_2013	
-RIKEN	000724	NPE1251	True	False	lane01	GATGTGACCA	10	E4			TRUE	TRUE	spring_2013			NPE1251___spring_2013	
-RIKEN	000725	NPE1262	True	False	lane01	GTAAGCCTGT	10	E5			TRUE	TRUE	spring_2013			NPE1262___spring_2013	
-RIKEN	000726	NPE1015	True	False	lane01	CGATTCTGCA	10	E6			TRUE	TRUE	spring_2013			NPE1015___spring_2013	
-RIKEN	000727	NPE1016	True	False	lane01	TTGGAGCTAC	10	E7			TRUE	TRUE	spring_2013			NPE1016___spring_2013	
-RIKEN	000728	NPE1259	True	False	lane01	ACATTGGCGA	10	E8			TRUE	TRUE	spring_2013			NPE1259___spring_2013	
-RIKEN	000729	NPE1014	True	False	lane01	TACTGTCGAG	10	E9			TRUE	TRUE	spring_2013			NPE1014___spring_2013	
-RIKEN	000730	NPE1025	True	False	lane01	GCAACCTGAT	10	E10			TRUE	TRUE	spring_2013			NPE1025___spring_2013	
-RIKEN	000731	NPE770	True	False	lane01	GGTCAACTGT	10	E11			TRUE	TRUE	spring_2013			NPE770___spring_2013	
-RIKEN	000732	Benomyl	True	False	lane01	GCTGTACCAA	10	E12			FALSE	FALSE	spring_2013			Benomyl___spring_2013	
-RIKEN	000733	NPE771	True	False	lane01	TTAGAAGCGC	10	F1			TRUE	TRUE	spring_2013			NPE771___spring_2013	
-RIKEN	000734	NPE795	True	False	lane01	CATTGAAGGC	10	F2			TRUE	TRUE	spring_2013			NPE795___spring_2013	
-RIKEN	000735	NPE1233	True	False	lane01	TACGTACCGA	10	F3			TRUE	TRUE	spring_2013			NPE1233___spring_2013	
-RIKEN	000736	NPE819	True	False	lane01	TAGACCTGGT	10	F4			TRUE	TRUE	spring_2013			NPE819___spring_2013	
-RIKEN	000737	NPE883	True	False	lane01	TAGCCATCGT	10	F5			TRUE	TRUE	spring_2013			NPE883___spring_2013	
-RIKEN	000738	NPE893	True	False	lane01	GACAGCATGT	10	F6			TRUE	TRUE	spring_2013			NPE893___spring_2013	
-RIKEN	000739	NPE630	True	False	lane01	ACGTATAGCG	10	F7			TRUE	TRUE	spring_2013			NPE630___spring_2013	
-RIKEN	000740	NPE1264	True	False	lane01	CGTTGGAATC	10	F8			TRUE	TRUE	spring_2013			NPE1264___spring_2013	
-RIKEN	000741	NPE678	True	False	lane01	GCAGTGACAT	10	F9			TRUE	TRUE	spring_2013			NPE678___spring_2013	
-RIKEN	000742	NPE696	True	False	lane01	TGACTGTACG	10	F10			TRUE	TRUE	spring_2013			NPE696___spring_2013	
-RIKEN	000743	NPE657	True	False	lane01	GAACCTCTTG	10	F11			TRUE	TRUE	spring_2013			NPE657___spring_2013	
-RIKEN	000744	Bortezomib	True	False	lane01	TCGAACGTAG	10	F12			FALSE	FALSE	spring_2013			Bortezomib___spring_2013	
-RIKEN	000745	NPE1254	True	False	lane01	GCTCATGAGA	10	G1			TRUE	TRUE	spring_2013			NPE1254___spring_2013	
-RIKEN	000746	NPE1226	True	False	lane01	TCAAGAGCTG	10	G2			TRUE	TRUE	spring_2013			NPE1226___spring_2013	
-RIKEN	000747	NPE818	True	False	lane01	CCGTGGAATT	10	G3			TRUE	TRUE	spring_2013			NPE818___spring_2013	
-RIKEN	000748	NPE1258	True	False	lane01	GTCACAAGCT	10	G4			TRUE	TRUE	spring_2013			NPE1258___spring_2013	
-RIKEN	000749	NPE1255	True	False	lane01	GGCCGATATT	10	G5			TRUE	TRUE	spring_2013			NPE1255___spring_2013	
-RIKEN	000750	NPE507	True	False	lane01	AATAGCTGGC	10	G6			TRUE	TRUE	spring_2013			NPE507___spring_2013	
-RIKEN	000751	NPE1250	True	False	lane01	TGCCAGATAG	10	G7			TRUE	TRUE	spring_2013			NPE1250___spring_2013	
-RIKEN	000752	NPE1265	True	False	lane01	TGAGAACGTC	10	G8			TRUE	TRUE	spring_2013			NPE1265___spring_2013	
-RIKEN	000753	NPE1026	True	False	lane01	CACATGATGG	10	G9			TRUE	TRUE	spring_2013			NPE1026___spring_2013	
-RIKEN	000754	NPE523	True	False	lane01	CGCATTGAGA	10	G10			TRUE	TRUE	spring_2013			NPE523___spring_2013	
-RIKEN	000755	NPE509	True	False	lane01	AACCGTTGAG	10	G11			TRUE	TRUE	spring_2013			NPE509___spring_2013	
-RIKEN	000756	Micafungin	True	False	lane01	GAACGCTATC	10	G12			FALSE	FALSE	spring_2013			Micafungin___spring_2013	
-RIKEN	000757	NPE1240	True	False	lane01	CACGCTATGA	10	H1			TRUE	TRUE	spring_2013			NPE1240___spring_2013	
-RIKEN	000758	NPE103	True	False	lane01	AGTCGACTGA	10	H2			TRUE	TRUE	spring_2013			NPE103___spring_2013	
-RIKEN	000759	RSOC0134	True	False	lane01	CAGGCATTGA	10	H3			TRUE	TRUE	spring_2013			RSOC0134___spring_2013	
-RIKEN	000760	NPE184	True	False	lane01	ACAATGTGCG	10	H4			TRUE	TRUE	spring_2013			NPE184___spring_2013	
-RIKEN	000761	NPE643	True	False	lane01	AGTTCAGCAC	10	H5			TRUE	TRUE	spring_2013			NPE643___spring_2013	
-RIKEN	000762	NPE211	True	False	lane01	GTAGCATCCT	10	H6			TRUE	TRUE	spring_2013			NPE211___spring_2013	
-RIKEN	000763	RSOC0140	True	False	lane01	TGGTACCTGA	10	H7			TRUE	TRUE	spring_2013			RSOC0140___spring_2013	
-RIKEN	000764	RSOC0141	True	False	lane01	TGTGTACGCA	10	H8			TRUE	TRUE	spring_2013			RSOC0141___spring_2013	
-RIKEN	000765	RSOC0143	True	False	lane01	TCTAAGTGCG	10	H9			TRUE	TRUE	spring_2013			RSOC0143___spring_2013	
-RIKEN	000766	NPE580	True	False	lane01	CAACTTCGTG	10	H10			TRUE	TRUE	spring_2013			NPE580___spring_2013	
-RIKEN	000767	NPE169	True	False	lane01	CTCATAGTGG	10	H11			TRUE	TRUE	spring_2013			NPE169___spring_2013	
-RIKEN	000768	MMS	True	False	lane01	TGATACCACG	10	H12			FALSE	FALSE	spring_2013			MMS___spring_2013	
+screen_name	expt_id	name	include?	control?	lane	index_tag	index_tag_plate	index_tag_well
+RIKEN	000001	DMSO	True	True	lane01	AATAGGCGCT	2	A1
+RIKEN	000002	DMSO	True	True	lane01	TACAGTTGCG	2	A2
+RIKEN	000003	DMSO	True	True	lane01	ATCCTAGCAG	2	A3
+RIKEN	000004	DMSO	True	True	lane01	GATTAGCCTC	2	A4
+RIKEN	000005	DMSO	True	True	lane01	AATGAGCCGT	2	A5
+RIKEN	000006	DMSO	True	True	lane01	ACGCGGATTA	2	A6
+RIKEN	000007	DMSO	True	True	lane01	GCTTACGGAA	2	A7
+RIKEN	000008	DMSO	True	True	lane01	CGGTAGACTA	2	A8
+RIKEN	000009	DMSO	True	True	lane01	ATTGCCGGAA	2	A9
+RIKEN	000010	DMSO	True	True	lane01	GACATGCTAG	2	A10
+RIKEN	000011	DMSO	True	True	lane01	TACGCTGCAT	2	A11
+RIKEN	000012	DMSO	True	True	lane01	GTCAAGCACT	2	A12
+RIKEN	000013	DMSO	True	True	lane01	AGCGTATGTC	2	B1
+RIKEN	000014	DMSO	True	True	lane01	GCGGATTAAC	2	B2
+RIKEN	000015	DMSO	True	True	lane01	ATACCTCGGA	2	B3
+RIKEN	000016	DMSO	True	True	lane01	GGTAGACATC	2	B4
+RIKEN	000017	DMSO	True	True	lane01	AGGTACCTAC	2	B5
+RIKEN	000018	DMSO	True	True	lane01	CGATAACGCT	2	B6
+RIKEN	000019	DMSO	True	True	lane01	TACCGGAATG	2	B7
+RIKEN	000020	DMSO	True	True	lane01	TAGGACCAGT	2	B8
+RIKEN	000021	DMSO	True	True	lane01	CTGCAAGTTC	2	B9
+RIKEN	000022	DMSO	True	True	lane01	TCGCGATTCA	2	B10
+RIKEN	000023	DMSO	True	True	lane01	GGTAACGTAC	2	B11
+RIKEN	000024	DMSO	True	True	lane01	AAGACCTGTG	2	B12
+RIKEN	000025	DMSO	True	True	lane01	AGTATGCACC	2	C1
+RIKEN	000026	DMSO	True	True	lane01	GCTAGCAGTA	2	C2
+RIKEN	000027	DMSO	True	True	lane01	TAATGGCTGC	2	C3
+RIKEN	000028	DMSO	True	True	lane01	CATCTGGTAG	2	C4
+RIKEN	000029	DMSO	True	True	lane01	TGCTGAATGC	2	C5
+RIKEN	000030	DMSO	True	True	lane01	AGAGCGTTCT	2	C6
+RIKEN	000031	DMSO	True	True	lane01	TGCGAGCATT	2	C7
+RIKEN	000032	DMSO	True	True	lane01	GTACGGCATT	2	C8
+RIKEN	000033	DMSO	True	True	lane01	TAAGATCCGG	2	C9
+RIKEN	000034	DMSO	True	True	lane01	CGGTACAACT	2	C10
+RIKEN	000035	DMSO	True	True	lane01	ATTGGTCCGA	2	C11
+RIKEN	000036	DMSO	True	True	lane01	ATTAGGACCG	2	C12
+RIKEN	000037	DMSO	True	True	lane01	CTTAAGAGCG	2	D1
+RIKEN	000038	DMSO	True	True	lane01	ATGGCATGCA	2	D2
+RIKEN	000039	DMSO	True	True	lane01	CGTATCATGG	2	D3
+RIKEN	000040	DMSO	True	True	lane01	CCGTCGATTA	2	D4
+RIKEN	000041	DMSO	True	True	lane01	TAACTGGCAC	2	D5
+RIKEN	000042	DMSO	True	True	lane01	CATTGGAACG	2	D6
+RIKEN	000043	DMSO	True	True	lane01	GTACATCCGA	2	D7
+RIKEN	000044	DMSO	True	True	lane01	ACTGACGAGT	2	D8
+RIKEN	000045	DMSO	True	True	lane01	GTATCGAACC	2	D9
+RIKEN	000046	DMSO	True	True	lane01	AACCGATTGC	2	D10
+RIKEN	000047	DMSO	True	True	lane01	TCAGCATGAG	2	D11
+RIKEN	000048	DMSO	True	True	lane01	GATGCCTTGA	2	D12
+RIKEN	000049	DMSO	True	True	lane01	TATCGGAAGC	2	E1
+RIKEN	000050	DMSO	True	True	lane01	GGAATCCACT	2	E2
+RIKEN	000051	DMSO	True	True	lane01	AGCTAAGTGC	2	E3
+RIKEN	000052	DMSO	True	True	lane01	TTGCATGAGC	2	E4
+RIKEN	000053	DMSO	True	True	lane01	CAGTTCACGT	2	E5
+RIKEN	000054	DMSO	True	True	lane01	TGTCTCGAGA	2	E6
+RIKEN	000055	DMSO	True	True	lane01	AGGAATCTCC	2	E7
+RIKEN	000056	DMSO	True	True	lane01	CTGTGGAACA	2	E8
+RIKEN	000057	DMSO	True	True	lane01	TAACAGCGCT	2	E9
+RIKEN	000058	DMSO	True	True	lane01	CACCGATTAG	2	E10
+RIKEN	000059	DMSO	True	True	lane01	CACAAGGTTG	2	E11
+RIKEN	000060	DMSO	False	True	lane01	CTCAAGGTGT	2	E12
+RIKEN	000061	DMSO	True	True	lane01	TCAGCAGGTA	2	F1
+RIKEN	000062	DMSO	True	True	lane01	CATAGTCTGG	2	F2
+RIKEN	000063	DMSO	True	True	lane01	ACACGTATGC	2	F3
+RIKEN	000064	DMSO	True	True	lane01	GCTATAGCGA	2	F4
+RIKEN	000065	DMSO	True	True	lane01	TTGTCGAACG	2	F5
+RIKEN	000066	DMSO	True	True	lane01	CCGATCAGTT	2	F6
+RIKEN	000067	DMSO	True	True	lane01	TGAATCCGCA	2	F7
+RIKEN	000068	DMSO	True	True	lane01	ATGCCATGAG	2	F8
+RIKEN	000069	DMSO	True	True	lane01	ATCAGTGAGC	2	F9
+RIKEN	000070	DMSO	True	True	lane01	CATCGGTGAA	2	F10
+RIKEN	000071	DMSO	True	True	lane01	ATGGTCACAG	2	F11
+RIKEN	000072	DMSO	False	True	lane01	ACCAGGTACT	2	F12
+RIKEN	000073	DMSO	True	True	lane01	GGCTACTAAC	2	G1
+RIKEN	000074	DMSO	True	True	lane01	AGAATGGCCT	2	G2
+RIKEN	000075	DMSO	True	True	lane01	CGACGTTAGT	2	G3
+RIKEN	000076	DMSO	True	True	lane01	CATAGGTGTC	2	G4
+RIKEN	000077	DMSO	True	True	lane01	AACTGGTCTG	2	G5
+RIKEN	000078	DMSO	True	True	lane01	ATGACACGTC	2	G6
+RIKEN	000079	DMSO	True	True	lane01	CAGTCAGATC	2	G7
+RIKEN	000080	DMSO	True	True	lane01	TTCCGGAACA	2	G8
+RIKEN	000081	DMSO	True	True	lane01	AGCTGGACTA	2	G9
+RIKEN	000082	DMSO	True	True	lane01	ATAGACGTCC	2	G10
+RIKEN	000083	DMSO	True	True	lane01	ACTCAAGTCG	2	G11
+RIKEN	000084	DMSO	False	True	lane01	ATCGAGTCGA	2	G12
+RIKEN	000085	DMSO	True	True	lane01	TGCAGATACC	2	H1
+RIKEN	000086	DMSO	True	True	lane01	GACAGTTGAC	2	H2
+RIKEN	000087	DMSO	True	True	lane01	TCCGGTAGAA	2	H3
+RIKEN	000088	DMSO	True	True	lane01	ACCAGTAGTC	2	H4
+RIKEN	000089	DMSO	True	True	lane01	CAGTGAATCC	2	H5
+RIKEN	000090	DMSO	True	True	lane01	GAAGCCATCT	2	H6
+RIKEN	000091	DMSO	True	True	lane01	GTGGCAATCT	2	H7
+RIKEN	000092	DMSO	True	True	lane01	ATTAACCGCG	2	H8
+RIKEN	000093	DMSO	True	True	lane01	GGCCTATAAG	2	H9
+RIKEN	000094	DMSO	True	True	lane01	CGCACAATTG	2	H10
+RIKEN	000095	DMSO	True	True	lane01	AGTCATCAGG	2	H11
+RIKEN	000096	DMSO	False	True	lane01	CACATGTCGA	2	H12
+RIKEN	000097	(-)-Bicuculline methobromide	True	False	lane01	GCTGAACTAG	3	A1
+RIKEN	000098	(R)-(-)-Epinephrine	True	False	lane01	CTCGGATTAC	3	A2
+RIKEN	000099	17alpha-Estradiol	True	False	lane01	TGCAAGATGC	3	A3
+RIKEN	000100	Acesulfame K	True	False	lane01	GCGCAATTGT	3	A4
+RIKEN	000101	Acetohexamide	True	False	lane01	TCTGGCGTAA	3	A5
+RIKEN	000102	alpha-Tocopherol nicotinate	True	False	lane01	CGTGTGATCA	3	A6
+RIKEN	000103	Baclofen	True	False	lane01	TACAGAGGCT	3	A7
+RIKEN	000104	Betamethasone	True	False	lane01	GCAAGGTCTT	3	A8
+RIKEN	000105	Biperiden	True	False	lane01	GCAATATCGG	3	A9
+RIKEN	000106	Bucetin	True	False	lane01	AGACTCGTTG	3	A10
+RIKEN	000107	Clonidine	True	False	lane01	ATGAGCATCC	3	A11
+RIKEN	000108	DMSO	True	True	lane01	TGGCCATGAA	3	A12
+RIKEN	000109	Cortisone	True	False	lane01	AAGTCAGCCT	3	B1
+RIKEN	000110	Desipramine	True	False	lane01	TGGATCCTAG	3	B2
+RIKEN	000111	Dexamethasone	True	False	lane01	AGCTTGGTCA	3	B3
+RIKEN	000112	Dextromethorphan	True	False	lane01	CAGTACTACG	3	B4
+RIKEN	000113	Dibucaine	True	False	lane01	TAGTCCGAAC	3	B5
+RIKEN	000114	Estriol	True	False	lane01	TAGTGCACGA	3	B6
+RIKEN	000115	Estrone	True	False	lane01	AGGCACTGTA	3	B7
+RIKEN	000116	Ethinylestradiol	True	False	lane01	TAGACGCTAC	3	B8
+RIKEN	000117	Etizolam	True	False	lane01	TAGCGCTTGA	3	B9
+RIKEN	000118	Etodolac	True	False	lane01	CAGGTCATAC	3	B10
+RIKEN	000119	Fluorometholone	True	False	lane01	CCTCTAGAGA	3	B11
+RIKEN	000120	DMSO	True	True	lane01	GAGACTCCAT	3	B12
+RIKEN	000121	Histamine	True	False	lane01	CAGGTACTGT	3	C1
+RIKEN	000122	Hydrocortisone	True	False	lane01	TGTTAAGCGC	3	C2
+RIKEN	000123	Ibuprofen	True	False	lane01	ATGTTCCGGA	3	C3
+RIKEN	000124	Imipramine	True	False	lane01	ATGGCGCATA	3	C4
+RIKEN	000125	Indomethacin	True	False	lane01	ATATGAGGCC	3	C5
+RIKEN	000126	Ketoprofen	True	False	lane01	TCACAGTGAC	3	C6
+RIKEN	000127	Lidocaine	True	False	lane01	ACTGATCGGA	3	C7
+RIKEN	000128	Mefenamic acid	True	False	lane01	GACTTGGACT	3	C8
+RIKEN	000129	Mestranol	True	False	lane01	AGAGCCTGAT	3	C9
+RIKEN	000130	Nikethamide	True	False	lane01	AGACTATCGG	3	C10
+RIKEN	000131	Norethisterone	True	False	lane01	GATGCTCTAG	3	C11
+RIKEN	000132	DMSO	True	True	lane01	GTATACGGAC	3	C12
+RIKEN	000133	Pheniramin	True	False	lane01	TACCTAGGAG	3	D1
+RIKEN	000134	Phenytoin	True	False	lane01	AGATGCTGAC	3	D2
+RIKEN	000135	Picrotoxinin	True	False	lane01	CTACAAGCTG	3	D3
+RIKEN	000136	Pilocarpine	True	False	lane01	AGAGTGCTTC	3	D4
+RIKEN	000137	Pimozide	True	False	lane01	GGAGTTACAC	3	D5
+RIKEN	000138	Pindolol	True	False	lane01	CCGTAGATAG	3	D6
+RIKEN	000139	Piperidolate	True	False	lane01	TGGTCAGTCA	3	D7
+RIKEN	000140	Prazosin	True	False	lane01	GGTTCCTACA	3	D8
+RIKEN	000141	Prednisolone	True	False	lane01	CCTCTGGAAT	3	D9
+RIKEN	000142	Primidone	True	False	lane01	ATGATCAGGC	3	D10
+RIKEN	000143	Procaine	True	False	lane01	CGAATTCAGG	3	D11
+RIKEN	000144	DMSO	True	True	lane01	CAGTATGGAC	3	D12
+RIKEN	000145	Raubasine	True	False	lane01	TCGTACGTCA	3	E1
+RIKEN	000146	Rauwolscine	True	False	lane01	CCGGTACATT	3	E2
+RIKEN	000147	Reserpine	True	False	lane01	TAGAGTCCGA	3	E3
+RIKEN	000148	Salbutamol	True	False	lane01	GCCATTAAGG	3	E4
+RIKEN	000149	Scopolamine	True	False	lane01	GCCAATCTGA	3	E5
+RIKEN	000150	Serotonine	True	False	lane01	AAGATTGCGC	3	E6
+RIKEN	000151	Spironolactone	True	False	lane01	GCGATATGAC	3	E7
+RIKEN	000152	Timolol	True	False	lane01	AAGTTCCGAG	3	E8
+RIKEN	000153	Tipepidine	True	False	lane01	GCACTCATGT	3	E9
+RIKEN	000154	Tolperisone	True	False	lane01	CCAGCGTATA	3	E10
+RIKEN	000155	Triamcinolone acetonide	True	False	lane01	AACATGGCGT	3	E11
+RIKEN	000156	Benomyl	True	False	lane01	TGACGACATG	3	E12
+RIKEN	000157	Valproic acid	True	False	lane01	TCATGACAGG	3	F1
+RIKEN	000158	NPE943	True	False	lane01	ATGGACATCG	3	F2
+RIKEN	000159	Carbetapentane	True	False	lane01	CAAGGACGTT	3	F3
+RIKEN	000160	Naloxone	True	False	lane01	TTCGAAGGCT	3	F4
+RIKEN	000161	Resveratrol	True	False	lane01	TCACATCAGG	3	F5
+RIKEN	000162	Neomycin B	True	False	lane01	GATCATCGCA	3	F6
+RIKEN	000163	Erythromycin	True	False	lane01	ATTGGAGACC	3	F7
+RIKEN	000164	Penicillin G	True	False	lane01	GTGAGCACAT	3	F8
+RIKEN	000165	Mitomycin C	True	False	lane01	TGTACACGGT	3	F9
+RIKEN	000166	Valinomycin	True	False	lane01	TCAGAATGGC	3	F10
+RIKEN	000167	Actinomycin D	True	False	lane01	TAGGATTCGC	3	F11
+RIKEN	000168	Bortezomib	True	False	lane01	ATGTTGGCAC	3	F12
+RIKEN	000169	Novobiocin	True	False	lane01	TCGAGCAATG	3	G1
+RIKEN	000170	Kanamycin A	True	False	lane01	ATCGGAGCAT	3	G2
+RIKEN	000171	Spectinomycin	True	False	lane01	TCTGGAGACA	3	G3
+RIKEN	000172	Streptomycin	True	False	lane01	AGGATCAGCT	3	G4
+RIKEN	000173	Butirosin A	True	False	lane01	ATAAGCTGCC	3	G5
+RIKEN	000174	Rifampicin	True	False	lane01	AATCGGTCGT	3	G6
+RIKEN	000175	Nystatin Al	True	False	lane01	AACATCGTGG	3	G7
+RIKEN	000176	Gramicidin S	True	False	lane01	AAGGCGTACT	3	G8
+RIKEN	000177	Bacitracin Al	True	False	lane01	CAGGATCCAT	3	G9
+RIKEN	000178	Chloramphenicol	True	False	lane01	TCCGATCGTA	3	G10
+RIKEN	000179	Cycloheximide	True	False	lane01	TCCAGTAGGT	3	G11
+RIKEN	000180	Micafungin	True	False	lane01	TGGCTGACAA	3	G12
+RIKEN	000181	UK-2A	True	False	lane01	CGTGCAATAG	3	H1
+RIKEN	000182	Amphotericin B	True	False	lane01	ACTTATGCGC	3	H2
+RIKEN	000183	Monensin	True	False	lane01	TGGACATCAC	3	H3
+RIKEN	000184	Streptozocin	True	False	lane01	CTGAGTAGAC	3	H4
+RIKEN	000185	Spiramycin I	True	False	lane01	AATCTAGGCG	3	H5
+RIKEN	000186	Cephalosporin C	True	False	lane01	AAGTTAGGCC	3	H6
+RIKEN	000187	Doxorubicin	True	False	lane01	TATAAGCGGC	3	H7
+RIKEN	000188	Vancomycin	True	False	lane01	CTTCGGAAGT	3	H8
+RIKEN	000189	Oligomycin A	True	False	lane01	TAAGCCGAGT	3	H9
+RIKEN	000190	Antimycin A3	True	False	lane01	TGTCACGTAG	3	H10
+RIKEN	000191	Filipin III	True	False	lane01	TACTTCGGCA	3	H11
+RIKEN	000192	MMS	True	False	lane01	AATGCAGGCT	3	H12
+RIKEN	000193	4,4'-Dithiodimorpholine	True	False	lane01	CGTTCTCGAA	4	A1
+RIKEN	000194	5-Fluorocytosine	True	False	lane01	CCATTAGACG	4	A2
+RIKEN	000195	Acivicin	True	False	lane01	CGAGCTGATT	4	A3
+RIKEN	000196	Acriflavine	True	False	lane01	TCTGCGGAAT	4	A4
+RIKEN	000197	Alendronate	True	False	lane01	GCGACTTAAG	4	A5
+RIKEN	000198	Allopurinol	True	False	lane01	AAGTCCGGTT	4	A6
+RIKEN	000199	Alloxan Monohydrate	True	False	lane01	CAGACTGTGT	4	A7
+RIKEN	000200	alpha-Glucosylrutin	True	False	lane01	GCCTTAATCG	4	A8
+RIKEN	000201	Amikacin	True	False	lane01	TTGCGACCAT	4	A9
+RIKEN	000202	Amoxicillin	True	False	lane01	TCATCAGTCG	4	A10
+RIKEN	000203	Apigenin	True	False	lane01	CCATGTGTGA	4	A11
+RIKEN	000204	DMSO	True	True	lane01	CGTCGGATAA	4	A12
+RIKEN	000205	Baicalin	True	False	lane01	CCATACAGGT	4	B1
+RIKEN	000206	Bekanamycin	True	False	lane01	GTCTTAAGCC	4	B2
+RIKEN	000207	Benzthiazide	True	False	lane01	TTGGCCATAG	4	B3
+RIKEN	000208	Benzylpenicillin	True	False	lane01	CGAGAGATCT	4	B4
+RIKEN	000209	Carbazochrome	True	False	lane01	GTGTGTCCAA	4	B5
+RIKEN	000210	Carbenicillin	True	False	lane01	TGACTCCAGT	4	B6
+RIKEN	000211	Carboplatin	True	False	lane01	GACCTCAATG	4	B7
+RIKEN	000212	Cefalexin	True	False	lane01	CAATACGTGG	4	B8
+RIKEN	000213	Cefalotin	True	False	lane01	GGTCCATAAC	4	B9
+RIKEN	000214	Cefazolin	True	False	lane01	CTAGTTACGC	4	B10
+RIKEN	000215	Cefotaxime	True	False	lane01	AAGACTCCTG	4	B11
+RIKEN	000216	DMSO	True	True	lane01	CGATACTGTG	4	B12
+RIKEN	000217	Cimetidine	True	False	lane01	TAAGGTCAGC	4	C1
+RIKEN	000218	Clarithromycin	True	False	lane01	TGTTCACAGG	4	C2
+RIKEN	000219	Clofibrate	True	False	lane01	TTAGCGCGAT	4	C3
+RIKEN	000220	Clotrimazole	True	False	lane01	ACTAGGCGTA	4	C4
+RIKEN	000221	Colistin	True	False	lane01	GACGAACTTG	4	C5
+RIKEN	000222	Compactin	True	False	lane01	TGGACTTAGC	4	C6
+RIKEN	000223	Conessin	True	False	lane01	TGCGACGTAT	4	C7
+RIKEN	000224	CV-6209	True	False	lane01	TCCATGACTG	4	C8
+RIKEN	000225	Cyclandelate	True	False	lane01	GCTAATGGCA	4	C9
+RIKEN	000226	Daunorubicin(Daunomycin)	True	False	lane01	GTTGCTACAC	4	C10
+RIKEN	000227	Diazoxide	True	False	lane01	GACATAGCTC	4	C11
+RIKEN	000228	DMSO	True	True	lane01	GATTAGGCCA	4	C12
+RIKEN	000229	Diethylstilbesterol	True	False	lane01	TATGCCTAGC	4	D1
+RIKEN	000230	Difenidol	True	False	lane01	ATAGCCTTCG	4	D2
+RIKEN	000231	Difurazone	True	False	lane01	TTCAGCCTAG	4	D3
+RIKEN	000232	Ellagic acid dihydrate	True	False	lane01	GTTGCACGAA	4	D4
+RIKEN	000233	Etacrynic acid	True	False	lane01	CCTGGTAACT	4	D5
+RIKEN	000234	Etidronate	True	False	lane01	ATACCGCATG	4	D6
+RIKEN	000235	Etoposide	True	False	lane01	TATACTCGCG	4	D7
+RIKEN	000236	Fosfomycin	True	False	lane01	GACGAGTCTA	4	D8
+RIKEN	000237	G-418	True	False	lane01	TGAGTAGCTC	4	D9
+RIKEN	000238	gamma-Oryzanol	True	False	lane01	AATGGCCTTG	4	D10
+RIKEN	000239	Geniposidic acid	True	False	lane01	GGCGCATAAT	4	D11
+RIKEN	000240	DMSO	True	True	lane01	TAGACTACGC	4	D12
+RIKEN	000241	Glibenclamide	True	False	lane01	GACCGTGTTA	4	E1
+RIKEN	000242	Gliclazide	True	False	lane01	CGTTATAGCC	4	E2
+RIKEN	000243	Harmol	True	False	lane01	TGGACTGCAT	4	E3
+RIKEN	000244	Idebenone	True	False	lane01	TGCCGGTAAT	4	E4
+RIKEN	000245	Ifenprodil	True	False	lane01	GAGAAGCTTC	4	E5
+RIKEN	000246	Indapamide	True	False	lane01	CCTTAGGAAG	4	E6
+RIKEN	000247	Ipriflavone	True	False	lane01	AGGATTCCAC	4	E7
+RIKEN	000248	Irsogladine	True	False	lane01	ATCATGGACG	4	E8
+RIKEN	000249	Josamycin	True	False	lane01	GCACAGTATG	4	E9
+RIKEN	000250	Ketotifen	True	False	lane01	CTTCTAGGCA	4	E10
+RIKEN	000251	L-Buthionine-(S,R)-sulfoximine	True	False	lane01	ACTGCTTGAC	4	E11
+RIKEN	000252	Benomyl	True	False	lane01	TGCAGTACGA	4	E12
+RIKEN	000253	Lovastatin	True	False	lane01	TGACGGACTA	4	F1
+RIKEN	000254	Meclizine	True	False	lane01	ACTATCGAGG	4	F2
+RIKEN	000255	Menatetrenone	True	False	lane01	TCAGGATGCA	4	F3
+RIKEN	000256	Methotrexate	True	False	lane01	GACAACGCTT	4	F4
+RIKEN	000257	Metolazone	True	False	lane01	TAGGACTGAC	4	F5
+RIKEN	000258	Miconazole	True	False	lane01	TGGATCTCGA	4	F6
+RIKEN	000259	Mycophenolic acid	True	False	lane01	CCAAGTAGTG	4	F7
+RIKEN	000260	Norfloxacin	True	False	lane01	GTCTAGAAGC	4	F8
+RIKEN	000261	Paeoniflorin	True	False	lane01	TACAGGTCCA	4	F9
+RIKEN	000262	Picrotoxin	True	False	lane01	CAAGCTTAGG	4	F10
+RIKEN	000263	Podophyllotoxin	True	False	lane01	GTTGCCTAAG	4	F11
+RIKEN	000264	Bortezomib	True	False	lane01	TGAACCTGAC	4	F12
+RIKEN	000265	Quinidine	True	False	lane01	AAGTGTTCCG	4	G1
+RIKEN	000266	Ranitidine	True	False	lane01	AACTCTGGAG	4	G2
+RIKEN	000267	Sennoside A	True	False	lane01	CAAGCCAGTT	4	G3
+RIKEN	000268	Sennoside B	True	False	lane01	GCATAGTTCG	4	G4
+RIKEN	000269	Simvastatin	True	False	lane01	TGGTGCATAC	4	G5
+RIKEN	000270	Suramin	True	False	lane01	TGACCGTCAT	4	G6
+RIKEN	000271	Tamoxifen	True	False	lane01	GATATGGACC	4	G7
+RIKEN	000272	Timosaponin A-III	True	False	lane01	CAACTGTGAG	4	G8
+RIKEN	000273	Tolazamide	True	False	lane01	ACTAGCATGG	4	G9
+RIKEN	000274	Tolbutamide	True	False	lane01	CTTAGCAGGT	4	G10
+RIKEN	000275	Triamterene	True	False	lane01	CAAGGATCTG	4	G11
+RIKEN	000276	Micafungin	True	False	lane01	CACCTAAGTG	4	G12
+RIKEN	000277	Ursodesoxycholic acid	True	False	lane01	CTGACCTAGA	4	H1
+RIKEN	000278	Vinblastine	True	False	lane01	TACAGCGTTG	4	H2
+RIKEN	000279	Anisomycin	True	False	lane01	GCTCAGAATC	4	H3
+RIKEN	000280	Brefeldin A	True	False	lane01	TCAGCTAGTG	4	H4
+RIKEN	000281	Cerulenin	True	False	lane01	AGCTGATCAG	4	H5
+RIKEN	000282	Cyclosporin A	True	False	lane01	TAACGTAGCC	4	H6
+RIKEN	000283	Cytochalasin B	True	False	lane01	ACAAGCGTTC	4	H7
+RIKEN	000284	CV-3988	True	False	lane01	CGGTACGTTA	4	H8
+RIKEN	000285	Ibandronate	True	False	lane01	ACACGTGGTA	4	H9
+RIKEN	000286	Midecamycin	True	False	lane01	AGCTGTATCC	4	H10
+RIKEN	000287	Omeprazole	True	False	lane01	AATACGTCCG	4	H11
+RIKEN	000288	MMS	True	False	lane01	CATGTGAGAC	4	H12
+RIKEN	000289	(-)-Ouabain	True	False	lane01	CTTGGCGATA	5	A1
+RIKEN	000290	Amiloride monohydrochloride dihydrate	True	False	lane01	GATAGCCAGT	5	A2
+RIKEN	000291	Benzamidine	True	False	lane01	CTATCGAGCA	5	A3
+RIKEN	000292	Berberine chloride	True	False	lane01	TTGAGCAGCA	5	A4
+RIKEN	000293	Cholesterol	True	False	lane01	CGCGATATTG	5	A5
+RIKEN	000294	cis-Androsterone	True	False	lane01	TATACACCGG	5	A6
+RIKEN	000295	L(-)-Mimosine	True	False	lane01	TAGTCAACCG	5	A7
+RIKEN	000296	Lactoferrin, from Bovin Milk	True	False	lane01	GGTCTAAGTC	5	A8
+RIKEN	000297	Limonin, from Grapefruit	True	False	lane01	AAGCGGTTAC	5	A9
+RIKEN	000298	L-Lobeline hydrochloride	True	False	lane01	ACGCGACATT	5	A10
+RIKEN	000299	Morantel citrate monohydrate	True	False	lane01	ACTCAGTGTG	5	A11
+RIKEN	000300	DMSO	True	True	lane01	TAGGCTTCCA	5	A12
+RIKEN	000301	Niflumic acid	True	False	lane01	TTGAAGACCG	5	B1
+RIKEN	000302	Olaquindox	True	False	lane01	TCGACTTGAC	5	B2
+RIKEN	000303	Oleandomycin	True	False	lane01	TGCAAGGCTA	5	B3
+RIKEN	000304	Oxacillin	True	False	lane01	GTAGCTAAGC	5	B4
+RIKEN	000305	Oxytetracycline	True	False	lane01	TCAGGACGAT	5	B5
+RIKEN	000306	Phenethicillin	True	False	lane01	GCTAAGATCG	5	B6
+RIKEN	000307	Piroxicam	True	False	lane01	AAGTGGCCTA	5	B7
+RIKEN	000308	Procaterol hydrochloride hemihydrate	True	False	lane01	ACGCTTACAG	5	B8
+RIKEN	000309	Riluzole hydrochloride	True	False	lane01	GGTCATTACG	5	B9
+RIKEN	000310	Sulindac	True	False	lane01	TGATGGATCC	5	B10
+RIKEN	000311	Tiothixene	True	False	lane01	TCGTAGGCTA	5	B11
+RIKEN	000312	DMSO	True	True	lane01	ATAGGCACTG	5	B12
+RIKEN	000313	Z-Capsaicin	True	False	lane01	CTTATGGCAG	5	C1
+RIKEN	000314	NPE797	True	False	lane01	GTTCCGATAC	5	C2
+RIKEN	000315	Aclacinomycin A	True	False	lane01	GCTCGAACTT	5	C3
+RIKEN	000316	Aminoguanidine, HCl	True	False	lane01	CATGACCTGT	5	C4
+RIKEN	000317	Aristolochic acid	True	False	lane01	CATAGGTCAG	5	C5
+RIKEN	000318	Aspirin	True	False	lane01	GAACCAGTTC	5	C6
+RIKEN	000319	Camptothecin	True	False	lane01	TCCGCAATTG	5	C7
+RIKEN	000320	Chlorpromazine, HCl	True	False	lane01	GCGAGTATTC	5	C8
+RIKEN	000321	Cisplatin	True	False	lane01	ACAGCTTGCT	5	C9
+RIKEN	000322	Cyclophosphamide	True	False	lane01	ACTTAGCGAG	5	C10
+RIKEN	000323	DFMO	True	False	lane01	CCAGTTGCAT	5	C11
+RIKEN	000324	DMSO	True	True	lane01	ATAACGTCGG	5	C12
+RIKEN	000325	Flutamide	True	False	lane01	GATCGACTCA	5	D1
+RIKEN	000326	L-NAME	True	False	lane01	GTCCTAACGA	5	D2
+RIKEN	000327	N-Acetyl-L-cysteine	True	False	lane01	AGAGCACGTT	5	D3
+RIKEN	000328	NDGA	True	False	lane01	ATGGCCGTTA	5	D4
+RIKEN	000329	N-Phenylanthranilic acid	True	False	lane01	TGTTGCAAGC	5	D5
+RIKEN	000330	Papaverine	True	False	lane01	CCTAAGGACT	5	D6
+RIKEN	000331	Pentoxifylline	True	False	lane01	GGACGTAATC	5	D7
+RIKEN	000332	NPE1246	True	False	lane01	CGCTTCGAAT	5	D8
+RIKEN	000333	Quercetin	True	False	lane01	ATATACGGCG	5	D9
+RIKEN	000334	Rolipram	True	False	lane01	AGACGTGTAC	5	D10
+RIKEN	000335	Salicylate	True	False	lane01	TTACGACTGG	5	D11
+RIKEN	000336	DMSO	True	True	lane01	GCGTATCTAG	5	D12
+RIKEN	000337	Theophylline	True	False	lane01	TTAACACGGC	5	E1
+RIKEN	000338	Azacytidine	True	False	lane01	GGCTATATGC	5	E2
+RIKEN	000339	NPE1206	True	False	lane01	TCGCAGTACT	5	E3
+RIKEN	000340	NPE1198	True	False	lane01	CGCTTGACAA	5	E4
+RIKEN	000341	NPE1199	True	False	lane01	TGCTTCAGAG	5	E5
+RIKEN	000342	1400W	True	False	lane01	AATGGATCCG	5	E6
+RIKEN	000343	NPE769	True	False	lane01	TACGTCATCG	5	E7
+RIKEN	000344	7-Nitroindazole	True	False	lane01	ATTCTGGACC	5	E8
+RIKEN	000345	Arphamenine A	True	False	lane01	CTGATCAAGG	5	E9
+RIKEN	000346	AZT	True	False	lane01	GCTTGAAGAC	5	E10
+RIKEN	000347	Cantharidin	True	False	lane01	CGTTGCATGA	5	E11
+RIKEN	000348	Benomyl	True	False	lane01	TGGATCGACA	5	E12
+RIKEN	000349	Emodin	True	False	lane01	TTCGAGGTCA	5	F1
+RIKEN	000350	Flurbiprofen	True	False	lane01	TTGGACATGC	5	F2
+RIKEN	000351	Fluvastatin	True	False	lane01	ATCGGATACG	5	F3
+RIKEN	000352	IBMX	True	False	lane01	TTCCAGAGGA	5	F4
+RIKEN	000353	Ro 20-1724	True	False	lane01	CACTGTGGAA	5	F5
+RIKEN	000354	Rottlerin	True	False	lane01	CTTATCGGAC	5	F6
+RIKEN	000355	Zaprinast	True	False	lane01	GCTAACAGCT	5	F7
+RIKEN	000356	Bestatin	True	False	lane01	CTACTGGACA	5	F8
+RIKEN	000357	Genistein	True	False	lane01	GGCAGAATCT	5	F9
+RIKEN	000358	N-Acetyl-S-farnesyl-L-cysteine	True	False	lane01	ACAGAGTTGC	5	F10
+RIKEN	000359	Nocodazole	True	False	lane01	CGAACATGGT	5	F11
+RIKEN	000360	Bortezomib	True	False	lane01	ACGGTTCCAA	5	F12
+RIKEN	000361	Puromycin	True	False	lane01	CTGACATCAG	5	G1
+RIKEN	000362	Bacitracin A	True	False	lane01	TAACGTTCCG	5	G2
+RIKEN	000363	Blasticidin S	True	False	lane01	AGCAGTAGCT	5	G3
+RIKEN	000364	Cathomycin	True	False	lane01	AGCCTGTAAC	5	G4
+RIKEN	000365	Cellocidin	True	False	lane01	CACGGAATTG	5	G5
+RIKEN	000366	D-cycloserine	True	False	lane01	ACGGTTAGCT	5	G6
+RIKEN	000367	Moenomycin	True	False	lane01	TAGAGCATCG	5	G7
+RIKEN	000368	O-carbamyl-D-serine	True	False	lane01	CACTTGGCAT	5	G8
+RIKEN	000369	Penicillin G	True	False	lane01	CCGATGTCTA	5	G9
+RIKEN	000370	Polyoxin A	True	False	lane01	AGAAGTCGTC	5	G10
+RIKEN	000371	Polyoxin D	True	False	lane01	ACGTGAGTAC	5	G11
+RIKEN	000372	Micafungin	True	False	lane01	GTGATCCTCA	5	G12
+RIKEN	000373	Riboflavin	True	False	lane01	ATGACGATGC	5	H1
+RIKEN	000374	Streptomycin	True	False	lane01	TACGCGATAG	5	H2
+RIKEN	000375	Tetracycline	True	False	lane01	TGGCCACTAT	5	H3
+RIKEN	000376	Viomycin	True	False	lane01	CTGGCTAGAA	5	H4
+RIKEN	000377	Minomycin	True	False	lane01	ATGCGCCAAT	5	H5
+RIKEN	000378	Sigmamycin(Oleandomycin)	True	False	lane01	GACCATGCAT	5	H6
+RIKEN	000379	Tuberin	True	False	lane01	CGAATAGGCT	5	H7
+RIKEN	000380	Tyrocidine B	True	False	lane01	AGTGTACCGA	5	H8
+RIKEN	000381	Hydroxymycin	True	False	lane01	TATAGGAGCC	5	H9
+RIKEN	000382	Oxytetracycline	True	False	lane01	AGTCTACGGT	5	H10
+RIKEN	000383	Colistin A	True	False	lane01	CAGTTGACAG	5	H11
+RIKEN	000384	MMS	True	False	lane01	AGCTCATTGG	5	H12
+RIKEN	000385	(-)-Cotinine	True	False	lane01	TTGCCGAAGA	7	A1
+RIKEN	000386	Epinephrine(+/-)	True	False	lane01	TGGCATCCAA	7	A2
+RIKEN	000387	Norepinephrine bitartrate	True	False	lane01	GCGTAATACG	7	A3
+RIKEN	000388	D-(+)-Catechin hydrate	True	False	lane01	AACACTTGGC	7	A4
+RIKEN	000389	(+)-cis-Diltiazem hydrocholoride	True	False	lane01	CTACGCGTAT	7	A5
+RIKEN	000390	Miconazole nitrate	True	False	lane01	TAATAGGCCG	7	A6
+RIKEN	000391	(+/-)-SKF-38393 hydrochloride	True	False	lane01	CATGGCGAAT	7	A7
+RIKEN	000392	(+/-)-Sulpiride	True	False	lane01	TAGACCGTGA	7	A8
+RIKEN	000393	Thalidomide	True	False	lane01	GACGATTGTC	7	A9
+RIKEN	000394	(+/-)-Vesamicol hydrochloride	True	False	lane01	AGTGTCCAAG	7	A10
+RIKEN	000395	(S)-(-)-Propranolol hydrochloride	True	False	lane01	TAGGCACTCA	7	A11
+RIKEN	000396	DMSO	True	True	lane01	GATGCACATC	7	A12
+RIKEN	000397	NPE272	True	False	lane01	GGTAACACGT	7	B1
+RIKEN	000398	Bromocriptine mesylate	True	False	lane01	ACATGGAGTC	7	B2
+RIKEN	000399	3-Hydroxy-DL-kynurenine	True	False	lane01	TAGAAGGCTC	7	B3
+RIKEN	000400	NPE759	True	False	lane01	GGCATACTTG	7	B4
+RIKEN	000401	NPE779	True	False	lane01	GGCCTTATAC	7	B5
+RIKEN	000402	NPE959	True	False	lane01	TAAGTCCGCT	7	B6
+RIKEN	000403	NPE1241	True	False	lane01	CAGCGTAATC	7	B7
+RIKEN	000404	5-Bromo-2'-deoxyuridine	True	False	lane01	AGGAGTCCTA	7	B8
+RIKEN	000405	Bergapten	True	False	lane01	TGGACCAACT	7	B9
+RIKEN	000406	6-Azauridine	True	False	lane01	GGCACAGTTA	7	B10
+RIKEN	000407	Xanthotoxin	True	False	lane01	TGAAGTCACC	7	B11
+RIKEN	000408	DMSO	True	True	lane01	TTGGCTCAGA	7	B12
+RIKEN	000409	Alizarin red S	True	False	lane01	AAGCGCATGT	7	C1
+RIKEN	000410	NPE1008	True	False	lane01	GACAGACTTC	7	C2
+RIKEN	000411	Aminopterin	True	False	lane01	AGTCGTCCAT	7	C3
+RIKEN	000412	Amitriptyline hydrochloride	True	False	lane01	ATGACACTGG	7	C4
+RIKEN	000413	Apomorphine hydrochloride hemihydrate	True	False	lane01	TGAGTGAACC	7	C5
+RIKEN	000414	Argininosuccinic acid disodium salt	True	False	lane01	TCATAGAGGC	7	C6
+RIKEN	000415	Atenolol	True	False	lane01	AGATCCGCAT	7	C7
+RIKEN	000416	Atropine	True	False	lane01	GGACAATCTC	7	C8
+RIKEN	000417	Auramine O	True	False	lane01	GCATGTTGCA	7	C9
+RIKEN	000418	Azlocillin sodium salt	True	False	lane01	GAACTGGCTT	7	C10
+RIKEN	000419	Azocarmine G	True	False	lane01	TAGCCGTATC	7	C11
+RIKEN	000420	DMSO	True	True	lane01	CGATTATCGC	7	C12
+RIKEN	000421	Beclomethasone	True	False	lane01	GATGACGCAT	7	D1
+RIKEN	000422	Benomyl	True	False	lane01	AGTACTAGGC	7	D2
+RIKEN	000423	NPE1010	True	False	lane01	AATCTGACGG	7	D3
+RIKEN	000424	Bicinchoninc acid disodium salt	True	False	lane01	ACAAGGCTCT	7	D4
+RIKEN	000425	Bisbenzimide H 33258	True	False	lane01	AGCCTAGTGA	7	D5
+RIKEN	000426	Brilliant blue G	True	False	lane01	CGTTGATACG	7	D6
+RIKEN	000427	Bromocresol purple	True	False	lane01	CATCAGTAGG	7	D7
+RIKEN	000428	Cefazolin sodium salt	True	False	lane01	TGAACGTGCT	7	D8
+RIKEN	000429	Cefoxitin sodium salt	True	False	lane01	CGTCTAATCG	7	D9
+RIKEN	000430	Cephalothin sodium salt	True	False	lane01	TAATGCAGCG	7	D10
+RIKEN	000431	Cephapirin sodium salt	True	False	lane01	TGCGCATATG	7	D11
+RIKEN	000432	DMSO	True	True	lane01	ACTACTGCAG	7	D12
+RIKEN	000433	Chenodeoxycholic acid	True	False	lane01	GTAGCTTCGA	7	E1
+RIKEN	000434	Chlorhexidine dihydrochloride	True	False	lane01	TGAAGCTTGC	7	E2
+RIKEN	000435	Chlorophyllin sodium copper salt	True	False	lane01	GTCTGGCATA	7	E3
+RIKEN	000436	Chromeazurol B	True	False	lane01	AGCCGAATTC	7	E4
+RIKEN	000437	Clebopride maleate salt	True	False	lane01	CCGGCATTAT	7	E5
+RIKEN	000438	Coenzyme B12	True	False	lane01	TGACAACCGT	7	E6
+RIKEN	000439	Colchicine	True	False	lane01	CCTAGAATGC	7	E7
+RIKEN	000440	Colistin sulfate salt	True	False	lane01	TATAGCGCCT	7	E8
+RIKEN	000441	Coprostane	True	False	lane01	GCACGGTTAA	7	E9
+RIKEN	000442	Cromolyn sodium salt	True	False	lane01	TACGTGCAAG	7	E10
+RIKEN	000443	Crystal violet	True	False	lane01	AGGTATGCCT	7	E11
+RIKEN	000444	Benomyl	True	False	lane01	CGTAGTAACC	7	E12
+RIKEN	000445	Cyproheptadine hydrochloride	True	False	lane01	ATCGAGGTTC	7	F1
+RIKEN	000446	Cystathionine	True	False	lane01	GGAGCATTAC	7	F2
+RIKEN	000447	D-Glucoheptose	True	False	lane01	TAGATCGAGC	7	F3
+RIKEN	000448	DL-Panthenol	True	False	lane01	ACGAGTCATC	7	F4
+RIKEN	000449	Eosin B	True	False	lane01	ACGTAGGACT	7	F5
+RIKEN	000450	Flavone	True	False	lane01	GGATTACGCA	7	F6
+RIKEN	000451	Florfenicol	True	False	lane01	ATAGTCGGCA	7	F7
+RIKEN	000452	Flumethasone pivalate	True	False	lane01	AGGCATCTAG	7	F8
+RIKEN	000453	Fluorescamine	True	False	lane01	ACCATGTGGT	7	F9
+RIKEN	000454	Folic acid	True	False	lane01	CGCTTAATGG	7	F10
+RIKEN	000455	Ginkgolide A from Ginkgo leaves	True	False	lane01	TACGGCAGTA	7	F11
+RIKEN	000456	Bortezomib	True	False	lane01	CCAGTCTGAA	7	F12
+RIKEN	000457	Guanabenz acetate salt	True	False	lane01	TGACTCATGG	7	G1
+RIKEN	000458	Hematoporphyrin dihydrochloride	True	False	lane01	CCTTCGTGAA	7	G2
+RIKEN	000459	Heptakis(2, 6-di-O-methyl)-beta-cyclodextrin	True	False	lane01	GAGGATCTAC	7	G3
+RIKEN	000460	Hyodeoxycholic acid	True	False	lane01	ACCACTGGAT	7	G4
+RIKEN	000461	Hypotaurine	True	False	lane01	TGACGTTCGA	7	G5
+RIKEN	000462	Idazoxan hydrochloride	True	False	lane01	AGCGACTGTT	7	G6
+RIKEN	000463	L-Canavanine sulfate salt	True	False	lane01	GGCGTCTTAA	7	G7
+RIKEN	000464	Leukomisine	True	False	lane01	GCTACAATGG	7	G8
+RIKEN	000465	L-Kynurenine	True	False	lane01	TCGTTCGAAG	7	G9
+RIKEN	000466	L-Mimosine from Koa hoale seeds	True	False	lane01	AAGTCGACGT	7	G10
+RIKEN	000467	Loxapine succinate salt	True	False	lane01	ACAGGCAGTT	7	G11
+RIKEN	000468	Micafungin	True	False	lane01	CTACATGTGC	7	G12
+RIKEN	000469	LY-165,163	True	False	lane01	AAGTCTGTCG	7	H1
+RIKEN	000470	D-(+)-Melibiose, Monohydrate	True	False	lane01	TGAACACCTG	7	H2
+RIKEN	000471	Moxisylyte hydrochloride	True	False	lane01	CTGTAGAGTC	7	H3
+RIKEN	000472	NPE1197	True	False	lane01	GATTGCGCAA	7	H4
+RIKEN	000473	NPE1200	True	False	lane01	TTCGATGACC	7	H5
+RIKEN	000474	N-Acetyl-D-mannosamine	True	False	lane01	GACCGCTTAA	7	H6
+RIKEN	000475	Naphthol AS-BI phosphate	True	False	lane01	AGGCTACATG	7	H7
+RIKEN	000476	NPE1214	True	False	lane01	GCCTATAGAC	7	H8
+RIKEN	000477	Nialamide	True	False	lane01	CGGCTTGATA	7	H9
+RIKEN	000478	Nifuroxazide	True	False	lane01	AGTTGGTACC	7	H10
+RIKEN	000479	NPE1244	True	False	lane01	TTGACAAGCC	7	H11
+RIKEN	000480	MMS	True	False	lane01	AAGCGACTTC	7	H12
+RIKEN	000481	Phenosafranin	True	False	lane01	CAATCTCGGA	8	A1
+RIKEN	000482	Phosphomycin disodium salt	True	False	lane01	CACTGGACTT	8	A2
+RIKEN	000483	Pramoxine hydrochloride	True	False	lane01	AAGCCTTGCA	8	A3
+RIKEN	000484	Prednisone	True	False	lane01	AGTGCGCTTA	8	A4
+RIKEN	000485	Progesterone	True	False	lane01	CTTGAGCTCA	8	A5
+RIKEN	000486	Propidium iodide	True	False	lane01	AGAATCTGGC	8	A6
+RIKEN	000487	Protriptyline hydrochloride	True	False	lane01	TCCACTGTAG	8	A7
+RIKEN	000488	Silibinin	True	False	lane01	ACGTGAATCG	8	A8
+RIKEN	000489	Sulconazole nitrate salt	True	False	lane01	AGGCTGAATC	8	A9
+RIKEN	000490	Sulfaquinoxaline sodium salt	True	False	lane01	TCATGGTCGA	8	A10
+RIKEN	000491	Sulforhodamine 101	True	False	lane01	GCTGACATAC	8	A11
+RIKEN	000492	DMSO	True	True	lane01	TTCCTGCAGA	8	A12
+RIKEN	000493	Thiacetazone	True	False	lane01	AATTCAGCGG	8	B1
+RIKEN	000494	Thiamine hydrochloride	True	False	lane01	TGCATTCCAG	8	B2
+RIKEN	000495	Trypan blue	True	False	lane01	AGTATCTCGG	8	B3
+RIKEN	000496	Vitamin K2 (20)	True	False	lane01	GCCGATATAG	8	B4
+RIKEN	000497	Xanthosine	True	False	lane01	GTACACGATC	8	B5
+RIKEN	000498	Berberine chloride	True	False	lane01	TAACGCATGC	8	B6
+RIKEN	000499	Lividomycin A sulfate salt	True	False	lane01	TAACGGTGTC	8	B7
+RIKEN	000500	Luteolin	True	False	lane01	CTGTGAACTG	8	B8
+RIKEN	000501	Forskolin	True	False	lane01	GATCACTGAC	8	B9
+RIKEN	000502	(+/-)Amethopterin	True	False	lane01	GCTAGTGCAA	8	B10
+RIKEN	000503	NPE958	True	False	lane01	AGTAGTGTCC	8	B11
+RIKEN	000504	DMSO	True	True	lane01	GCCAAGTGTT	8	B12
+RIKEN	000505	L-Anserine nitrate salt	True	False	lane01	AGAACGTTGC	8	C1
+RIKEN	000506	Kaempferol	True	False	lane01	ACGACCTTGA	8	C2
+RIKEN	000507	Betamethasone	True	False	lane01	ACTCGCTGAA	8	C3
+RIKEN	000508	Flecainide acetate salt	True	False	lane01	TTCAAGCGGT	8	C4
+RIKEN	000509	2'-Hydroxyflavanone	True	False	lane01	AACTGCCGTA	8	C5
+RIKEN	000510	Bathophenanthroline	True	False	lane01	CGAGATATGC	8	C6
+RIKEN	000511	Norethindrone	True	False	lane01	TAGCCTAACG	8	C7
+RIKEN	000512	Octyl beta-D-glucopyranoside	True	False	lane01	TTACCGAGTG	8	C8
+RIKEN	000513	Fluoresceinamine isomer I	True	False	lane01	AGCAATGCGT	8	C9
+RIKEN	000514	Perseitol diformal	True	False	lane01	CCTATGAGGA	8	C10
+RIKEN	000515	O-Acetyl-L-carnitine chloride	True	False	lane01	TAATACGCGC	8	C11
+RIKEN	000516	DMSO	True	True	lane01	TTAACGGCCA	8	C12
+RIKEN	000517	Oxybutynin chloride	True	False	lane01	GACATGCGTT	8	D1
+RIKEN	000518	L-Homocystine	True	False	lane01	TTCAGCGATC	8	D2
+RIKEN	000519	all trans-Retinal	True	False	lane01	GTGAACGTTC	8	D3
+RIKEN	000520	Aces	True	False	lane01	TTCGAACGGA	8	D4
+RIKEN	000521	Hypoxanthine	True	False	lane01	CCAGCTAGAT	8	D5
+RIKEN	000522	Naringenin	True	False	lane01	ACAACTGGTG	8	D6
+RIKEN	000523	NPE1243	True	False	lane01	CTACGTTGGA	8	D7
+RIKEN	000524	Sulfonazo III	True	False	lane01	CAAGATGTCG	8	D8
+RIKEN	000525	(+)-Camphorquinone	True	False	lane01	TTATAGCGCG	8	D9
+RIKEN	000526	Cholecalciferol	True	False	lane01	TGAGCGATAC	8	D10
+RIKEN	000527	Dithranol	True	False	lane01	GGACCTACAT	8	D11
+RIKEN	000528	DMSO	True	True	lane01	ATTACCGAGC	8	D12
+RIKEN	000529	Terbutaline	True	False	lane01	AGCTCATGCA	8	E1
+RIKEN	000530	Chlormadinone acetate	True	False	lane01	TCAGTCACAG	8	E2
+RIKEN	000531	N-Acetyl-D-glucosamine	True	False	lane01	GTACAGGACT	8	E3
+RIKEN	000532	Mepirizole	True	False	lane01	AGCTAACCTG	8	E4
+RIKEN	000533	5-Methoxytryptamine	True	False	lane01	CATATGGCCT	8	E5
+RIKEN	000534	Ceftazidime	True	False	lane01	CGGCAATTCT	8	E6
+RIKEN	000535	Bromophenol blue	True	False	lane01	GTTCTCAGGA	8	E7
+RIKEN	000536	NPE955	True	False	lane01	GGTGTAATCC	8	E8
+RIKEN	000537	D-(-)-Salicin	True	False	lane01	AACGTTGTGC	8	E9
+RIKEN	000538	Thioflavin T	True	False	lane01	TGCAAGCCAT	8	E10
+RIKEN	000539	Phenolphthalin	True	False	lane01	CTCAGGACTA	8	E11
+RIKEN	000540	Benomyl	True	False	lane01	TAACTCGAGG	8	E12
+RIKEN	000541	Pyrocatechol violet	True	False	lane01	ATGGAGTCTC	8	F1
+RIKEN	000542	Crystalponceau 6R	True	False	lane01	TGTGGCTAAC	8	F2
+RIKEN	000543	Naproxen sodium salt	True	False	lane01	CGATAGTCGA	8	F3
+RIKEN	000544	Nafcillin sodium salt monohydrate	True	False	lane01	TTGCACACAG	8	F4
+RIKEN	000545	Naphthylazoxine S disodium salt	True	False	lane01	TAAGTCGCCA	8	F5
+RIKEN	000546	3beta-Cholestanol	True	False	lane01	GTAACTCGTG	8	F6
+RIKEN	000547	Diloxanide furoate	True	False	lane01	TAACGGACGT	8	F7
+RIKEN	000548	Trimebutine	True	False	lane01	CTCGAAGTGA	8	F8
+RIKEN	000549	ACID RED 1	True	False	lane01	AGGCATAGTC	8	F9
+RIKEN	000550	Phloxine B	True	False	lane01	CTGGTGTACA	8	F10
+RIKEN	000551	Neutral red	True	False	lane01	TGAGGCATTC	8	F11
+RIKEN	000552	Bortezomib	True	False	lane01	GTCGTTAGCA	8	F12
+RIKEN	000553	AMPSO	True	False	lane01	ATCATCCGAG	8	G1
+RIKEN	000554	Hematoxylin	True	False	lane01	AAGGTACCTG	8	G2
+RIKEN	000555	Fast green FCF	True	False	lane01	AGTGGTTCCA	8	G3
+RIKEN	000556	Acebutolol hydrochloride	True	False	lane01	TGCATGCAGT	8	G4
+RIKEN	000557	Acemetacin	True	False	lane01	CAGAGCGTTA	8	G5
+RIKEN	000558	Acetazolamide	True	False	lane01	AACTGCTTGG	8	G6
+RIKEN	000559	Amoxapine	True	False	lane01	AATGTAGCGC	8	G7
+RIKEN	000560	Cyclocytidine HCl	True	False	lane01	GGTACGATCT	8	G8
+RIKEN	000561	Bendroflumethiazide	True	False	lane01	TATGAACCGC	8	G9
+RIKEN	000562	Beclomethasone dipropionate	True	False	lane01	TGTCCAAGAC	8	G10
+RIKEN	000563	Biochanin a	True	False	lane01	GGATACATCG	8	G11
+RIKEN	000564	Micafungin	True	False	lane01	CGGATCATTC	8	G12
+RIKEN	000565	Bumetanide	True	False	lane01	AAGATCGGTC	8	H1
+RIKEN	000566	Chlorogenic acid	True	False	lane01	ATAGCTCGAC	8	H2
+RIKEN	000567	Cholic acid	True	False	lane01	AGTCCTGTCA	8	H3
+RIKEN	000568	Clobetasol propionate	True	False	lane01	TCAAGTGCCT	8	H4
+RIKEN	000569	Dequalinium chloride	True	False	lane01	TTCGCGTGAA	8	H5
+RIKEN	000570	Digitoxin	True	False	lane01	GTCGCTAGAT	8	H6
+RIKEN	000571	Dipyridamole	True	False	lane01	TGTCCTAGCA	8	H7
+RIKEN	000572	Dirithromycin	True	False	lane01	CGAAGTTCAC	8	H8
+RIKEN	000573	Domperidone	True	False	lane01	TCCAACGTGT	8	H9
+RIKEN	000574	Eserine	True	False	lane01	TCTATGCACG	8	H10
+RIKEN	000575	Estradiol	True	False	lane01	GATCAACGTC	8	H11
+RIKEN	000576	MMS	True	False	lane01	TGCTGATCGA	8	H12
+RIKEN	000577	Flumequine	True	False	lane01	TGCGAACTGT	9	A1
+RIKEN	000578	Flunarizine hydrochloride	True	False	lane01	ATGCACCTGA	9	A2
+RIKEN	000579	Furazolidone	True	False	lane01	AGATTCGGCT	9	A3
+RIKEN	000580	Gemfibrozil	True	False	lane01	CCAGTAGCTA	9	A4
+RIKEN	000581	Gibberellin A3	True	False	lane01	ACCGTTGATC	9	A5
+RIKEN	000582	Hematein	True	False	lane01	AGCGATTGCA	9	A6
+RIKEN	000583	Hesperetin	True	False	lane01	TTAATCGGCG	9	A7
+RIKEN	000584	Ketoconazole	True	False	lane01	TAGTCCAAGG	9	A8
+RIKEN	000585	Khellin	True	False	lane01	AAGCTCAGTG	9	A9
+RIKEN	000586	Kinetin riboside	True	False	lane01	AACGGTCCTA	9	A10
+RIKEN	000587	Lanatoside c	True	False	lane01	GCACTAGACT	9	A11
+RIKEN	000588	DMSO	True	True	lane01	CTAGCTTGCA	9	A12
+RIKEN	000589	Mebendazole	True	False	lane01	GACTGGCAAT	9	B1
+RIKEN	000590	Melphalan	True	False	lane01	AACGTGATCC	9	B2
+RIKEN	000591	Morin	True	False	lane01	TTAGGCTAGC	9	B3
+RIKEN	000592	Nadolol	True	False	lane01	AGGAACCTTG	9	B4
+RIKEN	000593	Nalidixic acid	True	False	lane01	AACAGGCCTT	9	B5
+RIKEN	000594	Naringin	True	False	lane01	GAGTCGTACA	9	B6
+RIKEN	000595	Nicergoline	True	False	lane01	GTGCCATTCA	9	B7
+RIKEN	000596	Nifenazone	True	False	lane01	GGACCTGTAA	9	B8
+RIKEN	000597	Nitrendipine	True	False	lane01	GCTGGTCTAA	9	B9
+RIKEN	000598	Nitrofurantoin	True	False	lane01	GCACTAGGTA	9	B10
+RIKEN	000599	Oleandomycin phosphate	True	False	lane01	ATGACTTGCG	9	B11
+RIKEN	000600	DMSO	True	True	lane01	AGTTGAGCCT	9	B12
+RIKEN	000601	Peruvoside	True	False	lane01	TAAGCCATGG	9	C1
+RIKEN	000602	Phenolphthalein	True	False	lane01	AGGATCCTGT	9	C2
+RIKEN	000603	Phentolamine hydrochloride	True	False	lane01	ATGACTCCGA	9	C3
+RIKEN	000604	Phloretin	True	False	lane01	CAGCAGGATT	9	C4
+RIKEN	000605	Pipemidic acid	True	False	lane01	TGCATAACGG	9	C5
+RIKEN	000606	Strychnine	True	False	lane01	AGTCCGATTG	9	C6
+RIKEN	000607	Sulfacetamide	True	False	lane01	GCCGTACAAT	9	C7
+RIKEN	000608	Sulfachloropyridazine	True	False	lane01	GCGACCATTA	9	C8
+RIKEN	000609	Sulfadimethoxine	True	False	lane01	TCGCTGAAGT	9	C9
+RIKEN	000610	Sulfamerazine	True	False	lane01	AATGTCGCAG	9	C10
+RIKEN	000611	Sulfamethazine	True	False	lane01	CGTGACACTT	9	C11
+RIKEN	000612	DMSO	True	True	lane01	TATGCTGGCA	9	C12
+RIKEN	000613	Sulfamonomethoxine	True	False	lane01	CGAGATTACC	9	D1
+RIKEN	000614	Sulfaphenazole	True	False	lane01	AGCAGTTACG	9	D2
+RIKEN	000615	Sulfathiazole	True	False	lane01	CCTGACAGTA	9	D3
+RIKEN	000616	Tetracaine hydrochloride	True	False	lane01	AGTCATGCTC	9	D4
+RIKEN	000617	Thiothixene	True	False	lane01	AGATACGCTG	9	D5
+RIKEN	000618	Tolfenamic acid	True	False	lane01	ATGTGCAGCT	9	D6
+RIKEN	000619	Tomatine	True	False	lane01	GGTCGAATAC	9	D7
+RIKEN	000620	Trichlormethiazide	True	False	lane01	ACGGATATCC	9	D8
+RIKEN	000621	Xylometazoline hydrochloride	True	False	lane01	GCTCCTATGA	9	D9
+RIKEN	000622	Picrotin	True	False	lane01	GTTCTGCAAG	9	D10
+RIKEN	000623	Ubiquinone-10	True	False	lane01	ATCCGTGAAG	9	D11
+RIKEN	000624	DMSO	True	True	lane01	AGCCTATTCG	9	D12
+RIKEN	000625	Hycanthone	True	False	lane01	TAGCGCCATA	9	E1
+RIKEN	000626	Atractyloside potassium salt	True	False	lane01	CTGAGCATGA	9	E2
+RIKEN	000627	Flunisolide	True	False	lane01	CGAGCACTAT	9	E3
+RIKEN	000628	Convallatoxin	True	False	lane01	AGCACATGTG	9	E4
+RIKEN	000629	Clozapine	True	False	lane01	ATTCACACGG	9	E5
+RIKEN	000630	Kinetin	True	False	lane01	TTGCACTGCA	9	E6
+RIKEN	000631	Bretylium tosylate	True	False	lane01	CTTCAGGTGA	9	E7
+RIKEN	000632	Molsidomine	True	False	lane01	ATGTCTCCAG	9	E8
+RIKEN	000633	Cephradine	True	False	lane01	GAATTCAGCC	9	E9
+RIKEN	000634	Furosemide	True	False	lane01	CATCGTGTCA	9	E10
+RIKEN	000635	Yohimbine hydrochloride	True	False	lane01	AGTCACATGC	9	E11
+RIKEN	000636	Benomyl	True	False	lane01	TATGACGCGA	9	E12
+RIKEN	000637	Praziquantel	True	False	lane01	TGCGATTACG	9	F1
+RIKEN	000638	Tolnaftate	True	False	lane01	TGACATCGTG	9	F2
+RIKEN	000639	Amiodarone hydrochloride	True	False	lane01	CCGGTGATAT	9	F3
+RIKEN	000640	Chlorambucil	True	False	lane01	TGCACTCGTA	9	F4
+RIKEN	000641	Norcantharidin	True	False	lane01	GTTATCGACG	9	F5
+RIKEN	000642	Melatonin	True	False	lane01	CACGTGAACT	9	F6
+RIKEN	000643	Procyclidine hydrochloride	True	False	lane01	AGCGTGACTT	9	F7
+RIKEN	000644	Sulfamethoxypyridazine	True	False	lane01	TCCAGAGTAC	9	F8
+RIKEN	000645	3-Hydroxyflavone	True	False	lane01	ACGTCAAGCT	9	F9
+RIKEN	000646	Haloperidol	True	False	lane01	GAATACCGCT	9	F10
+RIKEN	000647	Sulfameter	True	False	lane01	AACGCTGTCA	9	F11
+RIKEN	000648	Bortezomib	True	False	lane01	GTGCTAGACA	9	F12
+RIKEN	000649	Benfluorex hydrochloride	True	False	lane01	GGTACTCATG	9	G1
+RIKEN	000650	Loperamide hydrochloride	True	False	lane01	ACTGTACGCT	9	G2
+RIKEN	000651	Warfarin	True	False	lane01	GACTAAGGTC	9	G3
+RIKEN	000652	Sulfadiazine	True	False	lane01	ATAGCCATGC	9	G4
+RIKEN	000653	Sulfapyridine	True	False	lane01	AAGCAGTGTC	9	G5
+RIKEN	000654	Sulfabenzamide	True	False	lane01	ACTCTGCGAT	9	G6
+RIKEN	000655	Abietic acid	True	False	lane01	CGGATGTACT	9	G7
+RIKEN	000656	Phenylbutazone	True	False	lane01	ACCTGGATCA	9	G8
+RIKEN	000657	niclosamide	True	False	lane01	ACTGTAGACG	9	G9
+RIKEN	000658	Achromycin	True	False	lane01	AGACACCTGT	9	G10
+RIKEN	000659	Antibiotic A201A	True	False	lane01	TTCAGAGACG	9	G11
+RIKEN	000660	Micafungin	True	False	lane01	GATAACCTGC	9	G12
+RIKEN	000661	Bicyclomycin	True	False	lane01	GAACTCCTAG	9	H1
+RIKEN	000662	Laurucin	True	False	lane01	ATAGTCCACG	9	H2
+RIKEN	000663	Nigericin	True	False	lane01	TACAATGCCG	9	H3
+RIKEN	000664	Relomycin	True	False	lane01	ACATGTTGGC	9	H4
+RIKEN	000665	Siccanin	True	False	lane01	CTAAGGCTAG	9	H5
+RIKEN	000666	Lipoxamycin	True	False	lane01	ACCTGTGCAT	9	H6
+RIKEN	000667	ADR	True	False	lane01	GTCTTACCAG	9	H7
+RIKEN	000668	Duamycin	True	False	lane01	TGGTCACACT	9	H8
+RIKEN	000669	Polymixin B	True	False	lane01	GTCACGTAAC	9	H9
+RIKEN	000670	Mucopeptin B	True	False	lane01	CCATTGGTCA	9	H10
+RIKEN	000671	Mucopeptin C	True	False	lane01	CGCATGATCT	9	H11
+RIKEN	000672	MMS	True	False	lane01	ACAACTCTGG	9	H12
+RIKEN	000673	NPE174	True	False	lane01	CGGTATGATC	10	A1
+RIKEN	000674	NPE1253	True	False	lane01	CGGATTGTCA	10	A2
+RIKEN	000675	NPE506	True	False	lane01	AACCAGGTGT	10	A3
+RIKEN	000676	NPE821	True	False	lane01	GGATGACTTC	10	A4
+RIKEN	000677	NPE822	True	False	lane01	GTATGCGTCA	10	A5
+RIKEN	000678	NPE694	True	False	lane01	CCTAGTTCGA	10	A6
+RIKEN	000679	NPE820	True	False	lane01	GAAGGCTTAC	10	A7
+RIKEN	000680	NPE692	True	False	lane01	CAGTCTGACT	10	A8
+RIKEN	000681	NPE690	True	False	lane01	AAGAGGTCTC	10	A9
+RIKEN	000682	NPE1234	True	False	lane01	CACAGTTAGC	10	A10
+RIKEN	000683	NPE803	True	False	lane01	ACCGAGGATT	10	A11
+RIKEN	000684	DMSO	True	True	lane01	TATGCAGCTC	10	A12
+RIKEN	000685	NPE687	True	False	lane01	TGGCTCGAAT	10	B1
+RIKEN	000686	NPE695	True	False	lane01	AAGGTTCGCA	10	B2
+RIKEN	000687	NPE1257	True	False	lane01	AGCTAGCTAG	10	B3
+RIKEN	000688	NPE772	True	False	lane01	CCGTACTAGT	10	B4
+RIKEN	000689	NPE1003	True	False	lane01	GAGTGCTACT	10	B5
+RIKEN	000690	NPE522	True	False	lane01	AGAGCTACTC	10	B6
+RIKEN	000691	NPE521	True	False	lane01	TCGTCAATGG	10	B7
+RIKEN	000692	NPE1260	True	False	lane01	ACCATAGGTG	10	B8
+RIKEN	000693	NPE279	True	False	lane01	TCCAGAAGTG	10	B9
+RIKEN	000694	NPE684	True	False	lane01	GTTACCAGTC	10	B10
+RIKEN	000695	NPE500	True	False	lane01	GTCCAATACG	10	B11
+RIKEN	000696	DMSO	True	True	lane01	TGACTCAGAC	10	B12
+RIKEN	000697	NPE277	True	False	lane01	TATGAGCCAG	10	C1
+RIKEN	000698	NPE102	True	False	lane01	CGTAGCGTAA	10	C2
+RIKEN	000699	NPE104	True	False	lane01	TAACAGCTGG	10	C3
+RIKEN	000700	NPE1252	True	False	lane01	TTAACGGAGC	10	C4
+RIKEN	000701	NPE280	True	False	lane01	TAGGCATACC	10	C5
+RIKEN	000702	NPE278	True	False	lane01	GCATTAGCAG	10	C6
+RIKEN	000703	NPE688	True	False	lane01	CACAGAGTGT	10	C7
+RIKEN	000704	NPE527	True	False	lane01	ATAGGTCTGC	10	C8
+RIKEN	000705	NPE691	True	False	lane01	TGACTGCTCA	10	C9
+RIKEN	000706	NPE25	True	False	lane01	TAGTAACGCC	10	C10
+RIKEN	000707	NPE1060	True	False	lane01	CTCAGTGGTA	10	C11
+RIKEN	000708	DMSO	True	True	lane01	CACGGTCTAT	10	C12
+RIKEN	000709	NPE824	True	False	lane01	GAGCTTCAAG	10	D1
+RIKEN	000710	NPE1004	True	False	lane01	CCGGAATTCA	10	D2
+RIKEN	000711	NPE1044	True	False	lane01	GACAAGTTCC	10	D3
+RIKEN	000712	NPE1248	True	False	lane01	ATCAAGCTGG	10	D4
+RIKEN	000713	RSOC0016	True	False	lane01	CACCGTAGTA	10	D5
+RIKEN	000714	NPE189	True	False	lane01	ATCGTCGACT	10	D6
+RIKEN	000715	RSOC0018	True	False	lane01	CTACACGAGT	10	D7
+RIKEN	000716	NPE201	True	False	lane01	AGAGTCTCAC	10	D8
+RIKEN	000717	NPE644	True	False	lane01	TCAGGTATCG	10	D9
+RIKEN	000718	NPE188	True	False	lane01	ACATGTACGG	10	D10
+RIKEN	000719	NPE186	True	False	lane01	TTATGCAGGC	10	D11
+RIKEN	000720	DMSO	True	True	lane01	TGCTCAACTG	10	D12
+RIKEN	000721	NPE216	True	False	lane01	TGATAGCGAC	10	E1
+RIKEN	000722	NPE210	True	False	lane01	AACATGTGCC	10	E2
+RIKEN	000723	NPE1263	True	False	lane01	CATGATGTGC	10	E3
+RIKEN	000724	NPE1251	True	False	lane01	GATGTGACCA	10	E4
+RIKEN	000725	NPE1262	True	False	lane01	GTAAGCCTGT	10	E5
+RIKEN	000726	NPE1015	True	False	lane01	CGATTCTGCA	10	E6
+RIKEN	000727	NPE1016	True	False	lane01	TTGGAGCTAC	10	E7
+RIKEN	000728	NPE1259	True	False	lane01	ACATTGGCGA	10	E8
+RIKEN	000729	NPE1014	True	False	lane01	TACTGTCGAG	10	E9
+RIKEN	000730	NPE1025	True	False	lane01	GCAACCTGAT	10	E10
+RIKEN	000731	NPE770	True	False	lane01	GGTCAACTGT	10	E11
+RIKEN	000732	Benomyl	True	False	lane01	GCTGTACCAA	10	E12
+RIKEN	000733	NPE771	True	False	lane01	TTAGAAGCGC	10	F1
+RIKEN	000734	NPE795	True	False	lane01	CATTGAAGGC	10	F2
+RIKEN	000735	NPE1233	True	False	lane01	TACGTACCGA	10	F3
+RIKEN	000736	NPE819	True	False	lane01	TAGACCTGGT	10	F4
+RIKEN	000737	NPE883	True	False	lane01	TAGCCATCGT	10	F5
+RIKEN	000738	NPE893	True	False	lane01	GACAGCATGT	10	F6
+RIKEN	000739	NPE630	True	False	lane01	ACGTATAGCG	10	F7
+RIKEN	000740	NPE1264	True	False	lane01	CGTTGGAATC	10	F8
+RIKEN	000741	NPE678	True	False	lane01	GCAGTGACAT	10	F9
+RIKEN	000742	NPE696	True	False	lane01	TGACTGTACG	10	F10
+RIKEN	000743	NPE657	True	False	lane01	GAACCTCTTG	10	F11
+RIKEN	000744	Bortezomib	True	False	lane01	TCGAACGTAG	10	F12
+RIKEN	000745	NPE1254	True	False	lane01	GCTCATGAGA	10	G1
+RIKEN	000746	NPE1226	True	False	lane01	TCAAGAGCTG	10	G2
+RIKEN	000747	NPE818	True	False	lane01	CCGTGGAATT	10	G3
+RIKEN	000748	NPE1258	True	False	lane01	GTCACAAGCT	10	G4
+RIKEN	000749	NPE1255	True	False	lane01	GGCCGATATT	10	G5
+RIKEN	000750	NPE507	True	False	lane01	AATAGCTGGC	10	G6
+RIKEN	000751	NPE1250	True	False	lane01	TGCCAGATAG	10	G7
+RIKEN	000752	NPE1265	True	False	lane01	TGAGAACGTC	10	G8
+RIKEN	000753	NPE1026	True	False	lane01	CACATGATGG	10	G9
+RIKEN	000754	NPE523	True	False	lane01	CGCATTGAGA	10	G10
+RIKEN	000755	NPE509	True	False	lane01	AACCGTTGAG	10	G11
+RIKEN	000756	Micafungin	True	False	lane01	GAACGCTATC	10	G12
+RIKEN	000757	NPE1240	True	False	lane01	CACGCTATGA	10	H1
+RIKEN	000758	NPE103	True	False	lane01	AGTCGACTGA	10	H2
+RIKEN	000759	RSOC0134	True	False	lane01	CAGGCATTGA	10	H3
+RIKEN	000760	NPE184	True	False	lane01	ACAATGTGCG	10	H4
+RIKEN	000761	NPE643	True	False	lane01	AGTTCAGCAC	10	H5
+RIKEN	000762	NPE211	True	False	lane01	GTAGCATCCT	10	H6
+RIKEN	000763	RSOC0140	True	False	lane01	TGGTACCTGA	10	H7
+RIKEN	000764	RSOC0141	True	False	lane01	TGTGTACGCA	10	H8
+RIKEN	000765	RSOC0143	True	False	lane01	TCTAAGTGCG	10	H9
+RIKEN	000766	NPE580	True	False	lane01	CAACTTCGTG	10	H10
+RIKEN	000767	NPE169	True	False	lane01	CTCATAGTGG	10	H11
+RIKEN	000768	MMS	True	False	lane01	TGATACCACG	10	H12
