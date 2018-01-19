@@ -36,7 +36,7 @@ def get_lane_location_table(config_params):
 
 def get_lane_folder(lane_id, lane_location_tab):
 
-    lane_location_tab = lane_location_tab.set_index('lane_id')
+    lane_location_tab = lane_location_tab.set_index('lane')
     lane_folder = lane_location_tab.loc[lane_id, 'location']
     return lane_folder
 
@@ -259,6 +259,9 @@ def get_fastq_filename_list(folder, read_type, barcode_reads):
                 no_r1_r2_filenames_dict[no_r1_r2_filename] = [base_filenames[i]]
         assert len(base_filenames) == 2 * len(no_r1_r2_filenames_dict), 'Did not detect an equal number of "R1" and "R2" files in this raw data directory:\n{}'.format(folder)
         filenames = [[os.path.join(folder, y) for y in x] for x in no_r1_r2_filenames_dict.values()]
+
+    assert len(filenames) > 0, '\nDid not detect any fastq files for lane: {}.\n' \
+            'Please move/copy/symlink your raw data to this folder:\n{}\n'.format(os.path.basename(folder), folder)
 
     return filenames
 
