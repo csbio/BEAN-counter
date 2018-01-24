@@ -13,30 +13,36 @@ BEAN-counter is a pipeline written in Python for processing barcode sequencing d
 
 ### Requirements
 
-BEAN-counter is written in python 2 (and currently MATLAB). It is recommended to download one of the latest versions of python 2.7. The following python libraries are also required (install them using: pip install PACKAGE, or kindly ask your sysadmin):
+BEAN-counter is written in Python 2. It is recommended to download the latest version of Python 2.7. The following Python libraries are also required:
 
-    numpy
-    scipy
-    pandas
-    scikit-learn
-    matplotlib
-    Bio (biopython)
+    numpy (>=1.12.1)
+    scipy (>=0.19.0)
+    pandas (>=0.20.1)
+    matplotlib (>=2.0.2)
+    scikit-learn (>=0.18.1)
+    biopython (>=1.68)
+    fastcluster (>=1.1.20)
     pyyaml (>= 3.11)
-    jellyfish (string distance, not kmer-counting, library)
-    fastcluster
-    networkx (for replicate collapsing only)
+    networkx (>=1.11)
+    jellyfish (>=0.2.0)
+    - Two python libraries exist with the name "jellyfish." BEAN-counter
+      requires the installation of the jellyfish library for string distance
+      computation, not the library for kmer counting.
 
+Conda (https://conda.io/docs/user-guide/install/index.html) provides a way to
+quickly install python and the required libraries. If you install conda, then
+the required packages above can be obtained from the Anaconda Cloud
+(https://anaconda.org/).
 
 ### Downloading BEAN-counter
 
 #### Basic
 
-Head on over to https://github.com/csbio/BEAN-counter/releases/ and download the latest release. Extract the compressed folder to a good location from which to run the software (i.e. get it out of your downloads folder!)
+Download the latest release from https://github.com/csbio/BEAN-counter/releases/.
 
 #### Advanced
 
 If you know what you are doing and want to keep up-to-date with the latest version, clone the repository (git clone https://github.com/csbio/BEAN-counter.git or windows equivalent).
-
 
 ### Setting up environment variables
 
@@ -46,38 +52,10 @@ Set the value of this environment variable to the path of the BEAN-counter folde
 Optional, but strongly recommended: adding `$BARSEQ_PATH/master_scripts/` to your PATH
 Adding the master_scripts folder inside of the BEAN-counter folder to your **PATH** environment variable allows you to execute the top-level scripts in the pipeline by calling them only by their names.
 
-Optional: adding `$BARSEQ_PATH/scripts/` to your **PATH**
-You may never need to run the scripts inside the "scripts" folder, but many of them can be run individually. This will make that process easier.
-
-#### How do I set my environment variables?
-
-##### Linux/Mac
-The best way to do this is by adding code to the scripts that run every time you open a new shell. If you use the bash shell, then add the following line to either your ~/.bashrc or ~/.bash_profile files:
-
-```
-export BARSEQ_PATH=/your/path/to/BEAN-counter/
-```
-
-If you use the c shell (csh), then add the following line to your ~/.cshrc file:
-
-```
-setenv BARSEQ_PATH /your/path/to/BEAN-counter/
-```
-
-To append a directory to your PATH variable, add this line to your ~/.bashrc or ~/.bash_profile (or equivalent for ~/.cshrc):
-
-```
-export PATH=$PATH:/your/path/to/BEAN-counter/master_scripts
-```
-
-##### Windows
-
-[Tutorial for changing path variable](http://www.computerhope.com/issues/ch000549.htm)
-
 ## How to Run
 ```
 process_screen.py [configuration file]
-visualize_zscore_matrices.py [configuration file] [formatting file]
+visualize_zscore_matrices.py [configuration file] [barcode_table_columns] [sample_table_columns]
 ```
 
 ## Documentation

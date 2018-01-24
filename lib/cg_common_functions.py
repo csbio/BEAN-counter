@@ -11,7 +11,8 @@ from datetime import datetime
 import yaml
 from multiprocessing import cpu_count
 
-bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False, 'T': True, 'F': False, '1': True, '0': False}
+bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False,
+        'T': True, 'F': False, '1': True, '0': False, True: True, False: False}
 
 def get_verbosity(config_params):
  

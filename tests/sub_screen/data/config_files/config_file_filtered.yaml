@@ -1,30 +1,32 @@
-# barseq_counter configuration file
+# BEAN-counter configuration file
 
 ###### File/folder locations
 
 # Where to put the results!
-output_folder: /path/to/your/screen/output
+output_folder: output
 
+# Sample table
+# Maps index tags and sequence lanes to sample information
+sample_table_file: sample_table/sample_table_filtered.txt
 
-# Sample table (maps index tags and sequence lanes to sample information)
-sample_table_file: /path/to/your/screen/sample_table.txt
+# Lane location table
+# Maps the lane column in the sample table to the folder
+# containing the raw sequencing data for that lane
+lane_location_file: config_files/lane_locations.txt
 
+# Screen configuration file
+# Contains the information on the structure of the sequenced
+# PCR product(s), which is required for correctly parsing
+# the sequencing data. Also points to the barcode file.
+amplicon_struct_file: config_files/amplicon_struct.yaml
 
-# Lane location table (maps the lane column in the sample table to the folder
-# containing the raw sequencing data for that lane)
-lane_location_file: /path/to/your/screen/lane_locations.txt
+# Gene barcode file
+gene_barcode_file: barcodes/barcodes_filtered.txt
 
+# Specifying sub screen
+sub_screen_column: index_tag_plate
 
-# Species (required for parsing PCR products, interpreting barcodes,
-# and downstream functional analyses)
-# Species must correspond to a species name in the species_config file
-species_ID: S_cerevisiae_minipool
-
-# File that specifies which barcodes to remove from a dataset. Strains with this barcode survive
-# the "per-lane" rounds of processing and are removed in the step that creates the final filtered
-# count matrix from all lanes. This is just a '\n'-delimited file of the barcode sequences to be
-# removed. This can be left blank if no strains need to be removed.
-barcodes_to_remove_file: /path/to/your/screen/remove_some_strains.txt
+###### Automatic removal of conditions
 
 # Should conditions matching the "barcode-specific" pattern (positive interactions for barcodes
 # beginning with one particular base) be removed? (can apply to small or large screens)
@@ -32,7 +34,7 @@ barcodes_to_remove_file: /path/to/your/screen/remove_some_strains.txt
 remove_barcode_specific_conditions: True
 
 # Should conditions associated with highly-self-correlating index tags (in control conditions) be removed?
-# (Intended for use in larger screens, e.g. 10+ lanes)
+# (Intended for use in larger screens, e.g. 6+ lanes)
 # (True / False)
 remove_correlated_index_tags: True
 
@@ -43,11 +45,15 @@ remove_correlated_index_tags: True
 # 1: "announcements," aka "generating z-score matrix for lane X" (default)
 # 2: inspection of objects
 # 3: deeper inspection of objects, very cryptic
-verbosity: 1
+verbosity: 2
 
 
 ##### ADVANCED OPTIONS
 ##### DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING :-)
+
+# Number of cores to use
+num_cores : 1
+
 # Set the number of errors allowed in the common primer and
 # genetic barcode (up to and including)
 common_primer_tolerance: 2
