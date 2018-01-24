@@ -440,19 +440,19 @@ def get_barseq_matrix(config_params, lane_id, parsed_coords, barcode_to_gene, ba
     sufficient_count_tags = np.mean(matrix, axis = 0) > mean_thresh
 
     if get_verbosity(config_params) >= 1:
-        print "number of barcodes with mean counts per condition > {}: {}".format(mean_thresh, sum(np.invert(sufficient_count_barcodes)))
-        print "number of index tags with mean counts per strain > {}: {}".format(mean_thresh, sum(np.invert(sufficient_count_tags)))
+        print "number of barcodes with mean counts per condition < {}: {}".format(mean_thresh, sum(np.invert(sufficient_count_barcodes)))
+        print "number of index tags with mean counts per strain < {}: {}".format(mean_thresh, sum(np.invert(sufficient_count_tags)))
     
-    matrix = matrix[np.ix_(sufficient_count_barcodes, sufficient_count_tags)]
-    barcodes = [x for i,x in enumerate(barcodes) if sufficient_count_barcodes[i]]
-    index_tags = [x for i,x in enumerate(index_tags) if sufficient_count_tags[i]]
+    filtered_matrix = matrix[np.ix_(sufficient_count_barcodes, sufficient_count_tags)]
+    filtered_barcodes = [x for i,x in enumerate(barcodes) if sufficient_count_barcodes[i]]
+    filtered_index_tags = [x for i,x in enumerate(index_tags) if sufficient_count_tags[i]]
 
     assert len(barcodes) == matrix.shape[0], "number of barcodes does not match number of rows in matrix after sufficient-count filtering."
     assert len(index_tags) == matrix.shape[1], "number of index tags does not match number of columns in matrix after sufficient-count filtering."
 
     f.close()
 
-    return barcodes, index_tags, matrix
+    return filtered_barcodes, filtered_index_tags, filtered_matrix, matrix
 
 def get_sorted_counts(label, counts):
 
@@ -470,7 +470,7 @@ def write_distribution(labels, counts, output_folder, lane_id, file_string, xlab
     x = np.array(range(len(counts)))
 
     plt.figure()
-    plt.bar(x, counts)
+    plt.fill_between(x, y1 = 0, y2 = counts, step = 'post')
     plt.ylabel('Number of occurrences')
     plt.xlabel(xlabel)
     plt.savefig(plot_filename)
@@ -501,17 +501,17 @@ def write_summary(total_counts, common_primer_counts, total_index_barcode_counts
 
     of.close()
 
-def generate_reports(config_params, lane_id, gen_barcodes, index_tags, matrix, orig_barcode_map, orig_index_tag_map, total_counts, common_primer_counts):
+def generate_reports(config_params, lane_id, gen_barcodes, index_tags, matrix, orig_barcode_map, orig_index_tag_map, orig_matrix, total_counts, common_primer_counts):
 
     output_folder = get_lane_reports_path(config_params, lane_id)
 
-    gen_barcode_counts = matrix.sum(axis = 1)
-    index_tag_counts = matrix.sum(axis = 0)
-    total_index_barcode_counts = matrix.sum()
+    gen_barcode_counts = orig_matrix.sum(axis = 1)
+    index_tag_counts = orig_matrix.sum(axis = 0)
+    total_index_barcode_counts = orig_matrix.sum()
     orig_matrix_shape = (len(orig_barcode_map), len(orig_index_tag_map))
 
-    index_tags_sorted, index_tag_counts_sorted = get_sorted_counts(index_tags, index_tag_counts)
-    gen_barcodes_sorted, gen_barcode_counts_sorted = get_sorted_counts(gen_barcodes, gen_barcode_counts)
+    index_tags_sorted, index_tag_counts_sorted = get_sorted_counts(orig_index_tag_map.keys(), index_tag_counts)
+    gen_barcodes_sorted, gen_barcode_counts_sorted = get_sorted_counts(orig_barcode_map.keys(), gen_barcode_counts)
 
     write_distribution(index_tags_sorted, index_tag_counts_sorted, output_folder, lane_id, 'index_tag', 'Index tags (sorted)')
     write_distribution(gen_barcodes_sorted, gen_barcode_counts_sorted, output_folder, lane_id, 'barcode', 'Genetic barcodes (sorted)')
@@ -566,7 +566,7 @@ def main(config_file, lane_id):
     # and assemble the matrix of read counts
     if get_verbosity(config_params) >= 1:
         print 'generating barseq matrix...'
-    corrected_barcodes, index_tags, matrix = get_barseq_matrix(config_params, lane_id, parsed_coords, barcode_to_gene, barcode_correcting_map, index_tag_to_condition)
+    corrected_barcodes, index_tags, matrix, unfiltered_matrix = get_barseq_matrix(config_params, lane_id, parsed_coords, barcode_to_gene, barcode_correcting_map, index_tag_to_condition)
 
     if get_verbosity(config_params) >= 1:
         print 'number of barcodes: {}'.format(len(corrected_barcodes))
@@ -576,7 +576,7 @@ def main(config_file, lane_id):
     # Generate reports for index tags and barcodes
     if get_verbosity(config_params) >= 1:
         print 'generating reports...'
-    generate_reports(config_params, lane_id, corrected_barcodes, index_tags, matrix, barcode_to_gene, index_tag_to_condition, total_counts, common_primer_counts)
+    generate_reports(config_params, lane_id, corrected_barcodes, index_tags, matrix, barcode_to_gene, index_tag_to_condition, unfiltered_matrix, total_counts, common_primer_counts)
 
     # Convert the barcodes to their condition names and unique gene/barcode names
     barcode_gene_ids = np.array([barcode_to_gene[bc] for bc in corrected_barcodes])
