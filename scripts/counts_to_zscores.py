@@ -571,6 +571,22 @@ def generate_scatterplots(config_params, outfolder, mean_control_profile, raw_da
                       strain_ids_final, condition_ids_final[i], config_params, scatter_outfolder)
 
 
+def get_batch_inds(sample_table, column, dataset):
+    if column == 'None' or column.replace(' ', '') == '':    
+        return [''], [np.arange(len(dataset[1]))]
+    assert column in sample_table, '\n"sub_screen_column" parameter "{}" is not a column in the sample information table,\n' \
+            'found here: {}'.format(column, config_params['sample_table_file'])
+    sample_table = sample_table.set_index(['screen_name', 'expt_id'], drop = False)
+    cond_tuples = [tuple(x) for x in dataset[1]]
+    batches = sample_table.loc[cond_tuples, column].values
+    batches_uniq = list(np.unique(batches))
+    batch_index_dict = {x:i for i,x in enumerate(batches_uniq)}
+    batch_index_list = [[] for i in range(len(batches_uniq))]
+    for i, cond in enumerate(cond_tuples):
+        batch = sample_table.loc[cond, column]
+        batch_index_list[batch_index_dict[batch]].append(i)
+
+    return batches_uniq, [np.array(x) for x in batch_index_list]
 
 def main(config_file, lane_id):
     
@@ -586,41 +602,89 @@ def main(config_file, lane_id):
     # Read in the count matrix from dumped file
     dataset = load_dumped_count_matrix(config_params, lane_id)
 
-    # Filter out samples flagged as "do not include" (include? == True)
-    filtered_dataset = filter_dataset_for_include(dataset, sample_table, config_params)
-
     # I think here is the best spot to split the dataset so that different
     # controls can be used for different samples.
     ### split dataset stuff!!!
+    # Function returns an empty string if there is only one batch
+    batch_col = str(config_params['sub_screen_column'])
+    batches, batch_inds = get_batch_inds(sample_table, batch_col, dataset)
 
-    # Get list of control samples (control? = True)
-    control_condition_ids = get_control_condition_ids(dataset, sample_table)
+    batch_outfolders = [os.path.join(outfolder, 'subscreen-{}'.format(x)) if x != '' else outfolder for x in batches]
+    for folder in batch_outfolders:
+        if not os.path.isdir(folder):
+            os.makedirs(folder)
 
-    # Proceed with algorithm to obtain chemical genetic interaction zscores (scaled deviations)
-    if get_verbosity(config_params) >= 1:
-        print "Normalizing ... "
-    normalized_dataset, mean_control_profile = normalizeUsingAllControlsAndSave(config_params, outfolder, filtered_dataset, control_condition_ids, lane_id)
-    if get_verbosity(config_params) >= 1:
-        print "Column means: "
-        print np.nanmean(normalized_dataset[2], axis = 0)
-        print "Done"
-        print "Calculating deviations ... "
-    deviation_dataset = deviations_globalmean(config_params, outfolder, normalized_dataset, mean_control_profile, lane_id)
-    if get_verbosity(config_params) >= 1:
-        print "Column means: "
-        print np.nanmean(deviation_dataset[2], axis = 0)
-        print "Done"
-        print "Scaling interactions ... "
-    scaled_dev_dataset = scaleInteractions(config_params, outfolder, deviation_dataset, filtered_dataset, control_condition_ids, lane_id)
-    if get_verbosity(config_params) >= 1:
-        print "Column means: "
-        print np.nanmean(scaled_dev_dataset[2], axis = 0)
-        print "Done"
-    if 'generate_scatterplots' in config_params:
-	if config_params['generate_scatterplots'] == 'Y' and lane_id == 'all_lanes_filtered':
-            if get_verbosity(config_params) >= 1:
-                print "Generating scatterplots"
-            generate_scatterplots(config_params, outfolder, mean_control_profile, filtered_dataset, normalized_dataset, deviation_dataset, scaled_dev_dataset)
+    # Keep track of individual batch datasets so they can be joined together again.
+    strains = dataset[0]
+    batch_condition_list = []
+    normalized_dataset_list = []
+    mean_control_profile_list = []
+    deviation_dataset_list = []
+    scaled_dev_dataset_list = []
+
+    for i, batch in enumerate(batches):
+        batch_ind = batch_inds[i]
+        # If there are no indices for this batch, then skip to the next batch
+        # (unlikely but possible, and it definitely would break things)
+        if len(batch_ind) == 0:
+            continue
+        batch_outfolder = batch_outfolders[i]
+        batch_conditions = dataset[1][batch_ind]
+        batch_dataset = [dataset[0], batch_conditions, dataset[2][:, batch_ind]]
+    
+        # Filter out samples flagged as "do not include" (include? == False)
+        filtered_dataset = filter_dataset_for_include(batch_dataset, sample_table, config_params)
+        batch_condition_list.append(filtered_dataset[1])
+
+        # Get list of control samples (control? = True)
+        control_condition_ids = get_control_condition_ids(batch_dataset, sample_table)
+
+        # Proceed with algorithm to obtain chemical genetic interaction zscores (scaled deviations)
+        if get_verbosity(config_params) >= 1:
+            print "Normalizing ... "
+        normalized_dataset, mean_control_profile = normalizeUsingAllControlsAndSave(config_params, batch_outfolder, filtered_dataset, control_condition_ids, lane_id)
+        if get_verbosity(config_params) >= 1:
+            print "Column means: "
+            print np.nanmean(normalized_dataset[2], axis = 0)
+            print "Done"
+            print "Calculating deviations ... "
+        normalized_dataset_list.append(normalized_dataset)
+        mean_control_profile_list.append(mean_control_profile)
+        deviation_dataset = deviations_globalmean(config_params, batch_outfolder, normalized_dataset, mean_control_profile, lane_id)
+        if get_verbosity(config_params) >= 1:
+            print "Column means: "
+            print np.nanmean(deviation_dataset[2], axis = 0)
+            print "Done"
+            print "Scaling interactions ... "
+        deviation_dataset_list.append(deviation_dataset)
+        scaled_dev_dataset = scaleInteractions(config_params, batch_outfolder, deviation_dataset, filtered_dataset, control_condition_ids, lane_id)
+        if get_verbosity(config_params) >= 1:
+            print "Column means: "
+            print np.nanmean(scaled_dev_dataset[2], axis = 0)
+            print "Done"
+        scaled_dev_dataset_list.append(scaled_dev_dataset)
+        # For another time
+        #if 'generate_scatterplots' in config_params:
+        #    if config_params['generate_scatterplots'] == 'Y' and lane_id == 'all_lanes_filtered':
+        #        if get_verbosity(config_params) >= 1:
+        #            print "Generating scatterplots"
+        #        generate_scatterplots(config_params, outfolder, mean_control_profile, filtered_dataset, normalized_dataset, deviation_dataset, scaled_dev_dataset)
+    # If the number of batches was greater than 1, then the data from the
+    # different stages of interaction scoring have been exported into
+    # batch-specific folders. Here we reconstruct the full datasets and export
+    # them.
+    if len(batches) > 1:
+        combined_conditions = np.vstack(batch_condition_list)
+        combined_norm_dataset = [strains, combined_conditions, np.hstack([x[2] for x in normalized_dataset_list])]
+        combined_dev_dataset = [strains, combined_conditions, np.hstack([x[2] for x in deviation_dataset_list])]
+        combined_scaled_dev_dataset = [strains, combined_conditions, np.hstack([x[2] for x in scaled_dev_dataset_list])]
+        with gzip.open(os.path.join(outfolder, '{}_lowess_norm.dump.gz'.format(lane_id)), 'wb') as f_norm:
+            cPickle.dump(combined_norm_dataset, f_norm)
+        with gzip.open(os.path.join(outfolder, '{}_deviation.dump.gz'.format(lane_id)), 'wb') as f_dev:
+            cPickle.dump(combined_dev_dataset, f_dev)
+        with gzip.open(os.path.join(outfolder, '{}_scaled_dev.dump.gz'.format(lane_id)), 'wb') as f_scaleddev:
+            cPickle.dump(combined_scaled_dev_dataset, f_scaleddev)
+
 
 # call: python counts_to_zscores.py <config_file> <lane_id>
 if __name__ == '__main__':
