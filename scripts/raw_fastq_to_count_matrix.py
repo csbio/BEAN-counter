@@ -470,7 +470,7 @@ def write_distribution(labels, counts, output_folder, lane_id, file_string, xlab
     x = np.array(range(len(counts)))
 
     plt.figure()
-    plt.bar(x, counts)
+    plt.fill_between(x, y1 = 0, y2 = counts, step = 'post')
     plt.ylabel('Number of occurrences')
     plt.xlabel(xlabel)
     plt.savefig(plot_filename)
