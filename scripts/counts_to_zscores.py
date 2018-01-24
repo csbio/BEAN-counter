@@ -304,9 +304,9 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
     lowess_neg, lowess_pos = getAsymmetricSigmaForScipyMatrix(mean_control_profile, control_matrix, config_params)
     for i in range(matrix.shape[1]):
         deviation = np.array( matrix[:, [i]] )
-        print 'deviation shape:', deviation.shape
-        print 'lowess_neg shape:', lowess_neg.shape
-        print 'lowess_pos shape:', lowess_pos.shape
+        #print 'deviation shape:', deviation.shape
+        #print 'lowess_neg shape:', lowess_neg.shape
+        #print 'lowess_pos shape:', lowess_pos.shape
         k = wellbehaved(deviation) # this remains same but nevertheless I have put it here
         I = np.argsort(abs(deviation[k]))
         I = I[range(int( I.shape[0]*0.75) )] # median 75%
@@ -316,9 +316,9 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
         total_sigma_neg = np.nanmax([sigma, lowess_neg], axis = 0)
         total_sigma_pos = np.nanmax([sigma, lowess_pos], axis = 0)
         zscores = np.zeros(deviation.shape) + np.nan
-        print 'zscores shape:', zscores.shape
-        print 'total_sigma_neg shape:', total_sigma_neg.shape
-        print 'total_sigma_pos shape:', total_sigma_pos.shape
+        #print 'zscores shape:', zscores.shape
+        #print 'total_sigma_neg shape:', total_sigma_neg.shape
+        #print 'total_sigma_pos shape:', total_sigma_pos.shape
         zscores[deviation < 0] = deviation[deviation < 0] / total_sigma_neg[deviation < 0]
         zscores[deviation > 0] = deviation[deviation > 0] / total_sigma_pos[deviation > 0]
         zscores[deviation == 0] = 0
@@ -606,7 +606,7 @@ def main(config_file, lane_id):
     # controls can be used for different samples.
     ### split dataset stuff!!!
     # Function returns an empty string if there is only one batch
-    batch_col = str(config_params['sub_screen_column'])
+    batch_col = str(config_params.get('sub_screen_column'))
     batches, batch_inds = get_batch_inds(sample_table, batch_col, dataset)
 
     batch_outfolders = [os.path.join(outfolder, 'subscreen-{}'.format(x)) if x != '' else outfolder for x in batches]
