@@ -6,13 +6,18 @@ import os
 
 def update_version_file(outdir, version):
     version_file = os.path.join(outdir, 'VERSION')
-    match = False
+    header = 'BEAN-counter versions used to generate results in this folder:'
+    header_match = False
+    version_match = False
     with open(version_file, 'a+') as f:
         for line in f:
+            if header == line.rstrip():
+                header_match = True
             if version == line.rstrip():
-                match = True
-                return None
-        if not match:
+                version_match = True
+        if not header_match:
+            f.write(header + '\n')
+        if not version_match:
             f.write(version + '\n')
     return None
 

@@ -31,6 +31,7 @@ barseq_path = os.getenv('BARSEQ_PATH')
 sys.path.append(os.path.join(barseq_path, 'lib'))
 
 from pr import precision_recall_curve
+from version_printing import update_version_file
 
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
@@ -668,7 +669,7 @@ def main(dataset_3d, sample_table, batch_column, nondup_col_list, include_column
     # as they evolve over the course of component removal
     #plot_MW_AUCs(components_removed, AUC_values, batch_column, pr_folder)
     #write_MW_pvals(components_removed, AUC_values, MW_pvals, batch_column, pr_folder)
-
+    update_version_file(output_folder, VERSION)
 
 # If this is run from the command line (which is the intention, then run the rest of this script!
 if __name__ == '__main__':

@@ -29,6 +29,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 from cg_common_functions import get_verbosity, get_sample_table, get_amplicon_struct_params, read_barcode_table, parse_yaml
+from version_printing import update_version_file
 
 def get_lane_location_table(config_params):
 
@@ -531,6 +532,7 @@ def dump_count_matrix(config_params, lane_id, barcodes, conditions, matrix):
     cPickle.dump(dataset, of)
 
     of.close()
+    update_version_file(out_path, VERSION)
 
 
 def main(config_file, lane_id):

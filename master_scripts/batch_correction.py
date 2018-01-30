@@ -33,6 +33,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 from cg_common_functions import read_sample_table
+from version_printing import update_version_file
 
 sys.path.append(os.path.join(barseq_path, 'lib/python2.7/site-packages'))
 
@@ -341,6 +342,8 @@ def main(dataset, sample_table, batch_column, nondup_col_list, max_comps, output
     # Write info on the dumped stacked matrix to a file
     corrected_data_info_filename = get_corrected_data_info_filename(output_folder)
     write_corrected_data_info(all_mats, batch_column, nondup_col_list, corrected_data_info_filename, input_file)
+
+    update_version_file(output_folder, VERSION)
 
 
 # If this is run from the command line (which is the intention, then run the rest of this script!

@@ -27,6 +27,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 from cg_common_functions import get_verbosity, get_sample_table, get_barcode_table, bool_dict, parse_yaml
+from version_printing import update_version_file
 
 #def get_sample_table(config_params):
 #
@@ -298,6 +299,7 @@ def dump_filtered_count_matrix(config_params, dataset):
 
     dataset_filename = get_dumped_count_matrix_filename(config_params, lane_id)
     dump_dataset(dataset, dataset_filename)
+    update_version_file(dataset_path, VERSION)
 
 def main(config_file):
 

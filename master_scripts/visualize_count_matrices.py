@@ -29,6 +29,7 @@ import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 import cluster_dataset_wrappers as clus_wrap
 from cg_common_functions import get_sample_table, parse_yaml
+from version_printing import update_version_file
 
 import argparse
 

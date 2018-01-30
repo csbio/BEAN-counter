@@ -15,6 +15,7 @@ import cPickle
 import argparse
 import os
 
+from version_printing import update_version_file
 
 def main(dataset, n, folder):
 
@@ -27,6 +28,8 @@ def main(dataset, n, folder):
     
     filename = os.path.join(folder, '{}_components_removed.dump.gz'.format(n))
     dump_dataset(extracted_dataset, filename)
+
+    update_version_file(folder, VERSION)
    
 def dump_dataset(dataset, filename):
 

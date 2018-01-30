@@ -25,6 +25,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 from cg_common_functions import get_verbosity, get_sample_table, parse_yaml
+from version_printing import update_version_file
 
 #def get_sample_table(config_params):
 #
@@ -114,6 +115,7 @@ def main(config_file):
     combined_count_folder = get_lane_data_path(config_params, 'all_lanes')
     if not os.path.isdir(combined_count_folder):
         os.makedirs(combined_count_folder)
+    update_version_file(combined_count_folder, VERSION)
 
     # Dump out the combined count matrix!
     combined_count_filename = get_dumped_count_matrix_filename(config_params, 'all_lanes')

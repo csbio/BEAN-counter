@@ -21,6 +21,7 @@ import cPickle
 barseq_path = os.getenv('BARSEQ_PATH')
 sys.path.append(os.path.join(barseq_path, 'lib'))
 from cg_common_functions import read_sample_table, bool_dict
+from version_printing import update_version_file
 
 #def read_sample_table(tab_filename):
 #
@@ -102,6 +103,8 @@ def main(dataset, sample_table, output_folder, col, inv, verbosity):
 
     dump_dataset([strains, reduced_conditions, reduced_matrix], dataset_filename)
     sample_table.to_csv(table_filename, sep = '\t', header = True, index = False)
+    
+    update_version_file(output_folder, VERSION)
 
 # If this is run from the command line (which is the intention), then run the rest of this script!
 if __name__ == '__main__':

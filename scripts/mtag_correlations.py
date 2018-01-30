@@ -24,6 +24,7 @@ sys.path.append('./lib')
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 from cg_common_functions import get_verbosity, get_sample_table, parse_yaml
+from version_printing import update_version_file
 
 
 #def get_sample_table(config_params):
@@ -381,6 +382,8 @@ def main(config_file):
     
     ## Plot a histogram of the index tag correlations
     plot_control_index_tag_correlations(control_index_tag_correlations_sorted, index_tag_path)
+
+    update_version_file(index_tag_path, VERSION)
 
 # call: python mtag_correlations.py <config_file>
 if __name__ == '__main__':

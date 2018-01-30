@@ -37,6 +37,7 @@ barseq_path = os.getenv('BARSEQ_PATH')
 sys.path.append(os.path.join(barseq_path, 'lib'))
 
 from cg_common_functions import read_barcode_table
+from version_printing import update_version_file
 
 def load_dataset(data_filename):
 

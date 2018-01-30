@@ -24,6 +24,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 
 import cluster_dataset_wrappers as clus_wrap
 from cg_common_functions import read_sample_table
+from version_printing import update_version_file
 
 #def read_sample_table(tab_filename):
 #
@@ -112,7 +113,8 @@ def main(dataset, dataset_file, table, val_name, strain_table_f, strain_columns,
         tab_fname = os.path.join(out_folder, 'data_table.txt.gz')
         with gzip.open(tab_fname, 'wb') as tab_f:
             table.to_csv(tab_f, sep = '\t', header = True, index = False)
-
+    
+    update_version_file(out_folder, VERSION)
 
 # If this is run from the command line (which is the intention), then run the rest of this script!
 if __name__ == '__main__':

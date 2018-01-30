@@ -31,6 +31,7 @@ import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 import cluster_dataset_wrappers as clus_wrap
 from cg_common_functions import get_verbosity, get_sample_table, get_temp_clustergram_name, parse_yaml
+from version_printing import update_version_file
 
 import argparse
 
@@ -88,6 +89,10 @@ os.makedirs(tmp_dir)
 # And copy all of the files to that temp directory!
 for f in filenames:
     shutil.copy(f, tmp_dir)
+
+# Add version to that directory
+update_version_file(tmp_dir, VERSION)
+
 # Now tar the directory!
 tar_fname = '{}.tar.gz'.format(tmp_dir)
 tar = tarfile.open(tar_fname, 'w:gz')

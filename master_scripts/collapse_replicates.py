@@ -29,6 +29,7 @@ import cPickle
 barseq_path = os.getenv('BARSEQ_PATH')
 sys.path.append(os.path.join(barseq_path, 'lib'))
 from cg_common_functions import read_sample_table
+from version_printing import update_version_file
 
 #def read_sample_table(tab_filename):
 #
@@ -311,6 +312,8 @@ def main(dataset, sample_table, collapse_col, cor_cutoff, output_folder, cols_to
     # And write the collapsed dataset out to file!
     data_filename = os.path.join(output_folder, 'collapsed_dataset.dump.gz')
     dump_dataset(dataset = [barcodes, collapsed_conditions, collapsed_matrix], filename = data_filename)
+    
+    update_version_file(output_folder, VERSION)
 
     return None
 
