@@ -4,6 +4,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.1.0'
+
 # This script will read in a count matrix and, given a sample table that
 # indicates which samples are controls and which should be excluded,
 # generates chemical genetic interaction z-scores.
@@ -25,6 +27,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 from cg_common_functions import get_verbosity, get_barcode_table, get_sample_table, get_num_cores, parse_yaml, bool_dict
+from version_printing import update_version_file
 from cluster_dataset_wrappers import customize_strains, customize_conditions
 from lowess import py_lowess
 from contextlib import closing
@@ -685,6 +688,7 @@ def main(config_file, lane_id):
         with gzip.open(os.path.join(outfolder, '{}_scaled_dev.dump.gz'.format(lane_id)), 'wb') as f_scaleddev:
             cPickle.dump(combined_scaled_dev_dataset, f_scaleddev)
 
+    update_version_file(outfolder, VERSION)
 
 # call: python counts_to_zscores.py <config_file> <lane_id>
 if __name__ == '__main__':

@@ -4,6 +4,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.1.0'
+
 # This script converts all dumped count matrices into CDTs,
 # which are visualized using Java Treeview. I anticipate
 # future versions will be smart and avoid re-clustering
@@ -27,6 +29,7 @@ import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 import cluster_dataset_wrappers as clus_wrap
 from cg_common_functions import get_sample_table, parse_yaml
+from version_printing import update_version_file
 
 import argparse
 

@@ -4,6 +4,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.1.0'
+
 # This brief script takes in a 3D dataset (stacked matrices) and exports,
 # as a similar format, one of the stacked matrices, with its row and
 # column labels.
@@ -13,6 +15,7 @@ import cPickle
 import argparse
 import os
 
+from version_printing import update_version_file
 
 def main(dataset, n, folder):
 
@@ -25,6 +28,8 @@ def main(dataset, n, folder):
     
     filename = os.path.join(folder, '{}_components_removed.dump.gz'.format(n))
     dump_dataset(extracted_dataset, filename)
+
+    update_version_file(folder, VERSION)
    
 def dump_dataset(dataset, filename):
 
