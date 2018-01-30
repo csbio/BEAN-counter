@@ -593,7 +593,8 @@ def main(config_file, lane_id):
 
     # Remove the temporary barseq file
     remove_barseq_file(config_params, lane_id)
- 
+    
+    update_version_file(config_params['output_folder'], VERSION)
 
 # call: python fastq_to_count_matrix.py <config_file> <lane_id>
 if __name__ == '__main__':

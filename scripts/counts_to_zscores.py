@@ -689,6 +689,7 @@ def main(config_file, lane_id):
             cPickle.dump(combined_scaled_dev_dataset, f_scaleddev)
 
     update_version_file(outfolder, VERSION)
+    update_version_file(config_params['output_folder'], VERSION)
 
 # call: python counts_to_zscores.py <config_file> <lane_id>
 if __name__ == '__main__':

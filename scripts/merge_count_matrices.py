@@ -120,6 +120,8 @@ def main(config_file):
     # Dump out the combined count matrix!
     combined_count_filename = get_dumped_count_matrix_filename(config_params, 'all_lanes')
     dump_dataset(dataset, combined_count_filename)
+    
+    update_version_file(config_params['output_folder'], VERSION)
 
 # call: python merge_count_matrices.py <config_file>
 if __name__ == '__main__':

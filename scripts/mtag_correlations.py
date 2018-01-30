@@ -384,6 +384,7 @@ def main(config_file):
     plot_control_index_tag_correlations(control_index_tag_correlations_sorted, index_tag_path)
 
     update_version_file(index_tag_path, VERSION)
+    update_version_file(config_params['output_folder'], VERSION)
 
 # call: python mtag_correlations.py <config_file>
 if __name__ == '__main__':
