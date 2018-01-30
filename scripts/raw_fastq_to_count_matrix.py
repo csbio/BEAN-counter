@@ -4,6 +4,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.1.0'
+
 # This script takes in the barseq_counter main configuration and species configuration files
 # and a sequencing lane identifier. It exports 1) reports on the total number
 # of reads, the number of reads matching the common primer, and the number of reads that

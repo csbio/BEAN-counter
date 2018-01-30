@@ -4,6 +4,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.1.0'
+
 # This script reads in the combined count matrix and filters out all of the
 # conditions and strains that either do not meet specified quality measures
 # and/or are specifically slated for removal

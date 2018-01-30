@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+
+VERSION='2.1.0'
+
 # This script reads in all of the per-lane condition-strain interaction
 # files (z-scores) and computes index tag correlations. It outputs
 # graphs and a sorted list with the most correlated index tags at the

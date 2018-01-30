@@ -4,6 +4,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.1.0'
+
 # This script takes in matrices, on which LDA has been performed and from which
 # LDA components have been removed, and plots PR curves and historgrams
 # visualizing the extent of the multiplex tag effect as each successive LDA

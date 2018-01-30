@@ -4,6 +4,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.1.0'
+
 # This script will read in a count matrix and, given a sample table that
 # indicates which samples are controls and which should be excluded,
 # generates chemical genetic interaction z-scores.
