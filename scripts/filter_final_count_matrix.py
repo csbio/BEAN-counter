@@ -362,6 +362,8 @@ def main(config_file):
 
     # Dump the dataset out to file
     dump_filtered_count_matrix(config_params, dataset)
+    
+    update_version_file(config_params['output_folder'], VERSION)
 
 # call: python filter_final_count_matrix.py <config_file>
 if __name__ == '__main__':
