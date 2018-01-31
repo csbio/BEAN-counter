@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+VERSION='2.1.0'
+
 import yaml
 
 # This script must be run from the root of the BEAN-counter source code
@@ -54,16 +56,80 @@ def rollback_version(vers, history):
     else:
         return vers
 
+def get_py_files(folder):
+    return [os.path.join(folder, x) for x in os.listdir(folder) if x.endswith('.py')]
+
+def check_version(fname):
+    version = None
+    with open(fname, 'rt') as f:
+        for line in f:
+            if line.startswith('VERSION'):
+                if version is not None:
+                    new_version = line.rstrip().split('=')[1].replace("'", "").replace('"', '')
+                    if version != new_version:
+                        version = 'multiple'
+                else:
+                    version = line.rstrip().split('=')[1].replace("'", "").replace('"', '')
+    return version
+
+def replace_version(fname, old, new):
+    f = open(fname, 'rt')
+    lines = f.readlines()
+    for i in range(len(lines)):
+        if lines[i].startswith('VERSION'):
+            lines[i].replace(old, new)
+    f.close()
+    f = open(fname, 'wt')
+    f.writelines(lines)
+    f.close()
+
 def main(args):
-    pass
+    
+    # Get a list of all filenames that will contain the VERSION variable
+    fnames = get_py_files('master_scripts') + get_py_files('scripts') + get_py_files('lib')
+
+    # First, scan all files to make sure they have the VERSION script and that
+    # all versions are aligned.
+    version_check = [check_version(x) for x in fnames]
+    assert all(x is not None for x in version_check), 'The following files do not contain a version number:\n' \
+            '{}'.format('\n'.join(files[i] for i,x in enumerate(version_check) if x is None)) + '\n'
+    versions = set(version_check)
+    assert len(versions) == 1, 'Multiple versions detected. Please fix before attempting to modify versions\n' \
+            'Versions detected:\n{}'.format('\n'.join(versions)) +'\n'
+    curr_version = version_check[0]
+
+    # Parse version file and ensure that the versions match
+    version, history = parse_version_file('VERSION.yaml')
+    assert curr_version = version, 'Version given in all *.py files {} does not match VERSION.yaml {}. ' \
+            'Please fix before proceeding'.format(curr_version, version)
+
+    # Determing new version
+    if args.major:
+        new_version = increment_version(curr_version, 'major')
+    elif args.minor:
+        new_version = increment_version(curr_version, 'minor')
+    elif args.patch:
+        new_version = increment_version(curr_version, 'patch')
+    elif args.rollback:
+        new_version = rollback_version(curr_version, history)
+    
+    # Gotta modify version file too!
+
+    # Once I know what the new version string is, replace it in all of the files!
+    for fname in fnames:
+        replace_version(fname, curr_version, new_version)
+    # Update VERSION.yaml too!
+
+    # Done
+
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument('--major', action = 'store_true', help = 'Bump major version number')
-    group.add_argument('--minor', action = 'store_true', help = 'Bump minor version number')
-    group.add_argument('--patch', action = 'store_true', help = 'Bump patch version number')
+    group = parser.add_mutually_exclusive_group(required = True)
+    group.add_argument('-1', '--major', action = 'store_true', help = 'Bump major version number')
+    group.add_argument('-2', '--minor', action = 'store_true', help = 'Bump minor version number')
+    group.add_argument('-3', '--patch', action = 'store_true', help = 'Bump patch version number')
     group.add_argument('-d', '--rollback', action = 'store_true', help = 'Decrement version to last version in the history')
 
     args = parser.parse_args()
