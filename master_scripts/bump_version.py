@@ -20,9 +20,9 @@ def parse_version_file(fname):
 
     history = version_dict.get('history')
     if history is None or history == '':
-        print "detected None history"
+        #print "detected None history"
         history = []
-        print history
+        #print history
     history.sort()
     history = history[::-1]
     invalid_history_strings = [x for x in history if not is_valid_version(x)]
@@ -49,7 +49,7 @@ def increment_version(vers, Type):
     major, minor, patch = parse_version(vers)
     if Type == 'patch':
         patch += 1
-    elif type == 'minor':
+    elif Type == 'minor':
         patch = 0
         minor += 1
     else:
@@ -100,10 +100,10 @@ def replace_version(fname, old, new):
     lines = f.readlines()
     for i in range(len(lines)):
         if lines[i].startswith('VERSION'):
-            print lines[i]
-            print old, new
+            #print lines[i]
+            #print old, new
             lines[i] = lines[i].replace(old, new)
-            print lines[i]
+            #print lines[i]
     f.close()
     f = open(fname, 'wt')
     f.writelines(lines)
@@ -154,7 +154,7 @@ def main(args):
 
         # Once I know what the new version string is, replace it in all of the files!
         for fname in fnames:
-            print fname
+            #print fname
             replace_version(fname, curr_version, new_version)
 
     # Done
