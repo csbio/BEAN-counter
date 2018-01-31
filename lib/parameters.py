@@ -2,6 +2,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.1.0'
+
 import os
 import textwrap
 from cg_common_functions import read_amplicon_struct_params, read_barcode_table

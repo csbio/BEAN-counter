@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+VERSION='2.1.0'
+
 import os
 
 # Module for function that adds/updates the "VERSION" file in a specified output directory.
