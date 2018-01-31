@@ -3,6 +3,8 @@
 VERSION='2.1.0'
 
 import yaml
+import argparse
+import os
 
 # This script must be run from the root of the BEAN-counter source code
 # directory. It provides options to bump the major, minor, and patch versions
@@ -13,26 +15,34 @@ def parse_version_file(fname):
     with open(fname, 'rt') as f:
         version_dict = yaml.load(f)
 
-    assert 'current' in version_dict, 'VERSION.yaml must have a key named "current".'
-    assert is_valid_version(version_dict['current']), 'The version string "{}" is not a valid version (must be "X.Y.Z").'.format(version_dict['current'])
+    assert 'current' in version_dict, '\nVERSION.yaml must have a key named "current".'
+    assert is_valid_version(version_dict['current']), '\nThe version string "{}" is not a valid version (must be "X.Y.Z").'.format(version_dict['current'])
 
     history = version_dict.get('history')
     if history is None or history == '':
+        print "detected None history"
         history = []
-    history = history.sort()
+        print history
+    history.sort()
     history = history[::-1]
     invalid_history_strings = [x for x in history if not is_valid_version(x)]
-    assert not any(invalid_history_strings), 'The current versions in the histroy of VERSION.yaml are invalid:\n' \
+    assert not any(invalid_history_strings), '\nThe current versions in the histroy of VERSION.yaml are invalid:\n' \
             '{}\nPlease correct before moving on.'.format('\n'.join(invalid_history_strings))
     return version_dict['current'], history
+
+def write_version_file(fname, version, history):
+    with open(fname, 'wt') as f:
+        f.write(yaml.dump({'version': version}))
+        f.write(yaml.dump({'history': history}, default_flow_style = False))
 
 def parse_version(x):
     '''
     Assumes x has been stripped of whitespace, if read in from a file for
     example.
     '''
+    assert is_valid_version(x), '\nVersion string "{}" is not a valid version string.\n' \
+            'Please fix before proceeding'.format(x)
     split_x = [int(xx) for xx in x.split('.')]
-    assert len(split_x) == 3, 'Version string "{}" is not in the proper X.Y.Z format'.format(x)
     return split_x
 
 def increment_version(vers, Type):
@@ -49,12 +59,25 @@ def increment_version(vers, Type):
 
     return '.'.join([str(major), str(minor), str(patch)])
 
+def is_valid_version(x):
+    split_x = x.split('.')
+    if len(split_x) != 3:
+        return False
+    try:
+        for xx in split_x:
+            int(xx)
+    except ValueError as e:
+        return False
+
+    return True
+
+
 def rollback_version(vers, history):
 
     if len(history) > 0:
-        return history[0]
+        return history[0], history[1:]
     else:
-        return vers
+        return vers, history
 
 def get_py_files(folder):
     return [os.path.join(folder, x) for x in os.listdir(folder) if x.endswith('.py')]
@@ -91,34 +114,44 @@ def main(args):
     # First, scan all files to make sure they have the VERSION script and that
     # all versions are aligned.
     version_check = [check_version(x) for x in fnames]
-    assert all(x is not None for x in version_check), 'The following files do not contain a version number:\n' \
-            '{}'.format('\n'.join(files[i] for i,x in enumerate(version_check) if x is None)) + '\n'
+    assert all(x is not None for x in version_check), '\nThe following files do not contain a version number:\n' \
+            '{}'.format('\n'.join(fnames[i] for i,x in enumerate(version_check) if x is None)) + '\n'
     versions = set(version_check)
-    assert len(versions) == 1, 'Multiple versions detected. Please fix before attempting to modify versions\n' \
+    assert len(versions) == 1, '\nMultiple versions detected. Please fix before attempting to modify versions\n' \
             'Versions detected:\n{}'.format('\n'.join(versions)) +'\n'
     curr_version = version_check[0]
 
     # Parse version file and ensure that the versions match
     version, history = parse_version_file('VERSION.yaml')
-    assert curr_version = version, 'Version given in all *.py files {} does not match VERSION.yaml {}. ' \
+    assert curr_version == version, '\nVersion given in all *.py files {} does not match VERSION.yaml {}. ' \
             'Please fix before proceeding'.format(curr_version, version)
 
     # Determing new version
     if args.major:
         new_version = increment_version(curr_version, 'major')
+        history.insert(0, curr_version)
     elif args.minor:
         new_version = increment_version(curr_version, 'minor')
+        history.insert(0, curr_version)
     elif args.patch:
         new_version = increment_version(curr_version, 'patch')
+        history.insert(0, curr_version)
     elif args.rollback:
-        new_version = rollback_version(curr_version, history)
-    
-    # Gotta modify version file too!
+        new_version, history = rollback_version(curr_version, history)
+  
+    while True:
+        proceed = raw_input('\nVersion will be modified from {} to {}.\nDo you wish to proceed? (y/n)' \
+                ''.format(curr_version, new_version))
+        if proceed in ['y', 'n']:
+            break
 
-    # Once I know what the new version string is, replace it in all of the files!
-    for fname in fnames:
-        replace_version(fname, curr_version, new_version)
-    # Update VERSION.yaml too!
+    if proceed == 'y':
+        # Gotta modify version file too!
+        write_version_file('VERSION.yaml', new_version, history)
+
+        # Once I know what the new version string is, replace it in all of the files!
+        for fname in fnames:
+            replace_version(fname, curr_version, new_version)
 
     # Done
 
