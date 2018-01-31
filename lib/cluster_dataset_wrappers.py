@@ -2,7 +2,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.1.0'
+VERSION='2.2.0'
 
 # Here I wrap the core dataset clustering function with functions
 # that send specific datasets to it and define specific output
