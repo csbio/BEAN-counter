@@ -32,7 +32,7 @@ def parse_version_file(fname):
 
 def write_version_file(fname, version, history):
     with open(fname, 'wt') as f:
-        f.write(yaml.dump({'version': version}))
+        f.write(yaml.dump({'current': version}, default_flow_style = False))
         f.write(yaml.dump({'history': history}, default_flow_style = False))
 
 def parse_version(x):
@@ -100,7 +100,10 @@ def replace_version(fname, old, new):
     lines = f.readlines()
     for i in range(len(lines)):
         if lines[i].startswith('VERSION'):
-            lines[i].replace(old, new)
+            print lines[i]
+            print old, new
+            lines[i] = lines[i].replace(old, new)
+            print lines[i]
     f.close()
     f = open(fname, 'wt')
     f.writelines(lines)
@@ -123,10 +126,10 @@ def main(args):
 
     # Parse version file and ensure that the versions match
     version, history = parse_version_file('VERSION.yaml')
-    assert curr_version == version, '\nVersion given in all *.py files {} does not match VERSION.yaml {}. ' \
-            'Please fix before proceeding'.format(curr_version, version)
+    assert curr_version == version, '\nVersion given in all *.py files ({}) does not match VERSION.yaml ({}). ' \
+            'Please fix before proceeding.'.format(curr_version, version)
 
-    # Determing new version
+    # Determine new version
     if args.major:
         new_version = increment_version(curr_version, 'major')
         history.insert(0, curr_version)
@@ -151,6 +154,7 @@ def main(args):
 
         # Once I know what the new version string is, replace it in all of the files!
         for fname in fnames:
+            print fname
             replace_version(fname, curr_version, new_version)
 
     # Done
