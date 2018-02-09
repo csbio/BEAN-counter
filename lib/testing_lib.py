@@ -2,6 +2,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.2.0'
+
 # Helper functions for all testing scripts
 
 import os, sys

@@ -4,6 +4,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.2.0'
+
 # This script takes in the barseq_counter main configuration and species configuration files
 # and a sequencing lane identifier. It exports 1) reports on the total number
 # of reads, the number of reads matching the common primer, and the number of reads that
@@ -27,6 +29,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 from cg_common_functions import get_verbosity, get_sample_table, get_amplicon_struct_params, read_barcode_table, parse_yaml
+from version_printing import update_version_file
 
 def get_lane_location_table(config_params):
 
@@ -529,6 +532,7 @@ def dump_count_matrix(config_params, lane_id, barcodes, conditions, matrix):
     cPickle.dump(dataset, of)
 
     of.close()
+    update_version_file(out_path, VERSION)
 
 
 def main(config_file, lane_id):
@@ -589,7 +593,8 @@ def main(config_file, lane_id):
 
     # Remove the temporary barseq file
     remove_barseq_file(config_params, lane_id)
- 
+    
+    update_version_file(config_params['output_folder'], VERSION)
 
 # call: python fastq_to_count_matrix.py <config_file> <lane_id>
 if __name__ == '__main__':

@@ -2,6 +2,8 @@
 # https://gist.github.com/agramfort/850437
 # and licensed under the BSD (3-clause)
 
+VERSION='2.2.0'
+
 # BSD-3-Clause
 # Copyright 2018 Regents of the University of Minnesota
 # 
