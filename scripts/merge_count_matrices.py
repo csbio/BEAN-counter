@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.1.0'
+VERSION='2.2.0'
 
 # This script reads in all of the count matrices from a screen and
 # merges them together. Filtering steps are performed in the next script

@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.1.0'
+VERSION='2.2.0'
 
 # This script provides both interactive and programmable interfaces
 # for setting up configuration files in the default directory
