@@ -39,6 +39,7 @@ import cPickle
 import time
 
 barseq_path = os.getenv('BARSEQ_PATH')
+assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
 sys.path.append(os.path.join(barseq_path, 'scripts'))
 sys.path.append(os.path.join(barseq_path, 'lib'))
 

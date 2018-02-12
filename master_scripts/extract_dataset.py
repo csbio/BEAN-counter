@@ -15,6 +15,9 @@ import cPickle
 import argparse
 import os
 
+barseq_path = os.getenv('BARSEQ_PATH')
+assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
+
 from version_printing import update_version_file
 
 def main(dataset, n, folder):

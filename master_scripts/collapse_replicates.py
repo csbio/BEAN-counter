@@ -27,6 +27,7 @@ import gzip
 import cPickle
 
 barseq_path = os.getenv('BARSEQ_PATH')
+assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
 sys.path.append(os.path.join(barseq_path, 'lib'))
 from cg_common_functions import read_sample_table
 from version_printing import update_version_file
