@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.2.0'
+VERSION='2.2.1'
 
 # This script reads in the combined count matrix and filters out all of the
 # conditions and strains that either do not meet specified quality measures
@@ -22,6 +22,7 @@ import gzip
 import itertools as it
 
 barseq_path = os.getenv('BARSEQ_PATH')
+assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
 sys.path.append(os.path.join(barseq_path, 'lib'))
 
 import compressed_file_opener as cfo

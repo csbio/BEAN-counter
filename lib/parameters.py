@@ -2,7 +2,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.2.0'
+VERSION='2.2.1'
 
 import os
 import textwrap
@@ -14,11 +14,15 @@ from cg_common_functions import read_amplicon_struct_params, read_barcode_table
 # First define the Param class
 class Param:
 
-    def __init__(self, name, value, type, help, options):
+    def __init__(self, name, value, type, help, options, config_help = None):
         self.name = name
         self.value = value
         self.type = type
         self.help = help
+        if config_help is None:
+            self.config_help = self.help
+        else:
+            self.config_help = config_help
         if options == '_any_':
             self.options = options
         elif isinstance(options, (basestring, int, float, bool)):
@@ -165,7 +169,7 @@ class Param:
 
     # Function to spit param out to config file
     def write_config(self, f):
-        f.writelines(['# {}\n'.format(x) for x in textwrap.wrap(self.help, width = 60)])
+        f.writelines(['# {}\n'.format(x) for x in textwrap.wrap(self.config_help, width = 60)])
         if self.value is None:
             f.write('{}: {}\n'.format(self.name, ''))
         else:
@@ -262,7 +266,9 @@ gene_barcode_file = Param(
         help = 'Tab-delimited text file in $BARSEQ_PATH/data/gene_barcode_files/ '\
                 'that maps barcodes to strains and their identifiers. '\
                 'Must contain unique "Strain_ID" column.',
-        options = list_valid_gene_barcode_files())
+        options = list_valid_gene_barcode_files(),
+        config_help = 'Tab-delimited text file that maps barcodes to strains and ' \
+                'their identifiers. Must contain unique "Strain_ID" column.')
 
 amplicon_struct_file = Param(
         name = 'amplicon_struct_file',
@@ -271,7 +277,9 @@ amplicon_struct_file = Param(
         help = 'YAML-formatted file in $BARSEQ_PATH/data/amplicon_struct_files/ that ' \
                 'defines the structure of the sequenced PCR amplicons. This is '\
                 'required for correctly parsing the sequencing data.',
-        options = list_valid_amplicon_struct_files())
+        options = list_valid_amplicon_struct_files(),
+        config_help = 'YAML-formatted file that defines the structure of the sequenced ' \
+                'PCR amplicons. This is required for correctly parsing the sequencing data.')
                 
 ###############################
 ##  Sample table parameters  ##

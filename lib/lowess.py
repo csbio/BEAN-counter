@@ -2,7 +2,7 @@
 # https://gist.github.com/agramfort/850437
 # and licensed under the BSD (3-clause)
 
-VERSION='2.2.0'
+VERSION='2.2.1'
 
 # BSD-3-Clause
 # Copyright 2018 Regents of the University of Minnesota
@@ -159,18 +159,28 @@ def calc_yest(i):
     # cause all weights to be zero is if all delta values within the
     # span are zero.
     delta_span = delta[starts[i]:(stops[i] + 1)]
-    if np.allclose(delta_span, 0):
-        return y_[i]
-    
     x_span = x_[starts[i]:(stops[i] + 1)]
     y_span = y_[starts[i]:(stops[i] + 1)]
 
+    # Update to comment paragraph above: if one or fewer unique pairs of delta
+    # and x value within the span remain, then return the original y estimate
+    # because convergence has occurred and otherwise a singular matrix error
+    # will be raised.
+    delta_span_nonzero_inds = np.where(~np.isclose(delta_span, 0))[0]
+    x_delta_nonzero_pairs = {(x_span[ii], delta_span[ii]) for ii in delta_span_nonzero_inds}
+    if len(x_delta_nonzero_pairs) <= 1:
+        return y_[i]
+    
     w = np.clip(np.abs((x_span - x_[i]) / h[i]), 0.0, 1.0)
     w = cube(1 - cube(w))
     weights = delta_span * w
     b = np.array([np.sum(weights * y_span), np.sum(weights * y_span * x_span)])
     A = np.array([[np.sum(weights), np.sum(weights * x_span)],
                   [np.sum(weights * x_span), np.sum(weights * x_span * x_span)]])
+    #print i
+    #print A, b
     beta = solve(A, b)
+        #assert False, '\n\nThe following values give rise to a LinAlgError from the scipy solver:\n\n' \
+        #        'delta_span\n{}\n\nweights\n{}\n\nx_span\n{}\n\ny_span\n{}\n\nstart\n{}\n\nstop\n{}\n\nA\n{}\n\nb\n{}\n\ni\n{}\n\nh[i]\n{}\n\nx_[i]\n{}\n\ny_[i]\n{}\n'.format(delta_span, weights, x_span, y_span, starts[i], stops[i], A, b, i, h[i], x_[i], y_[i])
     yest_i = beta[0] + beta[1] * x_[i]
     return yest_i

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION='2.2.0'
+VERSION='2.2.1'
 
 # This script reads in all of the per-lane condition-strain interaction
 # files (z-scores) and computes index tag correlations. It outputs
@@ -19,6 +19,7 @@ import itertools as it
 import cPickle
 
 barseq_path = os.getenv('BARSEQ_PATH')
+assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
 sys.path.append('./lib')
 
 import compressed_file_opener as cfo

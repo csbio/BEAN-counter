@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.2.0'
+VERSION='2.2.1'
 
 import pandas as pd
 import numpy as np

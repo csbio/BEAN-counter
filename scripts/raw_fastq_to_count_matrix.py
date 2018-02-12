@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.2.0'
+VERSION='2.2.1'
 
 # This script takes in the barseq_counter main configuration and species configuration files
 # and a sequencing lane identifier. It exports 1) reports on the total number
@@ -24,6 +24,7 @@ import cPickle
 import itertools as it
 
 barseq_path = os.getenv('BARSEQ_PATH')
+assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
 sys.path.append(os.path.join(barseq_path, 'lib'))
 
 import compressed_file_opener as cfo

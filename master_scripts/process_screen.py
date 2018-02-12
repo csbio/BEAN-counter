@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.2.0'
+VERSION='2.2.1'
 
 # This script takes barseq sequencing data through the following steps:
 # 1) Counting barcodes and index tags (individual lanes)
@@ -39,6 +39,7 @@ import cPickle
 import time
 
 barseq_path = os.getenv('BARSEQ_PATH')
+assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
 sys.path.append(os.path.join(barseq_path, 'scripts'))
 sys.path.append(os.path.join(barseq_path, 'lib'))
 

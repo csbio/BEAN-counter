@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.2.0'
+VERSION='2.2.1'
 
 # This script takes in matrices, on which LDA has been performed and from which
 # LDA components have been removed, and plots PR curves and historgrams
@@ -28,6 +28,7 @@ import argparse
 from sklearn.metrics import roc_curve, auc
 
 barseq_path = os.getenv('BARSEQ_PATH')
+assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
 sys.path.append(os.path.join(barseq_path, 'lib'))
 
 from pr import precision_recall_curve
