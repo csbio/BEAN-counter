@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION='2.2.1'
+VERSION='2.2.2'
 
 import yaml
 import argparse

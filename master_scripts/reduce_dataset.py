@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.2.1'
+VERSION='2.2.2'
 
 # This script takes in a dataset and a corresponding sample table with
 # a reduced number of rows. This script will reduce the dataset so that
