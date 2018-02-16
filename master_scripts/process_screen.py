@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.2.3'
+VERSION='2.2.4'
 
 # This script takes barseq sequencing data through the following steps:
 # 1) Counting barcodes and index tags (individual lanes)
