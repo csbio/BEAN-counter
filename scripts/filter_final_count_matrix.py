@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.2.2'
+VERSION='2.2.3'
 
 # This script reads in the combined count matrix and filters out all of the
 # conditions and strains that either do not meet specified quality measures
@@ -131,7 +131,7 @@ def filter_dataset_for_index_tags(dataset, config_params):
 
     f = open(index_tag_corr_filename, 'rt')
     index_tags, correlations = cPickle.load(f)
-    index_tags_to_remove = np.array([index_tags[i] for i,corr in enumerate(correlations) if corr >= index_tag_correlation_cutoff])
+    index_tags_to_remove = np.array([index_tags[i] for i,corr in enumerate(correlations) if corr >= index_tag_correlation_cutoff], dtype = np.str)
     # print 'index_tags_to_remove:'
     # print '\n'.join(index_tags_to_remove) + '\n'
    
