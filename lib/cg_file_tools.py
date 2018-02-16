@@ -2,7 +2,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.2.3'
+VERSION='2.2.4'
 
 import os, sys
 
