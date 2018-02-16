@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.2.2'
+VERSION='2.2.3'
 
 # This script takes in a chemical genetic interaction score dataset (matrix and strain/
 # condition ids) as well as a sample table containing information on each condition.
