@@ -2,7 +2,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.2.2'
+VERSION='2.2.3'
 
 import scipy
 from scipy.spatial.distance import pdist

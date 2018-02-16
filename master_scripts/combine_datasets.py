@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.2.2'
+VERSION='2.2.3'
 
 # This script takes in mulitple datasets and their corresponding sample tables and
 # spits out a combined dataset and a combined sample table. The only option
