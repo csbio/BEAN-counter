@@ -214,7 +214,11 @@ def get_seq_params(amplicon_struct_params, read):
         barcode_start = -1
         barcode_end = -1
 
-    return [common_primer_start, common_primer_seq, common_primer_end, index_tag_start, index_tag_end, barcode_start, barcode_end]
+    #return [common_primer_start, common_primer_seq, common_primer_end, index_tag_start, index_tag_end, barcode_start, barcode_end]
+    return {'common_primer' : { 'start' : common_primer_start , 'end' : common_primer_end, 'seq' : common_primer_seq },
+            'index_tag' : { 'start' : index_tag_start, 'end' : index_tag_end },
+            'barcode' : {'start' : barcode_start, 'end' : barcode_end }
+            }
 
 def determine_read_type(read_1_params, read_2_params):
     base_case = [-1, '', -1, -1, -1, -1, -1]
