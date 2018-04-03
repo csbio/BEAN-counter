@@ -37,7 +37,7 @@ from version_printing import update_version_file
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 import correlation_functions as cf
-from cg_common_functions import read_sample_table
+from cg_common_functions import read_sample_table, bool_dict
 import plotting_tools as pt
 
 #def read_sample_table(tab_filename):
@@ -78,7 +78,6 @@ def get_include_col_conditions(sample_table, include_col):
     # Do some checks to make sure the columns are in the sample table
     assert include_col in sample_table.columns, "Specified include column '{}' not in the sample table".format(include_col)
     
-    bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False}
     include_vals = [bool_dict[x] for x in sample_table[include_col]]
     if negate:
         include_vals = np.invert(include_vals)
@@ -168,7 +167,6 @@ def get_nonreplicating_conditions(sample_table, batch_col, nondup_col_list):
 
     # Iterate over the rows of the sample table, build up the list of conditions
     # that will be used to get the components for removing batch effects.
-    bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False}
     inds = []
     for i, row in sample_table.iterrows():
         # First, if the row has been slated to not be included, then don't include! Move on to the next row

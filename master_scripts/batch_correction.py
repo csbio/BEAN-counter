@@ -33,7 +33,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
-from cg_common_functions import read_sample_table
+from cg_common_functions import read_sample_table, bool_dict
 from version_printing import update_version_file
 
 sys.path.append(os.path.join(barseq_path, 'lib/python2.7/site-packages'))
@@ -106,7 +106,6 @@ def get_nonreplicating_conditions(sample_table, batch_col, nondup_col_list):
 
     # Iterate over the rows of the sample table, build up the list of conditions
     # that will be used to get the components for removing batch effects.
-    bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False}
     inds = []
     for i, row in sample_table.iterrows():
         # First, if the row has been slated to not be included, then don't include! Move on to the next row

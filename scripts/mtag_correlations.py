@@ -24,7 +24,7 @@ sys.path.append('./lib')
 
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
-from cg_common_functions import get_verbosity, get_sample_table, parse_yaml
+from cg_common_functions import get_verbosity, get_sample_table, parse_yaml, bool_dict
 from version_printing import update_version_file
 
 
@@ -180,7 +180,6 @@ def get_control_condition_ids(dataset, sample_table):
 
     [barcode_gene_ids, condition_ids, matrix] = dataset
 
-    bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False}
     control_bool_ind = np.array([bool_dict[x] for x in sample_table['control?']])
     control_table = sample_table[control_bool_ind]
     control_screen_names = control_table['screen_name']
