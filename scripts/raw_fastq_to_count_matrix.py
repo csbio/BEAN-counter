@@ -28,6 +28,8 @@ import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 from cg_common_functions import get_verbosity, get_sample_table, get_amplicon_struct_params, read_barcode_table, parse_yaml
 
+import pdb
+
 def get_lane_location_table(config_params):
 
     filename = config_params['lane_location_file']
@@ -540,6 +542,14 @@ def main(config_file, lane_id):
     config_params = parse_yaml(config_file)
     amplicon_struct_params = get_amplicon_struct_params(config_params)
 
+    
+    
+    
+    
+    
+    
+    
+    
     # Get maps of barcode to barcode_gene (keeps the strains unique/traceable), and index tag to condition
     if get_verbosity(config_params) >= 1:
         print 'creating mappings from barcodes and index tags...'

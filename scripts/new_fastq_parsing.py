@@ -163,7 +163,7 @@ def match_seq(seq, seq_trie_length_list, n_mismatch, lengths):
     '''
 
     for l in lengths:
-        res = seq_trie_length_list[i].get_approximate(seq[0:l], n)
+        res = seq_trie_length_list[i].get_approximate(seq[0:l], n_mismatch)
         if len(res) == 0:
             continue
 
@@ -191,7 +191,7 @@ def parse_seqs(lane_id, config_params):
     # how to proceed.
     read_params = [get_seq_params(amplicon_struct_params, 'read_1'), get_seq_params(amplicon_struct_params, 'read_2')]
 
-    read_type_dict = determine_read_type(read_1_params, read_2_params)
+    read_type_dict = determine_read_type(read_params[0], read_params[1])
 
     read_inds, seq_types, match_dicts, array_ind_dicts, seq_trie_lists, seq_lengths, tols, array = initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_params, sample_tab, barcode_tab)
 
@@ -199,7 +199,7 @@ def parse_seqs(lane_id, config_params):
     folder = get_lane_folder(lane_id, lane_location_tab)
 
     n = len(read_inds)
-    idxs = [None] * len(read_inds)
+    idxs = [None] * n
     for line_list in line_gen(folder, read_type_dict['type']):
         # Check for common primer...
         
@@ -213,9 +213,8 @@ def parse_seqs(lane_id, config_params):
                 corrected_seq = match_dicts[i][seq][0]
                 match_dicts[i][seq][1] += 1
             except KeyError as e:
-                # need to write match_seq function
-                # Returns a list of [corrected_seq, 1] where the "1" represents the first occurrence
-                match_dicts[i][seq] = match_seq(seq, seq_trie_lists[i], tols[i], seq_lengths)
+                # match_seq returns the corrected sequence
+                match_dicts[i][seq] = [match_seq(seq, seq_trie_lists[i], tols[i], seq_lengths), 1]
                 corrected_seq = match_dicts[i][seq][0]
 
             idxs[i] = array_ind_dicts[i][corrected_seq]
