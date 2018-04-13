@@ -255,15 +255,15 @@ def determine_read_type(read_1_params, read_2_params):
     barcode_read_2_present = all(barcode_read_2_list)
 
     if required_read_1_present and barcode_read_1_present and not required_read_2_present and not barcode_read_2_present:
-        return {'type': 'single', 'barcode': ['read_1']}
+        return {'type': 'single', 'barcode': ['read_1']}, [read_1_params]
     elif not required_read_1_present and not barcode_read_1_present and required_read_2_present and barcode_read_2_present:
-        return {'type': 'single', 'barcode': ['read_2']}
+        return {'type': 'single', 'barcode': ['read_2']}, [read_2_params]
     elif required_read_1_present and barcode_read_1_present and required_read_2_present and not barcode_read_2_present:
-        return {'type': 'paired', 'barcode': ['read_1']}
+        return {'type': 'paired', 'barcode': ['read_1']}, [read_1_params, read_2_params]
     elif required_read_1_present and not barcode_read_1_present and required_read_2_present and barcode_read_2_present:
-        return {'type': 'paired', 'barcode': ['read_2']}
+        return {'type': 'paired', 'barcode': ['read_2']}, [read_1_params, read_2_params]
     elif required_read_1_present and barcode_read_1_present and required_read_2_present and barcode_read_2_present:
-        return {'type': 'paired', 'barcode': ['read_1', 'read_2']}
+        return {'type': 'paired', 'barcode': ['read_1', 'read_2']}, [read_1_params, read_2_params]
         pass # paired end, both barcode
     assert False, 'Required "read_1" and/or "read_2" parameters were not supplied. Please check the "amplicon_struct_file"'
 
@@ -626,16 +626,16 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
         index_tag_tries, index_tag_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col])
         index_tags = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col])}
         index_tags['multi_match'] = len(index_tags)
-        index_tags['no_match'] = len(index_tags) + 1
+        index_tags['no_match'] = len(index_tags)
         barcode_col = amplicon_struct_params[read_type_dict['barcode'][0]]['genetic_barcode']['barcode_file_column']
         assert barcode_col in barcode_tab.columns, 'barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene_barcode table.'.format(barcode_col)
         barcode_tries, barcode_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col])
         barcodes = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col])}
         barcodes['multi_match'] = len(barcodes)
-        barcodes['no_match'] = len(barcodes) + 1
-        index_tag_tol = 0
-        barcode_tol = config_params['barcode_tolerance']
-        count_array = np.zeros((len(index_tags) + 2, len(barcodes) + 2), dtype = np.int)
+        barcodes['no_match'] = len(barcodes)
+        index_tag_tol = config_params.get('index_tag_tolerance', 0)
+        barcode_tol = config_params.get('barcode_tolerance', 0)
+        count_array = np.zeros((len(index_tags), len(barcodes)), dtype = np.int)
         return [0, 0], ['index_tag', 'barcode'], [{}, {}], [index_tags, barcodes], [index_tag_tries, barcode_tries], [index_tag_lengths, barcode_lengths], [index_tag_tol, barcode_tol], count_array
     elif read_type_dict['type'] == 'paired':
         # Since there are always 2 index tags in a paired read scheme, I can write this code once.
@@ -647,64 +647,64 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
             index_tag_1_tries, index_tag_1_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_1])
             index_tags_1 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_1])}
             index_tags_1['multi_match'] = len(index_tags_1)
-            index_tags_1['no_match'] = len(index_tags_1) + 1
+            index_tags_1['no_match'] = len(index_tags_1)
             barcode_col_1 = amplicon_struct_params['read_1']['genetic_barcode']['barcode_file_column']
             assert barcode_col_1 in barcode_tab.columns, 'read_1 barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene_barcode table.'.format(barcode_col_1)
             barcode_1_tries, barcode_1_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_1])
             barcodes_1 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_1])}
             barcodes_1['multi_match'] = len(barcodes_1)
-            barcodes_1['no_match'] = len(barcodes_1) + 1
+            barcodes_1['no_match'] = len(barcodes_1)
             index_tag_2_tries, index_tag_2_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_2])
             index_tags_2 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_2])}
             index_tags_2['multi_match'] = len(index_tags_2)
-            index_tags_2['no_match'] = len(index_tags_2) + 1
-            index_tag_tol = 0
-            barcode_tol = config_params['barcode_tolerance']
-            count_array = np.zeros((len(index_tags_1) + 2, len(barcodes_1) + 2, len(index_tags_2) + 2), dtype = np.int)
+            index_tags_2['no_match'] = len(index_tags_2)
+            index_tag_tol = config_params.get('index_tag_tolerance', 0)
+            barcode_tol = config_params.get('barcode_tolerance', 0)
+            count_array = np.zeros((len(index_tags_1), len(barcodes_1), len(index_tags_2)), dtype = np.int)
             return [0, 0, 1], ['index_tag', 'barcode', 'index_tag'], [{}, {}, {}], [index_tags_1, barcodes_1, index_tags_2], [index_tag_1_tries, barcode_1_tries, index_tag_2_tries], [index_tag_1_lengths, barcode_1_lengths, index_tag_2_lengths], [index_tag_tol, barcode_tol, index_tag_tol], count_array
         elif read_type_dict['barcode'] == ['read_2']:
             index_tag_1_tries, index_tag_1_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_1])
             index_tags_1 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_1])}
             index_tags_1['multi_match'] = len(index_tags_1)
-            index_tags_1['no_match'] = len(index_tags_1) + 1
+            index_tags_1['no_match'] = len(index_tags_1)
             index_tag_2_tries, index_tag_2_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_2])
             index_tags_2 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_2])}
             index_tags_2['multi_match'] = len(index_tags_2)
-            index_tags_2['no_match'] = len(index_tags_2) + 1
+            index_tags_2['no_match'] = len(index_tags_2)
             barcode_col_2 = amplicon_struct_params['read_2']['genetic_barcode']['barcode_file_column']
             assert barcode_col_2 in barcode_tab.columns, 'read_2 barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene_barcode table.'.format(barcode_col_2)
             barcode_2_tries, barcode_2_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_2])
             barcodes_2 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_2])}
             barcodes_2['multi_match'] = len(barcodes_2)
-            barcodes_2['no_match'] = len(barcodes_2) + 1
-            index_tag_tol = 0
-            barcode_tol = config_params['barcode_tolerance']
-            count_array = np.zeros((len(index_tags_1) + 2, len(index_tags_2) + 2, len(barcodes_2) + 2), dtype = np.int)
+            barcodes_2['no_match'] = len(barcodes_2)
+            index_tag_tol = config_params.get('index_tag_tolerance', 0)
+            barcode_tol = config_params.get('barcode_tolerance', 0)
+            count_array = np.zeros((len(index_tags_1), len(index_tags_2), len(barcodes_2)), dtype = np.int)
             return [0, 1, 1], ['index_tag', 'index_tag', 'barcode'], [{}, {}, {}], [index_tags_1, index_tags_2, barcodes_2], [index_tag_1_tries, index_tag_2_tries, barcode_2_tries], [index_tag_1_lengths, index_tag_2_lengths, barcode_2_lengths], [index_tag_tol, index_tag_tol, barcode_tol], count_array
         elif read_type_dict['barcode'] == ['read_1', 'read_2']:
             index_tag_1_tries, index_tag_1_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_1])
             index_tags_1 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_1])}
             index_tags_1['multi_match'] = len(index_tags_1)
-            index_tags_1['no_match'] = len(index_tags_1) + 1
+            index_tags_1['no_match'] = len(index_tags_1)
             barcode_col_1 = amplicon_struct_params['read_1']['genetic_barcode']['barcode_file_column']
             assert barcode_col_1 in barcode_tab.columns, 'read_1 barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene_barcode table.'.format(barcode_col_1)
             barcode_1_tries, barcode_1_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_1])
             barcodes_1 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_1])}
             barcodes_1['multi_match'] = len(barcodes_1)
-            barcodes_1['no_match'] = len(barcodes_1) + 1
+            barcodes_1['no_match'] = len(barcodes_1)
             index_tag_2_tries, index_tag_2_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_2])
             index_tags_2 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_2])}
             index_tags_2['multi_match'] = len(index_tags_2)
-            index_tags_2['no_match'] = len(index_tags_2) + 1
+            index_tags_2['no_match'] = len(index_tags_2)
             barcode_col_2 = amplicon_struct_params['read_2']['genetic_barcode']['barcode_file_column']
             assert barcode_col_2 in barcode_tab.columns, 'read_2 barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene barcode table.'.format(barcode_col_2)
             barcode_2_tries, barcode_2_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_2])
             barcodes_2 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_2])}
             barcodes_2['multi_match'] = len(barcodes_2)
-            barcodes_2['no_match'] = len(barcodes_2) + 1
-            index_tag_tol = 0
-            barcode_tol = config_params['barcode_tolerance']
-            count_array = np.zeros((len(index_tags_1) + 2, len(barcodes_1) + 2, len(index_tags_2) + 2, len(barcodes_2) + 2), dtype = np.int)
+            barcodes_2['no_match'] = len(barcodes_2)
+            index_tag_tol = config_params.get('index_tag_tolerance', 0)
+            barcode_tol = config_params.get('barcode_tolerance', 0)
+            count_array = np.zeros((len(index_tags_1), len(barcodes_1), len(index_tags_2), len(barcodes_2)), dtype = np.int)
             return [0, 0, 1, 1], ['index_tag', 'barcode', 'index_tag', 'barcode'], [{}, {}, {}, {}], [index_tags_1, barcodes_1, index_tags_2, barcodes_2], [index_tag_1_tries, barcode_1_tries, index_tag_2_tries, barcode_2_tries], [index_tag_1_lengths, barcode_1_lengths, index_tag_2_lengths, barcode_2_lengths], [index_tag_tol, index_tag_tol, barcode_tol, barcode_tol], count_array
     
 
@@ -745,6 +745,35 @@ def match_seq(seq, seq_trie_length_list, n_mismatch, lengths):
     # If nothing matched at all, return "no_match"!
     return 'no_match'
 
+def initialize_cp_matchers(read_type_dict, amplicon_struct_params, config_params):
+
+
+    if read_type_dict['type'] == 'single':
+        cp_read_id = [amplicon_struct_params[read_type_dict['barcode'][0]]]
+        if cp_read_id == 'read_1':
+            cp_read_inds = [0]
+        else:
+            cp_read_inds = [1]
+        cp_seq_list = [amplicon_struct_params[read_type_dict['barcode'][0]]['common_primer']['sequence']]
+    else:
+        cp_read_ids = ['read_1', 'read_2']
+        cp_read_inds = [0, 1]
+        cp_seq_list = [amplicon_struct_params[read_id]['common_primer']['sequence'] for read_id in ['read_1', 'read_2']]
+        
+    cp_tol = config_params.get('common_primer_tolerance', 0)
+    bases = ['A', 'C', 'G', 'T']
+    cp_dicts = [{}]
+    for i in range(len(cp_seq_list)):
+        cp_seq = cp_seq_list[i]
+        for mismatch_locs in it.combinations(range(len(cp_seq)), cp_tol):
+            this_seq = list(cp_seq)
+            for ind in mismatch_locs:
+                this_seq[ind] = bases
+            for mutated_seq_list in it.product(*this_seq):
+                cp_dicts[i][''.join(mutated_seq_list)] = 0
+
+    return cp_read_inds, cp_dicts
+
 
 def parse_seqs(lane_id, config_params):
 
@@ -759,12 +788,16 @@ def parse_seqs(lane_id, config_params):
     # how to proceed.
     read_params = [get_seq_params(amplicon_struct_params, 'read_1'), get_seq_params(amplicon_struct_params, 'read_2')]
 
-    read_type_dict = determine_read_type(read_params[0], read_params[1])
+    read_type_dict, read_params_clean = determine_read_type(read_params[0], read_params[1])
+
+    cp_read_inds, cp_dicts = initialize_cp_matchers(read_type_dict, amplicon_struct_params, config_params)
 
     read_inds, seq_types, match_dicts, array_ind_dicts, seq_trie_lists, seq_lengths, tols, array = initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_params, sample_tab, barcode_tab)
 
     lane_location_tab = get_lane_location_table(config_params)
     folder = get_lane_folder(lane_id, lane_location_tab)
+
+    pdb.set_trace()
 
     n = len(read_inds)
     idxs = [None] * n
@@ -778,10 +811,26 @@ def parse_seqs(lane_id, config_params):
         # For testing
         if counter / 1000000 == 2:
             break
+        
+        # Check first for common primer!
+        cp_match = [False] * len(cp_dicts)
+        for i in range(len(cp_dicts)):
+            start_coord = read_params_clean[i]['common_primer']['start']
+            end_coord = start_coord + len(read_params_clean[i]['common_primer']['seq'])
+            seq = line_list[i][start_coord:end_coord]
+            try:
+                cp_dicts[i][seq] += 1
+                cp_match[i] = True
+            except KeyError as e:
+                pass
+
+        if not all(cp_match):
+            continue
+
         # Match on index tags/barcodes
         for i in range(n):
-            start_coord = read_params[read_inds[i]][seq_types[i]]['start']
-            end_coord = read_params[read_inds[i]][seq_types[i]]['end']
+            start_coord = read_params_clean[read_inds[i]][seq_types[i]]['start']
+            end_coord = read_params_clean[read_inds[i]][seq_types[i]]['end']
             seq = line_list[read_inds[i]][start_coord:end_coord]
 
             try:
@@ -796,18 +845,27 @@ def parse_seqs(lane_id, config_params):
 
         array[tuple(idxs)] += 1
 
-    return array, match_dicts
+    return array, match_dicts, cp_dicts, counter
+
+def map_counts_to_strains_conditions(array, config_params):
+
+    sample_tab = get_sample_table(config_params)
+    barcode_tab = get_barcode_table(config_params)
+
+
 
 def main(config_file, lane_id):
 
     config_params = parse_yaml(config_file)
     amplicon_struct_params = get_amplicon_struct_params(config_params)
 
-    count_array, match_dicts = parse_seqs(lane_id, config_params)
+    # Check for common primer and put all reads into a master array
+    count_array, match_dicts, cp_dicts, total_reads = parse_seqs(lane_id, config_params)
     
     pdb.set_trace()
     
-    
+    # Map the counts to actual conditions and strains
+    strains, conditions, count_matrix = map_counts_to_strains_conditions(count_array, config_params)
     
     
     
