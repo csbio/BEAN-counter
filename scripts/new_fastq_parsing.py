@@ -220,3 +220,5 @@ def parse_seqs(lane_id, config_params):
             idxs[i] = array_ind_dicts[i][corrected_seq]
 
         array[tuple(idxs)] += 1
+
+    return array, match_dicts

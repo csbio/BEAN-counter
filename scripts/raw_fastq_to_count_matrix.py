@@ -20,13 +20,14 @@ matplotlib.use('Agg') # Force matplotlib to not use any Xwindows backend.
 import matplotlib.pyplot as plt
 import cPickle
 import itertools as it
+from Bio.trie import trie
 
 barseq_path = os.getenv('BARSEQ_PATH')
 sys.path.append(os.path.join(barseq_path, 'lib'))
 
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
-from cg_common_functions import get_verbosity, get_sample_table, get_amplicon_struct_params, read_barcode_table, parse_yaml
+from cg_common_functions import get_verbosity, get_sample_table, get_amplicon_struct_params, get_barcode_table, parse_yaml
 
 import pdb
 
@@ -69,105 +70,105 @@ def remove_barseq_file(config_params, lane_id):
     os.remove(fname)
     return None
 
-def get_barcode_to_gene(config_params):
-    # Need to update for paired-end configuration
-    #barseq_path = os.getenv('BARSEQ_PATH')
-
-    amplicon_struct_params = get_amplicon_struct_params(config_params)
-    
-    filename = config_params['gene_barcode_file']
-    #full_path = os.path.join(barseq_path, 'data', 'barcodes', filename)
-    barcode_tab = read_barcode_table(filename)
-
-    # Get all possible common primer/index tag/barcode parameters, then determine
-    # how to proceed.
-    read_1_params = get_seq_params(amplicon_struct_params, 'read_1')
-    read_2_params = get_seq_params(amplicon_struct_params, 'read_2')
-    read_type_dict = determine_read_type(read_1_params, read_2_params)
-
-    # Which barcode columns are required?
-    barcode_cols = [amplicon_struct_params[x]['genetic_barcode']['barcode_file_column'] for x in read_type_dict['barcode']]
-    assert all([x in barcode_tab.columns for x in barcode_cols]), 'Not all specified barcode columns are in the barcode table.\nRequired columns: {}\nBarcode table: {}'.format(barcode_cols, filename)
-
-    # Check for duplicates in the barcodes
-    num_dup_barcodes = sum(barcode_tab[barcode_cols].duplicated())
-    assert num_dup_barcodes == 0, '{} duplicate barcodes detected. Please review the barcode to strain mapping, found here: {}'.format(num_dup_barcodes, filename)
-
-    # If there is only one read containing the barcode, add a dummy
-    # column of empty strings for the other read.
-    if len(read_type_dict['barcode']) == 1:
-        barcode_tab['dummy_barcode'] = ['' for i in range(barcode_tab.shape[0])]
-        if read_type_dict['barcode'] == ['read_1']:
-            barcode_cols.append('dummy_barcode')
-        else:
-            barcode_cols.insert(0, 'dummy_barcode')
-
-    # Convert the table to a dictionary from barcode(s) to strain_id
-    # Note: the key is always a length-2 tuple. If there is only one
-    # barcode, the entry for the other barcode is just empty strings.
-    barcode_to_strain = barcode_tab.set_index(barcode_cols)['Strain_ID'].to_dict()
-
-    return barcode_to_strain
-
-def get_index_tag_to_condition(config_params, lane_id):
-
-    sample_table = get_sample_table(config_params)
-    sample_table = sample_table.set_index('lane')
-    sample_table_lane = sample_table.loc[lane_id]
-
-    # Get all possible common primer/index tag/barcode parameters, then determine
-    # how to proceed.
-    amplicon_struct_params = get_amplicon_struct_params(config_params)
-    read_1_params = get_seq_params(amplicon_struct_params, 'read_1')
-    read_2_params = get_seq_params(amplicon_struct_params, 'read_2')
-    read_type_dict = determine_read_type(read_1_params, read_2_params)
-
-    # Which index tag columns are required?
-    index_tag_cols = [amplicon_struct_params[x]['index_tag']['sample_table_column'] for x in ['read_1', 'read_2'] if x in amplicon_struct_params]
-    index_tag_reads = [x for x in ['read_1', 'read_2'] if x in amplicon_struct_params]
-    assert all([x in sample_table_lane.columns for x in index_tag_cols]), 'Not all specified index_tag columns are in the sample table.\nRequired columns: {}\nSample table: {}'.format(index_tag_cols, config_params['sample_table_file'])
-
-    # Check for duplicates in the index tags
-    num_dup_index_tags = sum(sample_table_lane[index_tag_cols].duplicated())
-    assert num_dup_index_tags == 0, '{} duplicate index tags within lane "{}" detected. Please review the sample table, found here: {}'.format(num_dup_index_tags, lane_id, config_params['sample_table_file'])
-
-    # If this is a single read experiment, add a dummy column of
-    # empty strings for the other read's empty index tag.
-    if len(index_tag_cols) == 1:
-        sample_table_lane['dummy_index_tag'] = ['' for i in range(sample_table_lane.shape[0])]
-        if index_tag_reads == ['read_1']:
-            index_tag_cols.append('dummy_index_tag')
-        else:
-            index_tag_cols.insert(0, 'dummy_index_tag')
-    
-    # Convert the table to a dictionary from index tag(s) to screen_name
-    # and expt_id.
-    # Note: the key is always a length-2 tuple. If there is only one
-    # index tag, the entry for the other index tag is just empty strings.
-    sample_table_lane['screen_name_and_expt_id'] = [tuple(x[1]) for x in sample_table_lane[['screen_name', 'expt_id']].iterrows()]
-    index_tag_to_condition = sample_table_lane.set_index(index_tag_cols)['screen_name_and_expt_id'].to_dict()
-
-    return index_tag_to_condition
-    
-def fastq_to_barseq(config_params, lane_id):
-
-    lane_location_tab = get_lane_location_table(config_params)
-    
-    # Get the raw data folder 
-    raw_folder = get_lane_folder(lane_id, lane_location_tab)
-
-    # Set up the output folders for the temporary barseq file, the output count matrix,
-    # and the read statistics
-    tmp_data_path = get_lane_data_paths(config_params, lane_id)[0]
-    data_path = get_lane_data_paths(config_params, lane_id)[1]
-    reports_path = get_lane_reports_path(config_params, lane_id)
-    cg_file.create_output_dir(tmp_data_path)
-    cg_file.create_output_dir(data_path)
-    cg_file.create_output_dir(reports_path)
-
-    total_counts, common_primer_counts, barcodes_in_data, index_tags_in_data, read_type_dict, parsed_coords = read_fastq(config_params, raw_folder, data_path, lane_id)
-
-    return total_counts, common_primer_counts, barcodes_in_data, index_tags_in_data, read_type_dict, parsed_coords
+#def get_barcode_to_gene(config_params):
+#    # Need to update for paired-end configuration
+#    #barseq_path = os.getenv('BARSEQ_PATH')
+#
+#    amplicon_struct_params = get_amplicon_struct_params(config_params)
+#    
+#    filename = config_params['gene_barcode_file']
+#    #full_path = os.path.join(barseq_path, 'data', 'barcodes', filename)
+#    barcode_tab = read_barcode_table(filename)
+#
+#    # Get all possible common primer/index tag/barcode parameters, then determine
+#    # how to proceed.
+#    read_1_params = get_seq_params(amplicon_struct_params, 'read_1')
+#    read_2_params = get_seq_params(amplicon_struct_params, 'read_2')
+#    read_type_dict = determine_read_type(read_1_params, read_2_params)
+#
+#    # Which barcode columns are required?
+#    barcode_cols = [amplicon_struct_params[x]['genetic_barcode']['barcode_file_column'] for x in read_type_dict['barcode']]
+#    assert all([x in barcode_tab.columns for x in barcode_cols]), 'Not all specified barcode columns are in the barcode table.\nRequired columns: {}\nBarcode table: {}'.format(barcode_cols, filename)
+#
+#    # Check for duplicates in the barcodes
+#    num_dup_barcodes = sum(barcode_tab[barcode_cols].duplicated())
+#    assert num_dup_barcodes == 0, '{} duplicate barcodes detected. Please review the barcode to strain mapping, found here: {}'.format(num_dup_barcodes, filename)
+#
+#    # If there is only one read containing the barcode, add a dummy
+#    # column of empty strings for the other read.
+#    if len(read_type_dict['barcode']) == 1:
+#        barcode_tab['dummy_barcode'] = ['' for i in range(barcode_tab.shape[0])]
+#        if read_type_dict['barcode'] == ['read_1']:
+#            barcode_cols.append('dummy_barcode')
+#        else:
+#            barcode_cols.insert(0, 'dummy_barcode')
+#
+#    # Convert the table to a dictionary from barcode(s) to strain_id
+#    # Note: the key is always a length-2 tuple. If there is only one
+#    # barcode, the entry for the other barcode is just empty strings.
+#    barcode_to_strain = barcode_tab.set_index(barcode_cols)['Strain_ID'].to_dict()
+#
+#    return barcode_to_strain
+#
+#def get_index_tag_to_condition(config_params, lane_id):
+#
+#    sample_table = get_sample_table(config_params)
+#    sample_table = sample_table.set_index('lane')
+#    sample_table_lane = sample_table.loc[lane_id]
+#
+#    # Get all possible common primer/index tag/barcode parameters, then determine
+#    # how to proceed.
+#    amplicon_struct_params = get_amplicon_struct_params(config_params)
+#    read_1_params = get_seq_params(amplicon_struct_params, 'read_1')
+#    read_2_params = get_seq_params(amplicon_struct_params, 'read_2')
+#    read_type_dict = determine_read_type(read_1_params, read_2_params)
+#
+#    # Which index tag columns are required?
+#    index_tag_cols = [amplicon_struct_params[x]['index_tag']['sample_table_column'] for x in ['read_1', 'read_2'] if x in amplicon_struct_params]
+#    index_tag_reads = [x for x in ['read_1', 'read_2'] if x in amplicon_struct_params]
+#    assert all([x in sample_table_lane.columns for x in index_tag_cols]), 'Not all specified index_tag columns are in the sample table.\nRequired columns: {}\nSample table: {}'.format(index_tag_cols, config_params['sample_table_file'])
+#
+#    # Check for duplicates in the index tags
+#    num_dup_index_tags = sum(sample_table_lane[index_tag_cols].duplicated())
+#    assert num_dup_index_tags == 0, '{} duplicate index tags within lane "{}" detected. Please review the sample table, found here: {}'.format(num_dup_index_tags, lane_id, config_params['sample_table_file'])
+#
+#    # If this is a single read experiment, add a dummy column of
+#    # empty strings for the other read's empty index tag.
+#    if len(index_tag_cols) == 1:
+#        sample_table_lane['dummy_index_tag'] = ['' for i in range(sample_table_lane.shape[0])]
+#        if index_tag_reads == ['read_1']:
+#            index_tag_cols.append('dummy_index_tag')
+#        else:
+#            index_tag_cols.insert(0, 'dummy_index_tag')
+#    
+#    # Convert the table to a dictionary from index tag(s) to screen_name
+#    # and expt_id.
+#    # Note: the key is always a length-2 tuple. If there is only one
+#    # index tag, the entry for the other index tag is just empty strings.
+#    sample_table_lane['screen_name_and_expt_id'] = [tuple(x[1]) for x in sample_table_lane[['screen_name', 'expt_id']].iterrows()]
+#    index_tag_to_condition = sample_table_lane.set_index(index_tag_cols)['screen_name_and_expt_id'].to_dict()
+#
+#    return index_tag_to_condition
+#    
+#def fastq_to_barseq(config_params, lane_id):
+#
+#    lane_location_tab = get_lane_location_table(config_params)
+#    
+#    # Get the raw data folder 
+#    raw_folder = get_lane_folder(lane_id, lane_location_tab)
+#
+#    # Set up the output folders for the temporary barseq file, the output count matrix,
+#    # and the read statistics
+#    tmp_data_path = get_lane_data_paths(config_params, lane_id)[0]
+#    data_path = get_lane_data_paths(config_params, lane_id)[1]
+#    reports_path = get_lane_reports_path(config_params, lane_id)
+#    cg_file.create_output_dir(tmp_data_path)
+#    cg_file.create_output_dir(data_path)
+#    cg_file.create_output_dir(reports_path)
+#
+#    total_counts, common_primer_counts, barcodes_in_data, index_tags_in_data, read_type_dict, parsed_coords = read_fastq(config_params, raw_folder, data_path, lane_id)
+#
+#    return total_counts, common_primer_counts, barcodes_in_data, index_tags_in_data, read_type_dict, parsed_coords
 
 
 def is_fastq_filename(filename):
@@ -223,12 +224,36 @@ def get_seq_params(amplicon_struct_params, read):
             }
 
 def determine_read_type(read_1_params, read_2_params):
-    base_case = [-1, '', -1, -1, -1, -1, -1]
-    required_read_1_present = all([x is not base_case[i] for i,x in enumerate(read_1_params) if i in range(5)])
-    required_read_2_present = all([x is not base_case[i] for i,x in enumerate(read_2_params) if i in range(5)])
-    barcode_read_1_present = all([x is not base_case[i] for i,x in enumerate(read_1_params) if i in [5, 6]])
-    barcode_read_2_present = all([x is not base_case[i] for i,x in enumerate(read_2_params) if i in [5, 6]])
+    #base_case = [-1, '', -1, -1, -1, -1, -1]
+    base_case =  {'common_primer' : { 'start' : -1 , 'end' : -1, 'seq' : '' },
+                  'index_tag' : { 'start' : -1, 'end' : -1 },
+                  'barcode' : {'start' : -1, 'end' : -1 }
+                  }
+    #required_read_1_present = all([x is not base_case[i] for i,x in enumerate(read_1_params) if i in range(5)])
+    #required_read_2_present = all([x is not base_case[i] for i,x in enumerate(read_2_params) if i in range(5)])
+    required_read_1_list = []
+    required_read_2_list = []
+    for x in ['common_primer', 'index_tag']:
+        for y in base_case[x].keys():
+            required_read_1_list.append(read_1_params[x][y] is not base_case[x][y])
+            required_read_2_list.append(read_2_params[x][y] is not base_case[x][y])
+    #required_read_1_present = all([read_1_params[x][y] is not base_case[x][y] for y in [base_case[x].keys() for x in ['common_primer', 'index_tag']]])
+    #required_read_2_present = all([read_2_params[x][y] is not base_case[x][y] for y in [base_case[x].keys() for x in ['common_primer', 'index_tag']]])
+    #barcode_read_1_present = all([x is not base_case[i] for i,x in enumerate(read_1_params) if i in [5, 6]])
+    #barcode_read_2_present = all([x is not base_case[i] for i,x in enumerate(read_2_params) if i in [5, 6]])
+    barcode_read_1_list = []
+    barcode_read_2_list = []
+    for y in base_case['barcode'].keys():
+        barcode_read_1_list.append(read_1_params['barcode'][y] is not base_case['barcode'][y])
+        barcode_read_2_list.append(read_2_params['barcode'][y] is not base_case['barcode'][y])
+    #barcode_read_1_present = all([read_1_params[x][y] is not base_case[x][y] for y in base_case[x].keys() for x in ['barcode']])
+    #barcode_read_2_present = all([read_2_params[x][y] is not base_case[x][y] for y in base_case[x].keys() for x in ['barcode']])
     #print required_read_1_present, barcode_read_1_present, required_read_2_present, barcode_read_2_present
+    required_read_1_present = all(required_read_1_list)
+    required_read_2_present = all(required_read_2_list)
+    barcode_read_1_present = all(barcode_read_1_list)
+    barcode_read_2_present = all(barcode_read_2_list)
+
     if required_read_1_present and barcode_read_1_present and not required_read_2_present and not barcode_read_2_present:
         return {'type': 'single', 'barcode': ['read_1']}
     elif not required_read_1_present and not barcode_read_1_present and required_read_2_present and barcode_read_2_present:
@@ -272,193 +297,193 @@ def get_fastq_filename_list(folder, read_type, barcode_reads):
     return filenames
 
 
-def read_fastq(config_params, folder, out_path, lane_id):
+#def read_fastq(config_params, folder, out_path, lane_id):
+#
+#    amplicon_struct_params = get_amplicon_struct_params(config_params)
+#
+#    # Get all possible common primer/index tag/barcode parameters, then determine
+#    # how to proceed.
+#    read_1_params = get_seq_params(amplicon_struct_params, 'read_1')
+#    read_2_params = get_seq_params(amplicon_struct_params, 'read_2')
+#
+#    read_type_dict = determine_read_type(read_1_params, read_2_params)
+#
+#    common_primer_tolerance = int(config_params['common_primer_tolerance'])
+#    
+#    out_filename = get_barseq_filename(config_params, lane_id)
+#    # print out_filename
+#    # print common_primer_tolerance
+#
+#    of = open(out_filename, 'wt')
+#
+#    # Need a function to return pairs of filenames, for which a None object
+#    # is one of the filenames if this is a single read run
+#    #fastq_filenames = [os.path.join(folder, x) for x in os.listdir(folder) if is_fastq_filename(x)]
+#    fastq_filenames = get_fastq_filename_list(folder, read_type_dict['type'], read_type_dict['barcode'])
+#
+#    common_primer_count = 0
+#    index_tags = set()
+#    barcodes = set()
+#    for filename_pair in fastq_filenames:
+#        handles = [cfo.get_compressed_file_handle(x) if x is not None else it.cycle('\n') for x in filename_pair]
+#        line_count = 0
+#        while True:
+#        #for line_count, line in enumerate(f):
+#            try:
+#                line_1 = handles[0].next()
+#                line_2 = handles[1].next()
+#            except StopIteration:
+#                break
+#            if get_verbosity(config_params) >= 3:
+#                print line_count, line_1, line_2
+#            if line_count % 4 == 1:
+#                #string = line.strip()
+#                common_primer_1 = line_1[read_1_params[0]:read_1_params[2]]
+#                common_primer_dist_1 = jf.hamming_distance(unicode(common_primer_1), unicode(read_1_params[1]))
+#                common_primer_2 = line_2[read_2_params[0]:read_2_params[2]]
+#                common_primer_dist_2 = jf.hamming_distance(unicode(common_primer_2), unicode(read_2_params[1]))
+#                if get_verbosity(config_params) >= 3:
+#                    print common_primer_1, read_1_params[1], common_primer_dist_1
+#                    print common_primer_2, read_2_params[1], common_primer_dist_2
+#                if common_primer_dist_1 <= common_primer_tolerance and common_primer_dist_2 <= common_primer_tolerance:
+#                    common_primer_count += 1
+#                    index_tag_1 = line_1[read_1_params[3]:read_1_params[4]]
+#                    barcode_1 = line_1[read_1_params[5]:read_1_params[6]]
+#                    index_tag_2 = line_2[read_2_params[3]:read_2_params[4]]
+#                    barcode_2 = line_2[read_2_params[5]:read_2_params[6]]
+#                    index_tags.add((index_tag_1, index_tag_2))
+#                    barcodes.add((barcode_1, barcode_2))
+#                    # print "index_tag, barcode : {}, {}".format(index_tag, barcode)
+#                    of.write('{0}\t{1}\t{2}\t{3}\n'.format(index_tag_1, barcode_1, index_tag_2, barcode_2))
+#            line_count += 1
+#                
+#        for h in handles:
+#            if hasattr(h, 'read'):
+#                h.close()
+#
+#    total_counts = (line_count + 1)/ 4
+#
+#    of.close()
+#
+#    parsed_lengths = [read_1_params[4] - read_1_params[3], read_1_params[6] - read_1_params[5],
+#            read_2_params[4] - read_2_params[3], read_2_params[6] - read_2_params[5]]
+#
+#    shifts = range(4)
+#    parsed_coords = []
+#    for i, length in enumerate(parsed_lengths):
+#        if i == 0:
+#            parsed_coords.append(0)
+#        else:
+#            parsed_coords.append(parsed_coords[-1] + 1)
+#        parsed_coords.append(parsed_coords[-1] + parsed_lengths[i])
+#
+#    return total_counts, common_primer_count, barcodes, index_tags, read_type_dict, parsed_coords
 
-    amplicon_struct_params = get_amplicon_struct_params(config_params)
-
-    # Get all possible common primer/index tag/barcode parameters, then determine
-    # how to proceed.
-    read_1_params = get_seq_params(amplicon_struct_params, 'read_1')
-    read_2_params = get_seq_params(amplicon_struct_params, 'read_2')
-
-    read_type_dict = determine_read_type(read_1_params, read_2_params)
-
-    common_primer_tolerance = int(config_params['common_primer_tolerance'])
-    
-    out_filename = get_barseq_filename(config_params, lane_id)
-    # print out_filename
-    # print common_primer_tolerance
-
-    of = open(out_filename, 'wt')
-
-    # Need a function to return pairs of filenames, for which a None object
-    # is one of the filenames if this is a single read run
-    #fastq_filenames = [os.path.join(folder, x) for x in os.listdir(folder) if is_fastq_filename(x)]
-    fastq_filenames = get_fastq_filename_list(folder, read_type_dict['type'], read_type_dict['barcode'])
-
-    common_primer_count = 0
-    index_tags = set()
-    barcodes = set()
-    for filename_pair in fastq_filenames:
-        handles = [cfo.get_compressed_file_handle(x) if x is not None else it.cycle('\n') for x in filename_pair]
-        line_count = 0
-        while True:
-        #for line_count, line in enumerate(f):
-            try:
-                line_1 = handles[0].next()
-                line_2 = handles[1].next()
-            except StopIteration:
-                break
-            if get_verbosity(config_params) >= 3:
-                print line_count, line_1, line_2
-            if line_count % 4 == 1:
-                #string = line.strip()
-                common_primer_1 = line_1[read_1_params[0]:read_1_params[2]]
-                common_primer_dist_1 = jf.hamming_distance(unicode(common_primer_1), unicode(read_1_params[1]))
-                common_primer_2 = line_2[read_2_params[0]:read_2_params[2]]
-                common_primer_dist_2 = jf.hamming_distance(unicode(common_primer_2), unicode(read_2_params[1]))
-                if get_verbosity(config_params) >= 3:
-                    print common_primer_1, read_1_params[1], common_primer_dist_1
-                    print common_primer_2, read_2_params[1], common_primer_dist_2
-                if common_primer_dist_1 <= common_primer_tolerance and common_primer_dist_2 <= common_primer_tolerance:
-                    common_primer_count += 1
-                    index_tag_1 = line_1[read_1_params[3]:read_1_params[4]]
-                    barcode_1 = line_1[read_1_params[5]:read_1_params[6]]
-                    index_tag_2 = line_2[read_2_params[3]:read_2_params[4]]
-                    barcode_2 = line_2[read_2_params[5]:read_2_params[6]]
-                    index_tags.add((index_tag_1, index_tag_2))
-                    barcodes.add((barcode_1, barcode_2))
-                    # print "index_tag, barcode : {}, {}".format(index_tag, barcode)
-                    of.write('{0}\t{1}\t{2}\t{3}\n'.format(index_tag_1, barcode_1, index_tag_2, barcode_2))
-            line_count += 1
-                
-        for h in handles:
-            if hasattr(h, 'read'):
-                h.close()
-
-    total_counts = (line_count + 1)/ 4
-
-    of.close()
-
-    parsed_lengths = [read_1_params[4] - read_1_params[3], read_1_params[6] - read_1_params[5],
-            read_2_params[4] - read_2_params[3], read_2_params[6] - read_2_params[5]]
-
-    shifts = range(4)
-    parsed_coords = []
-    for i, length in enumerate(parsed_lengths):
-        if i == 0:
-            parsed_coords.append(0)
-        else:
-            parsed_coords.append(parsed_coords[-1] + 1)
-        parsed_coords.append(parsed_coords[-1] + parsed_lengths[i])
-
-    return total_counts, common_primer_count, barcodes, index_tags, read_type_dict, parsed_coords
-
-def correct_barcode_map(config_params, barcodes_in_data, barcode_to_gene):
-
-    barcode_tolerance = int(config_params['barcode_tolerance'])
-
-    barcode_correcting_maps = [None for i in (0, 1)]
-    for i in (0, 1):
-        orig_barcodes = set([x[i] for x in barcode_to_gene.keys()])
-        observed_barcodes = set([x[i] for x in barcodes_in_data])
-        full_map = {x:x for x in orig_barcodes}
-        correcting_map = {}
-
-        unmatched_barcodes = observed_barcodes.difference(orig_barcodes)
-        for orig_barcode in orig_barcodes:
-            for unmatched_barcode in unmatched_barcodes:
-                barcode_dist = jf.hamming_distance(unicode(orig_barcode), unicode(unmatched_barcode))
-                if barcode_dist <= barcode_tolerance:
-                    if get_verbosity(config_params) >= 3:
-                        print 'bad : corrected --> {0} : {1}'.format(unmatched_barcode, orig_barcode)
-                    if correcting_map.has_key(unmatched_barcode):
-                        correcting_map[unmatched_barcode].append(orig_barcode)
-                    else:
-                        correcting_map[unmatched_barcode] = [orig_barcode]
-
-        # Now, filter out any unmatched barcodes that map to multiple original barcodes
-        for key in correcting_map.keys():
-            if len(correcting_map[key]) > 1:
-                correcting_map[key].pop()
-
-        # The corrected barcodes are still lists - turn them back into strings!
-        corrected_barcodes = correcting_map.keys()
-        for barcode in corrected_barcodes:
-            correcting_map[barcode] = correcting_map[barcode][0]
-
-        # Update the mapping of original barcodes to themselves with the mapping of
-        # unmatched barcodes to original barcodes
-        full_map.update(correcting_map)
-        barcode_correcting_maps[i] = full_map
-    
-    return barcode_correcting_maps
+#def correct_barcode_map(config_params, barcodes_in_data, barcode_to_gene):
+#
+#    barcode_tolerance = int(config_params['barcode_tolerance'])
+#
+#    barcode_correcting_maps = [None for i in (0, 1)]
+#    for i in (0, 1):
+#        orig_barcodes = set([x[i] for x in barcode_to_gene.keys()])
+#        observed_barcodes = set([x[i] for x in barcodes_in_data])
+#        full_map = {x:x for x in orig_barcodes}
+#        correcting_map = {}
+#
+#        unmatched_barcodes = observed_barcodes.difference(orig_barcodes)
+#        for orig_barcode in orig_barcodes:
+#            for unmatched_barcode in unmatched_barcodes:
+#                barcode_dist = jf.hamming_distance(unicode(orig_barcode), unicode(unmatched_barcode))
+#                if barcode_dist <= barcode_tolerance:
+#                    if get_verbosity(config_params) >= 3:
+#                        print 'bad : corrected --> {0} : {1}'.format(unmatched_barcode, orig_barcode)
+#                    if correcting_map.has_key(unmatched_barcode):
+#                        correcting_map[unmatched_barcode].append(orig_barcode)
+#                    else:
+#                        correcting_map[unmatched_barcode] = [orig_barcode]
+#
+#        # Now, filter out any unmatched barcodes that map to multiple original barcodes
+#        for key in correcting_map.keys():
+#            if len(correcting_map[key]) > 1:
+#                correcting_map[key].pop()
+#
+#        # The corrected barcodes are still lists - turn them back into strings!
+#        corrected_barcodes = correcting_map.keys()
+#        for barcode in corrected_barcodes:
+#            correcting_map[barcode] = correcting_map[barcode][0]
+#
+#        # Update the mapping of original barcodes to themselves with the mapping of
+#        # unmatched barcodes to original barcodes
+#        full_map.update(correcting_map)
+#        barcode_correcting_maps[i] = full_map
+#    
+#    return barcode_correcting_maps
 
 
-def get_barseq_matrix(config_params, lane_id, parsed_coords, barcode_to_gene, barcode_correcting_map, index_tag_to_condition):
-
-    # Iterates over barseq text file to fill the matrix
-
-    # Set up the matrix
-    barcodes = barcode_to_gene.keys()
-    bc_ind = {j:i for i,j in enumerate(barcodes)}
-
-    index_tags = index_tag_to_condition.keys()
-    tag_ind = {j:i for i,j in enumerate(index_tags)}
-    
-    matrix = np.zeros([len(barcodes), len(index_tags)], dtype = np.int)
-
-    # Open the barseq file
-    barseq_filename = get_barseq_filename(config_params, lane_id)
-    f = open(barseq_filename, 'rt')
-
-    for line in f:
-        index_tag = (line[parsed_coords[0]:parsed_coords[1]], line[parsed_coords[4]:parsed_coords[5]])
-        barcode = (line[parsed_coords[2]:parsed_coords[3]], line[parsed_coords[6]:parsed_coords[7]])
-        #print index_tag
-        #print barcode
-        
-        try:
-            # Since each barcode is now a 2-tuple, must correct each one
-            # individually (might be a bit slower, but much less complex
-            # than building a dictionary of every possible 2-tuple variation.
-            barcode_fixed = (barcode_correcting_map[0][barcode[0]], barcode_correcting_map[1][barcode[1]])
-            #print barcode_fixed
-            row = bc_ind[barcode_fixed]
-            col = tag_ind[index_tag]
-        except KeyError:
-            continue
-        
-        matrix[row, col] += 1
-
-    # Here is where I implement the "dumb filter," as Justin called it, to
-    # automatically remove any strains or conditions that have zero counts.
-    # Raamesh's version originally did this with a threshold of >0, and I
-    # removed it for some reason. However, this filter was not necessarily
-    # stringent enough, as I accidentally told someone to test the code using
-    # the full genome barcode file instead of the minipool file, leading to
-    # ~183 strains that averaged less then 0.4 counts per condition and
-    # exposing a bug in the new python lowess implementation. I will set this
-    # so that each strain must average >= 1 count in each condition, for added
-    # stringency.
-    mean_thresh = 1
-    sufficient_count_barcodes = np.mean(matrix, axis = 1) > mean_thresh
-    sufficient_count_tags = np.mean(matrix, axis = 0) > mean_thresh
-
-    if get_verbosity(config_params) >= 1:
-        print "number of barcodes with mean counts per condition < {}: {}".format(mean_thresh, sum(np.invert(sufficient_count_barcodes)))
-        print "number of index tags with mean counts per strain < {}: {}".format(mean_thresh, sum(np.invert(sufficient_count_tags)))
-    
-    filtered_matrix = matrix[np.ix_(sufficient_count_barcodes, sufficient_count_tags)]
-    filtered_barcodes = [x for i,x in enumerate(barcodes) if sufficient_count_barcodes[i]]
-    filtered_index_tags = [x for i,x in enumerate(index_tags) if sufficient_count_tags[i]]
-
-    assert len(barcodes) == matrix.shape[0], "number of barcodes does not match number of rows in matrix after sufficient-count filtering."
-    assert len(index_tags) == matrix.shape[1], "number of index tags does not match number of columns in matrix after sufficient-count filtering."
-
-    f.close()
-
-    return filtered_barcodes, filtered_index_tags, filtered_matrix, matrix
+#def get_barseq_matrix(config_params, lane_id, parsed_coords, barcode_to_gene, barcode_correcting_map, index_tag_to_condition):
+#
+#    # Iterates over barseq text file to fill the matrix
+#
+#    # Set up the matrix
+#    barcodes = barcode_to_gene.keys()
+#    bc_ind = {j:i for i,j in enumerate(barcodes)}
+#
+#    index_tags = index_tag_to_condition.keys()
+#    tag_ind = {j:i for i,j in enumerate(index_tags)}
+#    
+#    matrix = np.zeros([len(barcodes), len(index_tags)], dtype = np.int)
+#
+#    # Open the barseq file
+#    barseq_filename = get_barseq_filename(config_params, lane_id)
+#    f = open(barseq_filename, 'rt')
+#
+#    for line in f:
+#        index_tag = (line[parsed_coords[0]:parsed_coords[1]], line[parsed_coords[4]:parsed_coords[5]])
+#        barcode = (line[parsed_coords[2]:parsed_coords[3]], line[parsed_coords[6]:parsed_coords[7]])
+#        #print index_tag
+#        #print barcode
+#        
+#        try:
+#            # Since each barcode is now a 2-tuple, must correct each one
+#            # individually (might be a bit slower, but much less complex
+#            # than building a dictionary of every possible 2-tuple variation.
+#            barcode_fixed = (barcode_correcting_map[0][barcode[0]], barcode_correcting_map[1][barcode[1]])
+#            #print barcode_fixed
+#            row = bc_ind[barcode_fixed]
+#            col = tag_ind[index_tag]
+#        except KeyError:
+#            continue
+#        
+#        matrix[row, col] += 1
+#
+#    # Here is where I implement the "dumb filter," as Justin called it, to
+#    # automatically remove any strains or conditions that have zero counts.
+#    # Raamesh's version originally did this with a threshold of >0, and I
+#    # removed it for some reason. However, this filter was not necessarily
+#    # stringent enough, as I accidentally told someone to test the code using
+#    # the full genome barcode file instead of the minipool file, leading to
+#    # ~183 strains that averaged less then 0.4 counts per condition and
+#    # exposing a bug in the new python lowess implementation. I will set this
+#    # so that each strain must average >= 1 count in each condition, for added
+#    # stringency.
+#    mean_thresh = 1
+#    sufficient_count_barcodes = np.mean(matrix, axis = 1) > mean_thresh
+#    sufficient_count_tags = np.mean(matrix, axis = 0) > mean_thresh
+#
+#    if get_verbosity(config_params) >= 1:
+#        print "number of barcodes with mean counts per condition < {}: {}".format(mean_thresh, sum(np.invert(sufficient_count_barcodes)))
+#        print "number of index tags with mean counts per strain < {}: {}".format(mean_thresh, sum(np.invert(sufficient_count_tags)))
+#    
+#    filtered_matrix = matrix[np.ix_(sufficient_count_barcodes, sufficient_count_tags)]
+#    filtered_barcodes = [x for i,x in enumerate(barcodes) if sufficient_count_barcodes[i]]
+#    filtered_index_tags = [x for i,x in enumerate(index_tags) if sufficient_count_tags[i]]
+#
+#    assert len(barcodes) == matrix.shape[0], "number of barcodes does not match number of rows in matrix after sufficient-count filtering."
+#    assert len(index_tags) == matrix.shape[1], "number of index tags does not match number of columns in matrix after sufficient-count filtering."
+#
+#    f.close()
+#
+#    return filtered_barcodes, filtered_index_tags, filtered_matrix, matrix
 
 def get_sorted_counts(label, counts):
 
@@ -536,15 +561,251 @@ def dump_count_matrix(config_params, lane_id, barcodes, conditions, matrix):
 
     of.close()
 
+def get_fastq_filename_list(folder, read_type):
+    # Change from first implementation: just return a list of filenames if single read,
+    # and pairs of filenames if paired end read. The software can figure it out form there.
+    if read_type == 'single':
+        filenames = [os.path.join(folder, x) for x in os.listdir(folder) if is_fastq_filename(x)]
+    else:
+        base_filenames = [x for x in os.listdir(folder) if is_fastq_filename(x)]
+        # Sorting ensures the files are in "R1", "R2" order
+        base_filenames.sort()
+        # While sorting the filenames would be enough to pair them up, it is
+        # not particularly robust to missing files and such. So we perform a
+        # more explicit approach here.
+        no_r1_r2_filenames = [x.replace('_R1', '_R0').replace('_R2', '_R0') for x in base_filenames]
+        no_r1_r2_filenames_dict = {}
+        for i, no_r1_r2_filename in enumerate(no_r1_r2_filenames):
+            if no_r1_r2_filename in no_r1_r2_filenames_dict:
+                no_r1_r2_filenames_dict[no_r1_r2_filename].append(base_filenames[i])
+            else:
+                no_r1_r2_filenames_dict[no_r1_r2_filename] = [base_filenames[i]]
+        assert len(base_filenames) == 2 * len(no_r1_r2_filenames_dict), 'Did not detect an equal number of "R1" and "R2" files in this raw data directory:\n{}'.format(folder)
+        filenames = [[os.path.join(folder, y) for y in x] for x in no_r1_r2_filenames_dict.values()]
+
+    assert len(filenames) > 0, '\nDid not detect any fastq files for lane: {}.\n' \
+            'Please move/copy/symlink your raw data to this folder:\n{}\n'.format(os.path.basename(folder), folder)
+
+    return filenames
+
+def line_gen(folder, read_type):
+
+    filenames = get_fastq_filename_list(folder, read_type)
+
+    if read_type == 'single':
+        for fname in filenames:
+            with cfo.get_compressed_file_handle(fname) as f:
+                for i, line in enumerate(f):
+                    if i % 4 == 1:
+                        yield [line.rstrip()]
+    else:
+        for fname_pair in filenames:
+            with cfo.get_compressed_file_handle(fname_pair[0]) as f1, cfo.get_compressed_file_handle(fname_pair[1]) as f2:
+                for i, (line1, line2) in enumerate(it.izip(f1, f2)):
+                    if i % 4 == 1:
+                        yield [line1.rstrip(), line2.rstrip()]
+
+def gen_seq_tries(seqs):
+    lengths = list(set([len(seq) for seq in seqs]))
+    lengths.sort(key = lambda x: -x)
+    trie_list = [trie() for i in range(len(lengths))]
+    len_dict = {x:i for i,x in enumerate(lengths)}
+    for seq in seqs:
+        trie_list[len_dict[len(seq)]][seq] = 0
+
+    return trie_list, lengths
+
+def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_params, sample_tab, barcode_tab):
+    # Need to add in return of sequence tries, valid lengths, and mismatches
+    '''
+    read_inds, titles, match_dicts, array_ind_dicts, seq_trie_list, array = initialize_dicts_arrays(...)
+    '''
+    if read_type_dict['type'] == 'single':
+        index_tag_col = amplicon_struct_params[read_type_dict['barcode'][0]]['index_tag']['sample_table_column']
+        assert index_tag_col in sample_tab.columns, 'sample_table_column "{}" specified in amplicon_struct_file is not present in the sample table.'.format(index_tag_col)
+        index_tag_tries, index_tag_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col])
+        index_tags = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col])}
+        index_tags['multi_match'] = len(index_tags)
+        index_tags['no_match'] = len(index_tags) + 1
+        barcode_col = amplicon_struct_params[read_type_dict['barcode'][0]]['genetic_barcode']['barcode_file_column']
+        assert barcode_col in barcode_tab.columns, 'barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene_barcode table.'.format(barcode_col)
+        barcode_tries, barcode_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col])
+        barcodes = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col])}
+        barcodes['multi_match'] = len(barcodes)
+        barcodes['no_match'] = len(barcodes) + 1
+        index_tag_tol = 0
+        barcode_tol = config_params['barcode_tolerance']
+        count_array = np.zeros((len(index_tags) + 2, len(barcodes) + 2), dtype = np.int)
+        return [0, 0], ['index_tag', 'barcode'], [{}, {}], [index_tags, barcodes], [index_tag_tries, barcode_tries], [index_tag_lengths, barcode_lengths], [index_tag_tol, barcode_tol], count_array
+    elif read_type_dict['type'] == 'paired':
+        # Since there are always 2 index tags in a paired read scheme, I can write this code once.
+        index_tag_col_1 = amplicon_struct_params['read_1']['index_tag']['sample_table_column']
+        assert index_tag_col_1 in sample_tab.columns, 'read_1 sample_table_column "{}" specified in amplicon_struct_file is not present in the sample table.'.format(index_tag_col)
+        index_tag_col_2 = amplicon_struct_params['read_2']['index_tag']['sample_table_column']
+        assert index_tag_col_2 in sample_tab.columns, 'read_2 sample_table_column "{}" specified in amplicon_struct_file is not present in the sample table.'.format(index_tag_col)
+        if read_type_dict['barcode'] == ['read_1']:
+            index_tag_1_tries, index_tag_1_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_1])
+            index_tags_1 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_1])}
+            index_tags_1['multi_match'] = len(index_tags_1)
+            index_tags_1['no_match'] = len(index_tags_1) + 1
+            barcode_col_1 = amplicon_struct_params['read_1']['genetic_barcode']['barcode_file_column']
+            assert barcode_col_1 in barcode_tab.columns, 'read_1 barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene_barcode table.'.format(barcode_col_1)
+            barcode_1_tries, barcode_1_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_1])
+            barcodes_1 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_1])}
+            barcodes_1['multi_match'] = len(barcodes_1)
+            barcodes_1['no_match'] = len(barcodes_1) + 1
+            index_tag_2_tries, index_tag_2_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_2])
+            index_tags_2 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_2])}
+            index_tags_2['multi_match'] = len(index_tags_2)
+            index_tags_2['no_match'] = len(index_tags_2) + 1
+            index_tag_tol = 0
+            barcode_tol = config_params['barcode_tolerance']
+            count_array = np.zeros((len(index_tags_1) + 2, len(barcodes_1) + 2, len(index_tags_2) + 2), dtype = np.int)
+            return [0, 0, 1], ['index_tag', 'barcode', 'index_tag'], [{}, {}, {}], [index_tags_1, barcodes_1, index_tags_2], [index_tag_1_tries, barcode_1_tries, index_tag_2_tries], [index_tag_1_lengths, barcode_1_lengths, index_tag_2_lengths], [index_tag_tol, barcode_tol, index_tag_tol], count_array
+        elif read_type_dict['barcode'] == ['read_2']:
+            index_tag_1_tries, index_tag_1_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_1])
+            index_tags_1 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_1])}
+            index_tags_1['multi_match'] = len(index_tags_1)
+            index_tags_1['no_match'] = len(index_tags_1) + 1
+            index_tag_2_tries, index_tag_2_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_2])
+            index_tags_2 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_2])}
+            index_tags_2['multi_match'] = len(index_tags_2)
+            index_tags_2['no_match'] = len(index_tags_2) + 1
+            barcode_col_2 = amplicon_struct_params['read_2']['genetic_barcode']['barcode_file_column']
+            assert barcode_col_2 in barcode_tab.columns, 'read_2 barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene_barcode table.'.format(barcode_col_2)
+            barcode_2_tries, barcode_2_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_2])
+            barcodes_2 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_2])}
+            barcodes_2['multi_match'] = len(barcodes_2)
+            barcodes_2['no_match'] = len(barcodes_2) + 1
+            index_tag_tol = 0
+            barcode_tol = config_params['barcode_tolerance']
+            count_array = np.zeros((len(index_tags_1) + 2, len(index_tags_2) + 2, len(barcodes_2) + 2), dtype = np.int)
+            return [0, 1, 1], ['index_tag', 'index_tag', 'barcode'], [{}, {}, {}], [index_tags_1, index_tags_2, barcodes_2], [index_tag_1_tries, index_tag_2_tries, barcode_2_tries], [index_tag_1_lengths, index_tag_2_lengths, barcode_2_lengths], [index_tag_tol, index_tag_tol, barcode_tol], count_array
+        elif read_type_dict['barcode'] == ['read_1', 'read_2']:
+            index_tag_1_tries, index_tag_1_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_1])
+            index_tags_1 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_1])}
+            index_tags_1['multi_match'] = len(index_tags_1)
+            index_tags_1['no_match'] = len(index_tags_1) + 1
+            barcode_col_1 = amplicon_struct_params['read_1']['genetic_barcode']['barcode_file_column']
+            assert barcode_col_1 in barcode_tab.columns, 'read_1 barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene_barcode table.'.format(barcode_col_1)
+            barcode_1_tries, barcode_1_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_1])
+            barcodes_1 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_1])}
+            barcodes_1['multi_match'] = len(barcodes_1)
+            barcodes_1['no_match'] = len(barcodes_1) + 1
+            index_tag_2_tries, index_tag_2_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_2])
+            index_tags_2 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_2])}
+            index_tags_2['multi_match'] = len(index_tags_2)
+            index_tags_2['no_match'] = len(index_tags_2) + 1
+            barcode_col_2 = amplicon_struct_params['read_2']['genetic_barcode']['barcode_file_column']
+            assert barcode_col_2 in barcode_tab.columns, 'read_2 barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene barcode table.'.format(barcode_col_2)
+            barcode_2_tries, barcode_2_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_2])
+            barcodes_2 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_2])}
+            barcodes_2['multi_match'] = len(barcodes_2)
+            barcodes_2['no_match'] = len(barcodes_2) + 1
+            index_tag_tol = 0
+            barcode_tol = config_params['barcode_tolerance']
+            count_array = np.zeros((len(index_tags_1) + 2, len(barcodes_1) + 2, len(index_tags_2) + 2, len(barcodes_2) + 2), dtype = np.int)
+            return [0, 0, 1, 1], ['index_tag', 'barcode', 'index_tag', 'barcode'], [{}, {}, {}, {}], [index_tags_1, barcodes_1, index_tags_2, barcodes_2], [index_tag_1_tries, barcode_1_tries, index_tag_2_tries, barcode_2_tries], [index_tag_1_lengths, barcode_1_lengths, index_tag_2_lengths, barcode_2_lengths], [index_tag_tol, index_tag_tol, barcode_tol, barcode_tol], count_array
+    
+
+def match_seq(seq, seq_trie_length_list, n_mismatch, lengths):
+    '''
+    Returns first sequence that can be found in the given trie
+    that matches the query sequences within the number of given mismatches.
+    Comparisons are only performed between same-length sequences, aka the query
+    string is sliced to the the same length as each set of reference sequences
+    and the comparisons proceed starting with the longest slices first.
+
+    Returns "multi_match" if the query sequence matches two reference sequences
+    with the same distance. Returns "no_match" if it goes through everything
+    and no match is found.
+    '''
+
+    for i, l in enumerate(lengths):
+        res = seq_trie_length_list[i].get_approximate(seq[0:l], n_mismatch)
+        if len(res) == 0:
+            continue
+
+        # If res meets the mismatch criterion, return before examining any others
+        # But must account for multi-matches!
+        if len(res) > 1:
+            res = list(set(res))
+            if len(res) > 1:
+                res.sort(key = lambda x: x[2])
+                if res[0][2] == res[1][2]:
+                    return 'multi_match'
+                else:
+                    return res[0][0]
+            else:
+                return res[0][0]
+
+        else:
+            return res[0][0]
+
+    # If nothing matched at all, return "no_match"!
+    return 'no_match'
+
+
+def parse_seqs(lane_id, config_params):
+
+    amplicon_struct_params = get_amplicon_struct_params(config_params)
+    sample_tab = get_sample_table(config_params)
+    barcode_tab = get_barcode_table(config_params)
+
+    # Filter the sample table and return nothing if no samples exist with the given lane_id
+    sample_tab = sample_tab[sample_tab.lane == lane_id]
+
+    # Get all possible common primer/index tag/barcode parameters, then determine
+    # how to proceed.
+    read_params = [get_seq_params(amplicon_struct_params, 'read_1'), get_seq_params(amplicon_struct_params, 'read_2')]
+
+    read_type_dict = determine_read_type(read_params[0], read_params[1])
+
+    read_inds, seq_types, match_dicts, array_ind_dicts, seq_trie_lists, seq_lengths, tols, array = initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_params, sample_tab, barcode_tab)
+
+    lane_location_tab = get_lane_location_table(config_params)
+    folder = get_lane_folder(lane_id, lane_location_tab)
+
+    n = len(read_inds)
+    idxs = [None] * n
+    for counter, line_list in enumerate(line_gen(folder, read_type_dict['type'])):
+    #for line_list in line_gen(folder, read_type_dict['type']):
+        # Check for common primer...
+        
+        if counter % 1000000 == 0:
+            print counter
+
+        # For testing
+        if counter / 1000000 == 2:
+            break
+        # Match on index tags/barcodes
+        for i in range(n):
+            start_coord = read_params[read_inds[i]][seq_types[i]]['start']
+            end_coord = read_params[read_inds[i]][seq_types[i]]['end']
+            seq = line_list[read_inds[i]][start_coord:end_coord]
+
+            try:
+                corrected_seq = match_dicts[i][seq][0]
+                match_dicts[i][seq][1] += 1
+            except KeyError as e:
+                # match_seq returns the corrected sequence
+                match_dicts[i][seq] = [match_seq(seq, seq_trie_lists[i], tols[i], seq_lengths[i]), 1]
+                corrected_seq = match_dicts[i][seq][0]
+
+            idxs[i] = array_ind_dicts[i][corrected_seq]
+
+        array[tuple(idxs)] += 1
+
+    return array, match_dicts
 
 def main(config_file, lane_id):
 
     config_params = parse_yaml(config_file)
     amplicon_struct_params = get_amplicon_struct_params(config_params)
 
+    count_array, match_dicts = parse_seqs(lane_id, config_params)
     
-    
-    
+    pdb.set_trace()
     
     
     
