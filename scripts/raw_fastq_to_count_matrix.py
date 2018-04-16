@@ -618,7 +618,7 @@ def gen_seq_tries(seqs):
 def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_params, sample_tab, barcode_tab):
     # Need to add in return of sequence tries, valid lengths, and mismatches
     '''
-    read_inds, titles, match_dicts, array_ind_dicts, seq_trie_list, array = initialize_dicts_arrays(...)
+    read_inds, seq_types, match_dicts, array_ind_dicts, seq_trie_lists, seq_lengths, tols, column_names, array = initialize_dicts_arrays(...)
     '''
     if read_type_dict['type'] == 'single':
         index_tag_col = amplicon_struct_params[read_type_dict['barcode'][0]]['index_tag']['sample_table_column']
@@ -636,7 +636,7 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
         index_tag_tol = config_params.get('index_tag_tolerance', 0)
         barcode_tol = config_params.get('barcode_tolerance', 0)
         count_array = np.zeros((len(index_tags), len(barcodes)), dtype = np.int)
-        return [0, 0], ['index_tag', 'barcode'], [{}, {}], [index_tags, barcodes], [index_tag_tries, barcode_tries], [index_tag_lengths, barcode_lengths], [index_tag_tol, barcode_tol], count_array
+        return [0, 0], ['index_tag', 'barcode'], [{}, {}], [index_tags, barcodes], [index_tag_tries, barcode_tries], [index_tag_lengths, barcode_lengths], [index_tag_tol, barcode_tol], [index_tag_col, barcode_col], count_array
     elif read_type_dict['type'] == 'paired':
         # Since there are always 2 index tags in a paired read scheme, I can write this code once.
         index_tag_col_1 = amplicon_struct_params['read_1']['index_tag']['sample_table_column']
@@ -661,7 +661,7 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
             index_tag_tol = config_params.get('index_tag_tolerance', 0)
             barcode_tol = config_params.get('barcode_tolerance', 0)
             count_array = np.zeros((len(index_tags_1), len(barcodes_1), len(index_tags_2)), dtype = np.int)
-            return [0, 0, 1], ['index_tag', 'barcode', 'index_tag'], [{}, {}, {}], [index_tags_1, barcodes_1, index_tags_2], [index_tag_1_tries, barcode_1_tries, index_tag_2_tries], [index_tag_1_lengths, barcode_1_lengths, index_tag_2_lengths], [index_tag_tol, barcode_tol, index_tag_tol], count_array
+            return [0, 0, 1], ['index_tag', 'barcode', 'index_tag'], [{}, {}, {}], [index_tags_1, barcodes_1, index_tags_2], [index_tag_1_tries, barcode_1_tries, index_tag_2_tries], [index_tag_1_lengths, barcode_1_lengths, index_tag_2_lengths], [index_tag_tol, barcode_tol, index_tag_tol], [index_tag_col_1, barcode_col_1, index_tag_col_2], count_array
         elif read_type_dict['barcode'] == ['read_2']:
             index_tag_1_tries, index_tag_1_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_1])
             index_tags_1 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_1])}
@@ -680,7 +680,7 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
             index_tag_tol = config_params.get('index_tag_tolerance', 0)
             barcode_tol = config_params.get('barcode_tolerance', 0)
             count_array = np.zeros((len(index_tags_1), len(index_tags_2), len(barcodes_2)), dtype = np.int)
-            return [0, 1, 1], ['index_tag', 'index_tag', 'barcode'], [{}, {}, {}], [index_tags_1, index_tags_2, barcodes_2], [index_tag_1_tries, index_tag_2_tries, barcode_2_tries], [index_tag_1_lengths, index_tag_2_lengths, barcode_2_lengths], [index_tag_tol, index_tag_tol, barcode_tol], count_array
+            return [0, 1, 1], ['index_tag', 'index_tag', 'barcode'], [{}, {}, {}], [index_tags_1, index_tags_2, barcodes_2], [index_tag_1_tries, index_tag_2_tries, barcode_2_tries], [index_tag_1_lengths, index_tag_2_lengths, barcode_2_lengths], [index_tag_tol, index_tag_tol, barcode_tol], [index_tag_col_1, index_tag_col_2, barcode_col_1], count_array
         elif read_type_dict['barcode'] == ['read_1', 'read_2']:
             index_tag_1_tries, index_tag_1_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_1])
             index_tags_1 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_1])}
@@ -705,7 +705,7 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
             index_tag_tol = config_params.get('index_tag_tolerance', 0)
             barcode_tol = config_params.get('barcode_tolerance', 0)
             count_array = np.zeros((len(index_tags_1), len(barcodes_1), len(index_tags_2), len(barcodes_2)), dtype = np.int)
-            return [0, 0, 1, 1], ['index_tag', 'barcode', 'index_tag', 'barcode'], [{}, {}, {}, {}], [index_tags_1, barcodes_1, index_tags_2, barcodes_2], [index_tag_1_tries, barcode_1_tries, index_tag_2_tries, barcode_2_tries], [index_tag_1_lengths, barcode_1_lengths, index_tag_2_lengths, barcode_2_lengths], [index_tag_tol, index_tag_tol, barcode_tol, barcode_tol], count_array
+            return [0, 0, 1, 1], ['index_tag', 'barcode', 'index_tag', 'barcode'], [{}, {}, {}, {}], [index_tags_1, barcodes_1, index_tags_2, barcodes_2], [index_tag_1_tries, barcode_1_tries, index_tag_2_tries, barcode_2_tries], [index_tag_1_lengths, barcode_1_lengths, index_tag_2_lengths, barcode_2_lengths], [index_tag_tol, barcode_tol, index_tag_tol, barcode_tol], [index_tag_col_1, barcode_col_1, index_tag_col_2, barcode_col_2], count_array
     
 
 def match_seq(seq, seq_trie_length_list, n_mismatch, lengths):
@@ -792,7 +792,7 @@ def parse_seqs(lane_id, config_params):
 
     cp_read_inds, cp_dicts = initialize_cp_matchers(read_type_dict, amplicon_struct_params, config_params)
 
-    read_inds, seq_types, match_dicts, array_ind_dicts, seq_trie_lists, seq_lengths, tols, array = initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_params, sample_tab, barcode_tab)
+    read_inds, seq_types, match_dicts, array_ind_dicts, seq_trie_lists, seq_lengths, tols, column_names, array = initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_params, sample_tab, barcode_tab)
 
     lane_location_tab = get_lane_location_table(config_params)
     folder = get_lane_folder(lane_id, lane_location_tab)
@@ -803,7 +803,6 @@ def parse_seqs(lane_id, config_params):
     idxs = [None] * n
     for counter, line_list in enumerate(line_gen(folder, read_type_dict['type'])):
     #for line_list in line_gen(folder, read_type_dict['type']):
-        # Check for common primer...
         
         if counter % 1000000 == 0:
             print counter
@@ -845,14 +844,43 @@ def parse_seqs(lane_id, config_params):
 
         array[tuple(idxs)] += 1
 
-    return array, match_dicts, cp_dicts, counter
+    return array, array_ind_dicts, match_dicts, cp_dicts, counter, seq_types, column_names
 
-def map_counts_to_strains_conditions(array, config_params):
+def map_counts_to_strains_conditions(array, array_ind_dicts, seq_types, column_names, config_params):
+
+    seq_types = np.array(seq_types)
+    column_names = np.array(column_names)
 
     sample_tab = get_sample_table(config_params)
     barcode_tab = get_barcode_table(config_params)
+    
+    # Filter the sample table and return nothing if no samples exist with the given lane_id
+    sample_tab = sample_tab[sample_tab.lane == lane_id]
 
+    # Make mappings from each strain and condition to their respective barcode and index tag combinations
+    strain_to_barcode = {x[1]['Strain_ID']:tuple(x[1][column_names[seq_types == 'barcode']]) for x in barcode_tab.iterrows()}
+    condition_to_index_tag = {tuple(x[1][['screen_name', 'expt_id']]):tuple(x[1][column_names[seq_types == 'index_tag']]) for x in sample_tab.iterrows()}
+    
+    # Make an empty final matrix
+    strains = np.array(strain_to_barcode.keys())
+    conditions = np.array(condition_to_index_tag.keys())
+    matrix = np.zeros((len(strains), len(conditions)), dtype = np.int)
 
+    # Fill in the matrix!
+    ndim = len(array.shape)
+    for i, strain in enumerate(strains):
+        for j, condition in enumerate(conditions):
+            idx = [None] * ndim
+            index_tag_counter = 0
+            barcode_counter = 0
+            for k in range(ndim):
+                if seq_types[k] == 'index_tag':
+                    idx[k] = array_ind_dicts[k][condition_to_index_tag[tuple(condition)][index_tag_counter]]
+                else:
+                    idx[k] = array_ind_dicts[k][strain_to_barcode[strain][barcode_counter]]
+            matrix[i, j] = array[tuple(idx)]
+
+    return strains, conditions, matrix
 
 def main(config_file, lane_id):
 
@@ -860,13 +888,14 @@ def main(config_file, lane_id):
     amplicon_struct_params = get_amplicon_struct_params(config_params)
 
     # Check for common primer and put all reads into a master array
-    count_array, match_dicts, cp_dicts, total_reads = parse_seqs(lane_id, config_params)
+    count_array, array_ind_dicts, match_dicts, cp_dicts, total_reads, seq_types, column_names = parse_seqs(lane_id, config_params)
     
     pdb.set_trace()
     
     # Map the counts to actual conditions and strains
-    strains, conditions, count_matrix = map_counts_to_strains_conditions(count_array, config_params)
-    
+    strains, conditions, count_matrix = map_counts_to_strains_conditions(count_array, array_ind_dicts, seq_types, column_names, config_params)
+   
+    pdb.set_trace()
     
     
     # Get maps of barcode to barcode_gene (keeps the strains unique/traceable), and index tag to condition
