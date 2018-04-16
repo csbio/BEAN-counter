@@ -876,8 +876,10 @@ def map_counts_to_strains_conditions(array, array_ind_dicts, seq_types, column_n
             for k in range(ndim):
                 if seq_types[k] == 'index_tag':
                     idx[k] = array_ind_dicts[k][condition_to_index_tag[tuple(condition)][index_tag_counter]]
+                    index_tag_counter += 1
                 else:
                     idx[k] = array_ind_dicts[k][strain_to_barcode[strain][barcode_counter]]
+                    barcode_counter += 1
             matrix[i, j] = array[tuple(idx)]
 
     return strains, conditions, matrix
