@@ -492,6 +492,7 @@ def get_sorted_counts(label, counts):
     # Take "no_match" and "multi_match" into account
     no_or_multi_label = np.array(['multi_match', 'no_match'])
     no_or_multi_counts = np.array([counts[label == x] for x in no_or_multi_label])
+    no_or_multi_label = np.array([label[label == x] for x in no_or_multi_label])
     
     no_or_multi_bool = (label == 'no_match') | (label == 'multi_match')
     label = label[~no_or_multi_bool]
@@ -501,7 +502,7 @@ def get_sorted_counts(label, counts):
     sort_indices = counts.argsort()[::-1]
     labels_sorted = label[sort_indices]
     counts_sorted = counts[sort_indices]
-
+    
     labels_sorted = np.append(labels_sorted, no_or_multi_label)
     counts_sorted = np.append(counts_sorted, no_or_multi_counts)
 
@@ -512,8 +513,10 @@ def write_distribution(labels, counts, output_folder, lane_id, file_string, tabl
     plot_filename = os.path.join(output_folder, '{0}_{1}_distribution.png'.format(lane_id, file_string))
     x = np.array(range(len(counts)))
 
+    no_or_multi_bool = (labels == 'multi_match') | (labels == 'no_match')
+
     plt.figure()
-    plt.fill_between(x, y1 = 0, y2 = counts, step = 'post')
+    plt.fill_between(x[~no_or_multi_bool], y1 = 0, y2 = counts[~no_or_multi_bool], step = 'post')
     plt.ylabel('Number of occurrences')
     plt.xlabel(xlabel)
     plt.savefig(plot_filename)
@@ -525,7 +528,12 @@ def write_distribution(labels, counts, output_folder, lane_id, file_string, tabl
         of.write('{0}\t{1}\n'.format(labels[i], counts[i]))
     of.close()
 
-def write_summary(total_counts, common_primer_counts, total_index_barcode_counts, matrix_shape, orig_matrix_shape, output_folder, lane_id):
+def write_corrected_seqs(tab, output_folder, lane_id, file_string):
+
+    filename = os.path.join(output_folder, '{0}_{1}_corrections.txt'.format(lane_id, file_string))
+    tab.to_csv(filename, sep = '\t', index = False)
+
+def write_summary(total_counts, common_primer_counts, total_index_barcode_counts, matrix_shape, orig_matrix_shape, count_array_shape, count_array_read_ids, count_array_seq_types, output_folder, lane_id):
 
     filename = os.path.join(output_folder, '{0}_summary.txt'.format(lane_id))
 
@@ -537,29 +545,18 @@ def write_summary(total_counts, common_primer_counts, total_index_barcode_counts
     of.write('Total number of reads: {0}\n'.format(total_counts))
     of.write('Number of reads with common primer: {0} ({1:.2f} %)\n'.format(common_primer_counts, common_primer_vs_total_percent))
     of.write('Number of reads that match index tags and genetic barcodes: {0} ({1:.2f} % of total counts, {2:.2f} % of common primer counts)\n'.format(total_index_barcode_counts, tag_barcode_match_vs_total_percent, tag_barcode_match_vs_common_primer_percent))
+    of.write('\n')
+
+    # Write dimensions of the count array
+    of.write('Size of the original count array (minus "multi_match" and "no_match" entries): {}\n'.format(' x '.join('{} {} {}s'.format(dim - 2, count_array_read_ids[i],
+        count_array_seq_types[i] + s if count_array_seq_types[i].endswith('s') else count_array_seq_types[i]) for i,dim in enumerate(count_array_shape))))
+    of.write('\n')
 
     # Write original and final matrix sizes
-    of.write('Original size of the data: {0} barcodes (gene mutants) x {1} index tags (conditions)\n'.format(*orig_matrix_shape))
-    of.write('Final size of the data (zero-count barcodes/tags removed): {0} barcodes (gene mutants) x {1} index tags (conditions)\n'.format(*matrix_shape))
+    of.write('Original size of the strain x condition matrix: {0} strains x {1} conditions\n'.format(*orig_matrix_shape))
+    of.write('Final size of the strain x condition matrix (strains/conditions with mean(count) < 1 removed): {0} strains x {1} conditions\n'.format(*matrix_shape))
 
     of.close()
-
-def generate_reports(config_params, lane_id, gen_barcodes, index_tags, matrix, orig_barcode_map, orig_index_tag_map, orig_matrix, total_counts, common_primer_counts):
-
-    output_folder = get_lane_reports_path(config_params, lane_id)
-
-    gen_barcode_counts = orig_matrix.sum(axis = 1)
-    index_tag_counts = orig_matrix.sum(axis = 0)
-    total_index_barcode_counts = orig_matrix.sum()
-    orig_matrix_shape = (len(orig_barcode_map), len(orig_index_tag_map))
-
-    index_tags_sorted, index_tag_counts_sorted = get_sorted_counts(orig_index_tag_map.keys(), index_tag_counts)
-    gen_barcodes_sorted, gen_barcode_counts_sorted = get_sorted_counts(orig_barcode_map.keys(), gen_barcode_counts)
-
-    write_distribution(index_tags_sorted, index_tag_counts_sorted, output_folder, lane_id, 'index_tag', 'Index tags (sorted)')
-    write_distribution(gen_barcodes_sorted, gen_barcode_counts_sorted, output_folder, lane_id, 'barcode', 'Genetic barcodes (sorted)')
-
-    write_summary(total_counts, common_primer_counts, total_index_barcode_counts, matrix.shape, orig_matrix_shape, output_folder, lane_id)
 
 def generate_reports(config_params, lane_id, count_array_dataset, count_matrix_dataset, filtered_count_matrix_dataset, seq_info_dict, total_counts, common_primer_counts):
 
@@ -593,32 +590,58 @@ def generate_reports(config_params, lane_id, count_array_dataset, count_matrix_d
 
     # Plot total counts for strains and conditions
     strains_sorted, strain_counts_sorted = get_sorted_counts(count_matrix_dataset[0], strain_counts)
-    conditions_sorted, condition_counts_sorted = get_sorted_counts(count_matrix_dataset[1], condition_counts)
-    # write_distribution needs to be able to take in extra info columns!
+    # Have to hack this for conditions since they can't be tuples
+    conditions_sorted, condition_counts_sorted = get_sorted_counts(np.array(['\t'.join(x) for x in count_matrix_dataset[1]]), condition_counts)
 
-    pdb.set_trace()
+    #pdb.set_trace()
 
-    gen_barcode_counts = orig_matrix.sum(axis = 1)
-    index_tag_counts = orig_matrix.sum(axis = 0)
-    total_index_barcode_counts = orig_matrix.sum()
-    orig_matrix_shape = (len(orig_barcode_map), len(orig_index_tag_map))
+    # write_distribution needs to be able to take in extra info columns! Or maybe not
+    write_distribution(strains_sorted, strain_counts_sorted, output_folder, lane_id, 'strain', 'Strain_ID', 'Strains (sorted)')
+    # Must complete the hack for conditions
+    write_distribution(conditions_sorted, condition_counts_sorted, output_folder, lane_id, 'condition', 'screen_name\texpt_id', 'Conditions (sorted)')
 
-    index_tags_sorted, index_tag_counts_sorted = get_sorted_counts(orig_index_tag_map.keys(), index_tag_counts)
-    gen_barcodes_sorted, gen_barcode_counts_sorted = get_sorted_counts(orig_barcode_map.keys(), gen_barcode_counts)
+    #pdb.set_trace()
 
-    write_distribution(index_tags_sorted, index_tag_counts_sorted, output_folder, lane_id, 'index_tag', 'Index tags (sorted)')
-    write_distribution(gen_barcodes_sorted, gen_barcode_counts_sorted, output_folder, lane_id, 'barcode', 'Genetic barcodes (sorted)')
+    # Now write out stats on barcode/index tag corrections
+    for i, d in enumerate(seq_info_dict['match_dicts']):
+        seq_type = seq_info_dict['seq_types'][i]
+        read_id = seq_info_dict['read_ids'][i]
+        column_name = seq_info_dict['column_names'][i]
+        correction_tab = pd.DataFrame((x[0], x[1][0], x[1][1]) for x in d.iteritems()).sort_values(by = 2, ascending = False)
+        correction_tab.columns = ['observed_{}'.format(column_name), 'corrected_{}'.format(column_name), 'Number of occurrences']
+        write_corrected_seqs(correction_tab, output_folder, lane_id, '{}_{}'.format(seq_type, read_id))
 
-    write_summary(total_counts, common_primer_counts, total_index_barcode_counts, matrix.shape, orig_matrix_shape, output_folder, lane_id)
+    # And finally write out the summary
+    write_summary(total_counts, common_primer_counts, mapped_read_counts,
+            filtered_count_matrix_dataset[2].shape, count_matrix_dataset[2].shape,
+            count_array_dataset[1].shape, seq_info_dict['read_ids'],
+            seq_info_dict['seq_types'],
+            output_folder, lane_id)
 
-def dump_count_matrix(config_params, lane_id, barcodes, conditions, matrix):
+def dump_count_array(config_params, lane_id, read_ids, seq_types, dim_label_list, array):
+
+    out_path = get_lane_data_paths(config_params, lane_id)[1]
+
+    if not os.path.isdir(out_path):
+        os.makedirs(out_path)
+
+    out_filename = os.path.join(out_path, '{0}_{1}'.format(lane_id, 'barseq_array.dump.gz'))
+
+    of = gzip.open(out_filename, 'wb')
+
+    dataset = [read_ids, seq_types, dim_label_list, array]
+    cPickle.dump(dataset, of)
+
+    of.close()
+
+def dump_count_matrix(config_params, lane_id, strains, conditions, matrix):
 
     out_path = get_lane_data_paths(config_params, lane_id)[1]
     out_filename = os.path.join(out_path, '{0}_{1}'.format(lane_id, 'barseq_matrix.dump.gz'))
 
     of = gzip.open(out_filename, 'wb')
 
-    dataset = [barcodes, conditions, matrix]
+    dataset = [strains, conditions, matrix]
     cPickle.dump(dataset, of)
 
     of.close()
@@ -975,8 +998,8 @@ def filter_count_matrix(matrix, strains, conditions, config_params):
         print "number of conditions with mean counts per strain < {}: {}".format(mean_thresh, sum(np.invert(sufficient_count_conditions)))
     
     filtered_matrix = matrix[np.ix_(sufficient_count_strains, sufficient_count_conditions)]
-    filtered_strains = [x for i,x in enumerate(strains) if sufficient_count_strains[i]]
-    filtered_conditions = [x for i,x in enumerate(conditions) if sufficient_count_conditions[i]]
+    filtered_strains = np.array([x for i,x in enumerate(strains) if sufficient_count_strains[i]])
+    filtered_conditions = np.array([x for i,x in enumerate(conditions) if sufficient_count_conditions[i]])
 
     assert len(strains) == matrix.shape[0], "number of strains does not match number of rows in matrix after sufficient-count filtering."
     assert len(conditions) == matrix.shape[1], "number of index tags does not match number of columns in matrix after sufficient-count filtering."
@@ -1011,7 +1034,7 @@ def main(config_file, lane_id):
         seq_list.sort(key = lambda x: x[1])
         seqs[i] = [x[0] for x in seq_list]
 
-    pdb.set_trace()
+    #pdb.set_trace()
 
 #def generate_reports(config_params, lane_id, count_array_dataset, count_matrix_dataset, filtered_count_matrix_dataset, match_dicts, seq_info_dict, total_counts, common_primer_counts):
     generate_reports(config_params, lane_id,
@@ -1024,60 +1047,17 @@ def main(config_file, lane_id):
                 'column_names': column_names},
             total_reads, count_array.sum())
     
-    ## Get maps of barcode to barcode_gene (keeps the strains unique/traceable), and index tag to condition
-    #if get_verbosity(config_params) >= 1:
-    #    print 'creating mappings from barcodes and index tags...'
-    #barcode_to_gene = get_barcode_to_gene(config_params)
-    #index_tag_to_condition = get_index_tag_to_condition(config_params, lane_id)
-
-    ## Loop over the raw fastq files, write out the "index_tag\tbarcode" file,
-    ## and return all encountered index tags and barcodes
-    #if get_verbosity(config_params) >= 1:
-    #    print 'parsing fastq file(s)...'
-    #total_counts, common_primer_counts, barcodes_in_data, index_tags_in_data, read_type_dict, parsed_coords = fastq_to_barseq(config_params, lane_id)
-
-    #if get_verbosity(config_params) >= 1:
-    #    print 'barcode to gene map: {}'.format(barcode_to_gene.items()[0:5])
-    #    print 'index tag to condition map: {}'.format(index_tag_to_condition.items()[0:5])
-
-    ## Correct the barcodes within the specified error tolerance
-    ## (There is no function to correct the index tags - this could easily be
-    ## written in later, although we see no need for it)
-    #if get_verbosity(config_params) >= 1:
-    #    print 'correcting barcodes...'
-    #barcode_correcting_map = correct_barcode_map(config_params, barcodes_in_data, barcode_to_gene)
-    #if get_verbosity(config_params) >= 1:
-    #    print 'number of read_1 barcodes that will be counted: {}'.format(len(barcode_correcting_map[0]))
-    #    print 'number of read_2 barcodes that will be counted: {}'.format(len(barcode_correcting_map[1]))
-
-    ## Loop over the barseq file (index_tag_1\tbarcode_1\tindex_tag_2\tbarcode_2\n)
-    ## and assemble the matrix of read counts
-    #if get_verbosity(config_params) >= 1:
-    #    print 'generating barseq matrix...'
-    #corrected_barcodes, index_tags, matrix, unfiltered_matrix = get_barseq_matrix(config_params, lane_id, parsed_coords, barcode_to_gene, barcode_correcting_map, index_tag_to_condition)
-
-    #if get_verbosity(config_params) >= 1:
-    #    print 'number of barcodes: {}'.format(len(corrected_barcodes))
-    #    print 'number of index tags: {}'.format(len(index_tags))
-    #    print 'matrix shape: {0} rows x {1} columns'.format(*matrix.shape)
-
-    # Generate reports for index tags and barcodes
+    # Dump the raw count array in case someone wants to use it
     if get_verbosity(config_params) >= 1:
-        print 'generating reports...'
-    generate_reports(config_params, lane_id, corrected_barcodes, index_tags, matrix, barcode_to_gene, index_tag_to_condition, unfiltered_matrix, total_counts, common_primer_counts)
+        print 'dumping count array...'
+    dump_count_array(config_params, lane_id, read_ids, seq_types, seqs, count_array)
 
-    # Convert the barcodes to their condition names and unique gene/barcode names
-    barcode_gene_ids = np.array([barcode_to_gene[bc] for bc in corrected_barcodes])
-    condition_ids = np.array([index_tag_to_condition[tag] for tag in index_tags])
-
-    # Dump out the final count matrix to file - other scripts will read it and turn it into a readable matrix/CDT
+    # And dump the count matrix
     if get_verbosity(config_params) >= 1:
         print 'dumping count matrix...'
-    dump_count_matrix(config_params, lane_id, barcode_gene_ids, condition_ids, matrix)
+    dump_count_matrix(config_params, lane_id, filtered_strains, filtered_conditions, filtered_count_matrix)
 
-    # Remove the temporary barseq file
-    remove_barseq_file(config_params, lane_id)
- 
+    #pdb.set_trace()
 
 # call: python fastq_to_count_matrix.py <config_file> <lane_id>
 if __name__ == '__main__':
