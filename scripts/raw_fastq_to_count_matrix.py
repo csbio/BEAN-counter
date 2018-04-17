@@ -895,15 +895,17 @@ def parse_seqs(lane_id, config_params):
 
     n = len(read_inds)
     idxs = [None] * n
+    print ''
     for counter, line_list in enumerate(line_gen(folder, read_type_dict['type'])):
     #for line_list in line_gen(folder, read_type_dict['type']):
         
         if counter % 1000000 == 0:
-            print counter
+            sys.stdout.write('\r{} M reads'.format(counter / 1000000))
+            sys.stdout.flush()
 
-        # For testing
-        if counter / 1000000 == 2:
-            break
+        ## For testing
+        #if counter / 1000000 == 2:
+        #    break
         
         # Check first for common primer!
         cp_match = [False] * len(cp_dicts)
@@ -938,6 +940,7 @@ def parse_seqs(lane_id, config_params):
 
         array[tuple(idxs)] += 1
 
+    print ''
     return array, array_ind_dicts, match_dicts, cp_dicts, counter, seq_types, column_names, read_ids
 
 def map_counts_to_strains_conditions(array, array_ind_dicts, seq_types, column_names, config_params):
