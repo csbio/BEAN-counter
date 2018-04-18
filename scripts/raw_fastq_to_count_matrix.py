@@ -206,28 +206,24 @@ def get_seq_params(amplicon_struct_params, read):
         common_primer_end = -1
     try:
         index_tag_start = int(amplicon_struct_params[read]['index_tag']['start'])
-        index_tag_end = index_tag_start + int(amplicon_struct_params[read]['index_tag']['length'])
     except (KeyError, TypeError):
         index_tag_start = -1
-        index_tag_end = -1
     try:
         barcode_start = int(amplicon_struct_params[read]['genetic_barcode']['start'])
-        barcode_end = barcode_start + int(amplicon_struct_params[read]['genetic_barcode']['length'])
     except (KeyError, TypeError):
         barcode_start = -1
-        barcode_end = -1
 
     #return [common_primer_start, common_primer_seq, common_primer_end, index_tag_start, index_tag_end, barcode_start, barcode_end]
     return {'common_primer' : { 'start' : common_primer_start , 'end' : common_primer_end, 'seq' : common_primer_seq },
-            'index_tag' : { 'start' : index_tag_start, 'end' : index_tag_end },
-            'barcode' : {'start' : barcode_start, 'end' : barcode_end }
+            'index_tag' : { 'start' : index_tag_start },
+            'barcode' : {'start' : barcode_start }
             }
 
 def determine_read_type(read_1_params, read_2_params):
     #base_case = [-1, '', -1, -1, -1, -1, -1]
     base_case =  {'common_primer' : { 'start' : -1 , 'end' : -1, 'seq' : '' },
-                  'index_tag' : { 'start' : -1, 'end' : -1 },
-                  'barcode' : {'start' : -1, 'end' : -1 }
+                  'index_tag' : { 'start' : -1 },
+                  'barcode' : {'start' : -1 }
                   }
     #required_read_1_present = all([x is not base_case[i] for i,x in enumerate(read_1_params) if i in range(5)])
     #required_read_2_present = all([x is not base_case[i] for i,x in enumerate(read_2_params) if i in range(5)])
@@ -697,7 +693,8 @@ def gen_seq_tries(seqs):
     len_dict = {x:i for i,x in enumerate(lengths)}
     for seq in seqs:
         trie_list[len_dict[len(seq)]][seq] = 0
-
+    # Returns a list of tries, one for each sequence length,
+    # sorted in descending order by sequence length.
     return trie_list, lengths
 
 def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_params, sample_tab, barcode_tab):
@@ -925,7 +922,9 @@ def parse_seqs(lane_id, config_params):
         # Match on index tags/barcodes
         for i in range(n):
             start_coord = read_params_clean[read_inds[i]][seq_types[i]]['start']
-            end_coord = read_params_clean[read_inds[i]][seq_types[i]]['end']
+            # Always match on longest possible sequence, which is the first in the list (hence the [0])
+            end_coord = start_coord + seq_lengths[i][0]
+            #end_coord = read_params_clean[read_inds[i]][seq_types[i]]['end']
             seq = line_list[read_inds[i]][start_coord:end_coord]
 
             try:
