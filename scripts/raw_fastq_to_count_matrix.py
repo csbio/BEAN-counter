@@ -942,7 +942,7 @@ def parse_seqs(lane_id, config_params):
     print ''
     return array, array_ind_dicts, match_dicts, cp_dicts, counter, seq_types, column_names, read_ids
 
-def map_counts_to_strains_conditions(array, array_ind_dicts, seq_types, column_names, config_params):
+def map_counts_to_strains_conditions(array, array_ind_dicts, seq_types, column_names, config_params, lane_id):
 
     seq_types = np.array(seq_types)
     column_names = np.array(column_names)
@@ -1019,7 +1019,7 @@ def main(config_file, lane_id):
     #pdb.set_trace()
     
     # Map the counts to actual conditions and strains
-    strains, conditions, count_matrix = map_counts_to_strains_conditions(count_array, array_ind_dicts, seq_types, column_names, config_params)
+    strains, conditions, count_matrix = map_counts_to_strains_conditions(count_array, array_ind_dicts, seq_types, column_names, config_params, lane_id)
    
     #pdb.set_trace()
     
