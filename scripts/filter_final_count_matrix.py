@@ -4,6 +4,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.2.4'
+
 # This script reads in the combined count matrix and filters out all of the
 # conditions and strains that either do not meet specified quality measures
 # and/or are specifically slated for removal
@@ -20,11 +22,13 @@ import gzip
 import itertools as it
 
 barseq_path = os.getenv('BARSEQ_PATH')
+assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
 sys.path.append(os.path.join(barseq_path, 'lib'))
 
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 from cg_common_functions import get_verbosity, get_sample_table, get_barcode_table, bool_dict, parse_yaml
+from version_printing import update_version_file
 
 #def get_sample_table(config_params):
 #
@@ -51,6 +55,13 @@ def get_dumped_count_matrix_filename(config_params, lane_id):
     lane_folder = get_lane_data_path(config_params, lane_id)
     return os.path.join(lane_folder, '{}_barseq_matrix.dump.gz'.format(lane_id))
 
+def get_detection_limits(config_params):
+
+    sample_detection_limit = float(config_params['sample_detection_limit'])
+    control_detection_limit = float(config_params['control_detection_limit'])
+    
+    return sample_detection_limit, control_detection_limit
+
 def load_dumped_count_matrix(config_params, lane_id):
 
     filename = get_dumped_count_matrix_filename(config_params, lane_id)
@@ -70,6 +81,36 @@ def dump_dataset(dataset, filename):
 def a_is_row_in_b(a, b):
 
     return np.any(np.all(a == b, axis = 1))
+
+def get_control_condition_ids(dataset, sample_table):
+    
+    [barcode_gene_ids, condition_ids, matrix] = dataset
+   
+    control_bool_ind = np.array([bool_dict[x] for x in sample_table['control?']])
+    control_table = sample_table[control_bool_ind]
+    control_screen_names = control_table['screen_name']
+    control_expt_ids = control_table['expt_id']
+    control_condition_ids = np.array(list(it.izip(control_screen_names, control_expt_ids)))
+    
+    control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, control_condition_ids)])
+    final_control_condition_ids = condition_ids[control_condition_indices]
+
+    return final_control_condition_ids
+
+def get_control_dataset(dataset, control_condition_ids):
+    
+    [barcode_gene_ids, condition_ids, matrix] = dataset
+    
+    control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, control_condition_ids)])
+    
+    if control_condition_indices.size == 0:
+        control_condition_ids = condition_ids
+        control_matrix = matrix
+    else:
+        control_condition_ids = condition_ids[control_condition_indices]
+        control_matrix = matrix[:, control_condition_indices]
+
+    return [barcode_gene_ids, control_condition_ids, control_matrix]
 
 def filter_dataset_for_include_2(dataset, sample_table):
     
@@ -127,7 +168,7 @@ def filter_dataset_for_index_tags(dataset, config_params):
 
     f = open(index_tag_corr_filename, 'rt')
     index_tags, correlations = cPickle.load(f)
-    index_tags_to_remove = np.array([index_tags[i] for i,corr in enumerate(correlations) if corr >= index_tag_correlation_cutoff])
+    index_tags_to_remove = np.array([index_tags[i] for i,corr in enumerate(correlations) if corr >= index_tag_correlation_cutoff], dtype = np.str)
     # print 'index_tags_to_remove:'
     # print '\n'.join(index_tags_to_remove) + '\n'
    
@@ -215,9 +256,23 @@ def filter_dataset_for_count_degree(dataset, config_params, sample_table, barcod
     passing_strain_read_count_sums = np.nansum(passing_strain_read_count_matrix, axis = 1)
     passing_strain_fraction = passing_strain_read_count_sums / float(passing_strain_read_count_matrix.shape[1])
     # print passing_strain_fraction
-    strains_to_keep_inds = passing_strain_fraction >= strain_pass_fraction
+    strains_to_keep_inds_all = passing_strain_fraction >= strain_pass_fraction
+
+    # Furthermore, get indices of strains for which the counts in control
+    # conditions are below the threshold.  These cause an np.nan for that
+    # strain in the mean control profile, and it just propagates from there to
+    # all occurrences of that strain.
+    sample_detection_limit, control_detection_limit = get_detection_limits(config_params)
+    control_ids = get_control_condition_ids(dataset, sample_table)
+    control_dataset = get_control_dataset(dataset, control_ids)
+    control_matrix = control_dataset[2]
+    strains_to_keep_inds_control = np.any(control_matrix >= control_detection_limit, axis = 1)
+
+    # Combine both strain removal strategies
+    strains_to_keep_inds = np.logical_and(strains_to_keep_inds_all, strains_to_keep_inds_control)
     strains_to_remove_inds = np.invert(strains_to_keep_inds)
     strains_to_remove = strain_ids[strains_to_remove_inds]
+
 
     # Get the indices of the conditions to keep (and those to eliminate)
     passing_condition_read_count_matrix = matrix >= condition_pass_read_count
@@ -296,6 +351,7 @@ def dump_filtered_count_matrix(config_params, dataset):
 
     dataset_filename = get_dumped_count_matrix_filename(config_params, lane_id)
     dump_dataset(dataset, dataset_filename)
+    update_version_file(dataset_path, VERSION)
 
 def main(config_file):
 
@@ -358,6 +414,8 @@ def main(config_file):
 
     # Dump the dataset out to file
     dump_filtered_count_matrix(config_params, dataset)
+    
+    update_version_file(config_params['output_folder'], VERSION)
 
 # call: python filter_final_count_matrix.py <config_file>
 if __name__ == '__main__':

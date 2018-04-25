@@ -4,6 +4,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.2.4'
+
 # This script takes in a chemical genetic interaction score dataset (matrix and strain/
 # condition ids) as well as a sample table containing information on each condition.
 # Then, it rotates the coordinate space of the data to find the axes of greatest
@@ -26,11 +28,13 @@ import cPickle
 import argparse
 
 barseq_path = os.getenv('BARSEQ_PATH')
+assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
 sys.path.append(os.path.join(barseq_path, 'lib'))
 
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 from cg_common_functions import read_sample_table
+from version_printing import update_version_file
 
 #def read_sample_table(tab_filename):
 #
@@ -363,6 +367,7 @@ def main(dataset, sample_table, max_comps, include_column, output_folder, input_
     # corrected_data_info_filename = get_corrected_data_info_filename(output_folder)
     # write_corrected_data_info(corrected_3d_dataset, corrected_data_info_filename, input_file)
 
+    update_version_file(output_folder, VERSION)
 
 # If this is run from the command line (which is the intention, then run the rest of this script!
 if __name__ == '__main__':

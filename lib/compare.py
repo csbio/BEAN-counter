@@ -3,6 +3,9 @@
 #################################################################
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
+
+VERSION='2.2.4'
+
 import pandas as pd
 import numpy as np
 import matplotlib

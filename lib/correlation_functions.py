@@ -2,6 +2,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.2.4'
+
 # This file defines some useful functions for computing average
 # within- and between-group correlations from a symmetric
 # correlation matrix and a vector of groups along the rows and columns

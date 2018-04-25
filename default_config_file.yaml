@@ -17,18 +17,14 @@ lane_location_file: config_files/lane_locations.txt
 # from which the data came.
 sample_table_file: sample_table/sample_table_filtered.txt
 
-# Tab-delimited text file in
-# $BARSEQ_PATH/data/gene_barcode_files/ that maps barcodes to
-# strains and their identifiers. Must contain unique
-# "Strain_ID" column.
+# Tab-delimited text file that maps barcodes to strains and
+# their identifiers. Must contain unique "Strain_ID" column.
 gene_barcode_file: barcodes/barcodes_filtered.txt
 
-# YAML-formatted file in
-# $BARSEQ_PATH/data/amplicon_struct_files/ that defines the
-# structure of the sequenced PCR amplicons. This is required
-# for correctly parsing the sequencing data.
+# YAML-formatted file that defines the structure of the
+# sequenced PCR amplicons. This is required for correctly
+# parsing the sequencing data.
 amplicon_struct_file: config_files/amplicon_struct.yaml
-
 
 
 ####  Basic parameters  ####

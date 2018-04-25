@@ -4,6 +4,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.2.4'
+
 # This script converts all dumped count matrices into CDTs,
 # which are visualized using Java Treeview. I anticipate
 # future versions will be smart and avoid re-clustering
@@ -20,6 +22,7 @@ import itertools as it
 import cPickle
 
 barseq_path = os.getenv('BARSEQ_PATH')
+assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
 sys.path.append(os.path.join(barseq_path, 'scripts'))
 sys.path.append(os.path.join(barseq_path, 'lib'))
 
@@ -27,6 +30,7 @@ import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 import cluster_dataset_wrappers as clus_wrap
 from cg_common_functions import get_sample_table, parse_yaml
+from version_printing import update_version_file
 
 import argparse
 

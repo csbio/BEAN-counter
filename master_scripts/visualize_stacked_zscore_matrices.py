@@ -4,6 +4,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.2.4'
+
 # This script converts all z-score matrices from a dumped 3D
 # array into CDTs, which are visualized using Java Treeview.
 
@@ -20,6 +22,7 @@ import cPickle
 import shutil
 
 barseq_path = os.getenv('BARSEQ_PATH')
+assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
 sys.path.append(os.path.join(barseq_path, 'scripts'))
 sys.path.append(os.path.join(barseq_path, 'lib'))
 
@@ -27,6 +30,7 @@ import compressed_file_opener as cfo
 import cg_file_tools as cg_file
 import cluster_dataset_wrappers as clus_wrap
 from cg_common_functions import get_temp_clustergram_name, read_sample_table, read_barcode_table
+from version_printing import update_version_file
 
 import argparse
 
@@ -120,6 +124,7 @@ tar.close()
 shutil.rmtree(tmp_dir, ignore_errors = True)
 
 
+update_version_file(output_folder, VERSION)
 
 
 

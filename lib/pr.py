@@ -4,6 +4,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.2.4'
+
 import numpy as np
 
 def precision_recall_curve(y_true, probas_pred):

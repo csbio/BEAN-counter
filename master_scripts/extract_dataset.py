@@ -4,6 +4,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.2.4'
+
 # This brief script takes in a 3D dataset (stacked matrices) and exports,
 # as a similar format, one of the stacked matrices, with its row and
 # column labels.
@@ -11,8 +13,13 @@ import numpy as np
 import gzip
 import cPickle
 import argparse
-import os
+import os, sys
 
+barseq_path = os.getenv('BARSEQ_PATH')
+assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
+sys.path.append(os.path.join(barseq_path, 'lib'))
+
+from version_printing import update_version_file
 
 def main(dataset, n, folder):
 
@@ -25,6 +32,8 @@ def main(dataset, n, folder):
     
     filename = os.path.join(folder, '{}_components_removed.dump.gz'.format(n))
     dump_dataset(extracted_dataset, filename)
+
+    update_version_file(folder, VERSION)
    
 def dump_dataset(dataset, filename):
 

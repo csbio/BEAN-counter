@@ -4,6 +4,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.2.4'
+
 # This script takes in a dataset and a corresponding sample table with
 # a reduced number of rows. This script will reduce the dataset so that
 # it contains only the samples corresponding to the rows in the
@@ -17,8 +19,10 @@ import gzip
 import cPickle
 
 barseq_path = os.getenv('BARSEQ_PATH')
+assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
 sys.path.append(os.path.join(barseq_path, 'lib'))
 from cg_common_functions import read_sample_table, bool_dict
+from version_printing import update_version_file
 
 #def read_sample_table(tab_filename):
 #
@@ -100,6 +104,8 @@ def main(dataset, sample_table, output_folder, col, inv, verbosity):
 
     dump_dataset([strains, reduced_conditions, reduced_matrix], dataset_filename)
     sample_table.to_csv(table_filename, sep = '\t', header = True, index = False)
+    
+    update_version_file(output_folder, VERSION)
 
 # If this is run from the command line (which is the intention), then run the rest of this script!
 if __name__ == '__main__':

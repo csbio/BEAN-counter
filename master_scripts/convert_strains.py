@@ -4,6 +4,8 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
+VERSION='2.2.4'
+
 # This script takes in a dataset in the original BEAN-counter
 # format, with strains identified by pairs of (Barcode, Strain_ID),
 # and converts it to the new format, with only unique Strain_IDs
@@ -32,9 +34,11 @@ import gzip
 import cPickle
 
 barseq_path = os.getenv('BARSEQ_PATH')
+assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
 sys.path.append(os.path.join(barseq_path, 'lib'))
 
 from cg_common_functions import read_barcode_table
+from version_printing import update_version_file
 
 def load_dataset(data_filename):
 
