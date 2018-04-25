@@ -419,12 +419,16 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
     if read_type_dict['type'] == 'single':
         index_tag_col = amplicon_struct_params[read_type_dict['barcode'][0]]['index_tag']['sample_table_column']
         assert index_tag_col in sample_tab.columns, 'sample_table_column "{}" specified in amplicon_struct_file is not present in the sample table.'.format(index_tag_col)
+        # Remove duplicated index tags
+        sample_tab = sample_tab[~sample_tab[index_tag_col].duplicated()]
         index_tag_tries, index_tag_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col])
         index_tags = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col])}
         index_tags['multi_match'] = len(index_tags)
         index_tags['no_match'] = len(index_tags)
         barcode_col = amplicon_struct_params[read_type_dict['barcode'][0]]['genetic_barcode']['barcode_file_column']
         assert barcode_col in barcode_tab.columns, 'barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene_barcode table.'.format(barcode_col)
+        # Remove duplicated barcodes
+        barcode_tab = barcode_tab[~barcode_tab[barcode_col].duplicated()]
         barcode_tries, barcode_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col])
         barcodes = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col])}
         barcodes['multi_match'] = len(barcodes)
@@ -448,6 +452,8 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
         assert index_tag_col_1 in sample_tab.columns, 'read_1 sample_table_column "{}" specified in amplicon_struct_file is not present in the sample table.'.format(index_tag_col)
         index_tag_col_2 = amplicon_struct_params['read_2']['index_tag']['sample_table_column']
         assert index_tag_col_2 in sample_tab.columns, 'read_2 sample_table_column "{}" specified in amplicon_struct_file is not present in the sample table.'.format(index_tag_col)
+        # Remove duplicated index tags
+        sample_tab = sample_tab[~sample_tab[[index_tag_col_1, index_tag_col_2]].duplicated()]
         if read_type_dict['barcode'] == ['read_1']:
             index_tag_1_tries, index_tag_1_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_1])
             index_tags_1 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_1])}
@@ -455,6 +461,8 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
             index_tags_1['no_match'] = len(index_tags_1)
             barcode_col_1 = amplicon_struct_params['read_1']['genetic_barcode']['barcode_file_column']
             assert barcode_col_1 in barcode_tab.columns, 'read_1 barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene_barcode table.'.format(barcode_col_1)
+            # Remove duplicated barcodes
+            barcode_tab = barcode_tab[~barcode_tab[barcode_col_1].duplicated()]
             barcode_1_tries, barcode_1_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_1])
             barcodes_1 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_1])}
             barcodes_1['multi_match'] = len(barcodes_1)
@@ -478,6 +486,8 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
             index_tags_2['no_match'] = len(index_tags_2)
             barcode_col_2 = amplicon_struct_params['read_2']['genetic_barcode']['barcode_file_column']
             assert barcode_col_2 in barcode_tab.columns, 'read_2 barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene_barcode table.'.format(barcode_col_2)
+            # Remove duplicated barcodes
+            barcode_tab = barcode_tab[~barcode_tab[barcode_col_2].duplicated()]
             barcode_2_tries, barcode_2_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_2])
             barcodes_2 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_2])}
             barcodes_2['multi_match'] = len(barcodes_2)
@@ -491,18 +501,20 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
             index_tags_1 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_1])}
             index_tags_1['multi_match'] = len(index_tags_1)
             index_tags_1['no_match'] = len(index_tags_1)
-            barcode_col_1 = amplicon_struct_params['read_1']['genetic_barcode']['barcode_file_column']
-            assert barcode_col_1 in barcode_tab.columns, 'read_1 barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene_barcode table.'.format(barcode_col_1)
-            barcode_1_tries, barcode_1_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_1])
-            barcodes_1 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_1])}
-            barcodes_1['multi_match'] = len(barcodes_1)
-            barcodes_1['no_match'] = len(barcodes_1)
             index_tag_2_tries, index_tag_2_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_2])
             index_tags_2 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_2])}
             index_tags_2['multi_match'] = len(index_tags_2)
             index_tags_2['no_match'] = len(index_tags_2)
+            barcode_col_1 = amplicon_struct_params['read_1']['genetic_barcode']['barcode_file_column']
+            assert barcode_col_1 in barcode_tab.columns, 'read_1 barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene_barcode table.'.format(barcode_col_1)
             barcode_col_2 = amplicon_struct_params['read_2']['genetic_barcode']['barcode_file_column']
             assert barcode_col_2 in barcode_tab.columns, 'read_2 barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene barcode table.'.format(barcode_col_2)
+            # Remove duplicated barcodes
+            barcode_tab = barcode_tab[~barcode_tab[[barcode_col_1, barcode_col_2]].duplicated()]
+            barcode_1_tries, barcode_1_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_1])
+            barcodes_1 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_1])}
+            barcodes_1['multi_match'] = len(barcodes_1)
+            barcodes_1['no_match'] = len(barcodes_1)
             barcode_2_tries, barcode_2_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_2])
             barcodes_2 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_2])}
             barcodes_2['multi_match'] = len(barcodes_2)
