@@ -677,17 +677,17 @@ def main(config_file, lane_id):
     # different stages of interaction scoring have been exported into
     # batch-specific folders. Here we reconstruct the full datasets and export
     # them.
-    if len(batches) > 1:
-        combined_conditions = np.vstack(batch_condition_list)
-        combined_norm_dataset = [strains, combined_conditions, np.hstack([x[2] for x in normalized_dataset_list])]
-        combined_dev_dataset = [strains, combined_conditions, np.hstack([x[2] for x in deviation_dataset_list])]
-        combined_scaled_dev_dataset = [strains, combined_conditions, np.hstack([x[2] for x in scaled_dev_dataset_list])]
-        with gzip.open(os.path.join(outfolder, '{}_lowess_norm.dump.gz'.format(lane_id)), 'wb') as f_norm:
-            cPickle.dump(combined_norm_dataset, f_norm)
-        with gzip.open(os.path.join(outfolder, '{}_deviation.dump.gz'.format(lane_id)), 'wb') as f_dev:
-            cPickle.dump(combined_dev_dataset, f_dev)
-        with gzip.open(os.path.join(outfolder, '{}_scaled_dev.dump.gz'.format(lane_id)), 'wb') as f_scaleddev:
-            cPickle.dump(combined_scaled_dev_dataset, f_scaleddev)
+    # Take out the conditional so that processing can proceed with per-lane scoring
+    combined_conditions = np.vstack(batch_condition_list)
+    combined_norm_dataset = [strains, combined_conditions, np.hstack([x[2] for x in normalized_dataset_list])]
+    combined_dev_dataset = [strains, combined_conditions, np.hstack([x[2] for x in deviation_dataset_list])]
+    combined_scaled_dev_dataset = [strains, combined_conditions, np.hstack([x[2] for x in scaled_dev_dataset_list])]
+    with gzip.open(os.path.join(outfolder, '{}_lowess_norm.dump.gz'.format(lane_id)), 'wb') as f_norm:
+        cPickle.dump(combined_norm_dataset, f_norm)
+    with gzip.open(os.path.join(outfolder, '{}_deviation.dump.gz'.format(lane_id)), 'wb') as f_dev:
+        cPickle.dump(combined_dev_dataset, f_dev)
+    with gzip.open(os.path.join(outfolder, '{}_scaled_dev.dump.gz'.format(lane_id)), 'wb') as f_scaleddev:
+        cPickle.dump(combined_scaled_dev_dataset, f_scaleddev)
 
     update_version_file(outfolder, VERSION)
     update_version_file(config_params['output_folder'], VERSION)
