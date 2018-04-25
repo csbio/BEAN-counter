@@ -101,6 +101,17 @@ def py_lowess(x, y, f=2. / 3., iter=3, num_cores = 2):
             yest = np.array(map(calc_yest, range(n)))
         residuals = y - yest
         s = np.median(np.abs(residuals))
+        # This is a hack to ensure that s is not zero. If the residuals are so
+        # tight that the median absolute residual is zero, then the mean should
+        # also be a very small number (possibly except in cases with insanely
+        # deviant outliers).  This issue only occurs with very low complexity
+        # vectors and is, again, a rare corner case.
+        if s == 0.0:
+            s = np.mean(np.abs(residuals))
+        # If the mean absolute residual is also zero, then all of the resulting
+        # delta values before biweight transformation should also be zero.
+        if s == 0.0:
+            delta = np.zeros_like(residuals, dtype = np.float)
         delta = np.clip(residuals / (6.0 * s), -1, 1)
         delta = (1 - delta ** 2) ** 2
     return yest[unsort_inds]
