@@ -34,8 +34,6 @@ from lowess import py_lowess
 from contextlib import closing
 from multiprocessing import Pool
 
-import pdb
-
 def get_lane_data_path(config_params, lane_id):
 
     output_folder = config_params['output_folder']
@@ -134,8 +132,6 @@ def get_control_dataset(dataset, control_condition_ids, control_detection_limit)
     else:
         control_condition_ids = condition_ids[control_condition_indices]
         control_matrix = matrix[:, control_condition_indices]    
-	
-    pdb.set_trace()
 
     return [barcode_gene_ids, control_condition_ids, control_matrix]
 
