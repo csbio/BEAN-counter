@@ -241,6 +241,15 @@ def write_corrected_seqs(tab, output_folder, lane_id, file_string):
 
     filename = os.path.join(output_folder, '{0}_{1}_corrections.txt'.format(lane_id, file_string))
     tab.to_csv(filename, sep = '\t', index = False)
+    
+def write_duplicated(seqs_sorted, seq_counts_sorted, output_folder, lane_id, seq_type):
+
+    filename = os.path.join(output_folder, '{0}_nonunique_{1}s.txt'.format(lane_id, seq_type))
+    of = open(filename, 'wt')
+    of.write('{}\tcount\n'.format(seq_type))
+    for i, seq in enumerate(seqs_sorted):
+        of.write('{}\t{}\n'.format(seq, seq_counts_sorted[i]))
+    of.close()
 
 def write_summary(total_counts, common_primer_counts, total_index_barcode_counts, matrix_shape, orig_matrix_shape, count_array_shape, count_array_read_ids, count_array_seq_types, output_folder, lane_id):
 
@@ -267,7 +276,7 @@ def write_summary(total_counts, common_primer_counts, total_index_barcode_counts
 
     of.close()
 
-def generate_reports(config_params, lane_id, count_array_dataset, count_matrix_dataset, filtered_count_matrix_dataset, seq_info_dict, total_counts, common_primer_counts):
+def generate_reports(config_params, lane_id, count_array_dataset, count_matrix_dataset, filtered_count_matrix_dataset, seq_info_dict, total_counts, common_primer_counts, nonunique_dict):
 
     # seq_info_dict contains: match_dicts, read_ids, seq_types, and column_names
 
@@ -319,6 +328,16 @@ def generate_reports(config_params, lane_id, count_array_dataset, count_matrix_d
         correction_tab = pd.DataFrame((x[0], x[1][0], x[1][1]) for x in d.iteritems()).sort_values(by = 2, ascending = False)
         correction_tab.columns = ['observed_{}'.format(column_name), 'corrected_{}'.format(column_name), 'Number of occurrences']
         write_corrected_seqs(correction_tab, output_folder, lane_id, '{}_{}'.format(seq_type, read_id))
+
+    # If any barcodes/index tags did not uniquely identify their respective
+    # strains/conditions, write out the number of duplicated strains/conditions
+    # they mapped to.
+    duplicated_barcodes = nonunique_dict['barcode']
+    duplicated_index_tags = nonunique_dict['index_tag']
+    dup_barcodes_sorted, dup_barcode_counts_sorted = get_sorted_counts(duplicated_barcodes.index.values, duplicated_barcodes.values)
+    dup_index_tags_sorted, dup_index_tag_counts_sorted = get_sorted_counts(duplicated_index_tags.index.values, duplicated_index_tags.values)
+    write_duplicated(dup_barcodes_sorted, dup_barcode_counts_sorted, output_folder, lane_id, 'barcode')
+    write_duplicated(dup_index_tags_sorted, dup_index_tag_counts_sorted, output_folder, lane_id, 'index_tag')
 
     # And finally write out the summary
     write_summary(total_counts, common_primer_counts, mapped_read_counts,
@@ -676,16 +695,26 @@ def map_counts_to_strains_conditions(array, array_ind_dicts, seq_types, column_n
     sample_tab = get_sample_table(config_params)
     barcode_tab = get_barcode_table(config_params)
     
-    # Filter the sample table and return nothing if no samples exist with the given lane_id
+    # Filter the sample table to the current lane
     sample_tab = sample_tab[sample_tab.lane == lane_id]
 
     # Make mappings from each strain and condition to their respective barcode and index tag combinations
     strain_to_barcode = {x[1]['Strain_ID']:tuple(x[1][column_names[seq_types == 'barcode']]) for x in barcode_tab.iterrows()}
     condition_to_index_tag = {tuple(x[1][['screen_name', 'expt_id']]):tuple(x[1][column_names[seq_types == 'index_tag']]) for x in sample_tab.iterrows()}
-    
+   
+    # Deal with strains/conditions that are not uniquely defined by their barcodes/index tags 
+    strains_per_barcode = pd.Series(strain_to_barcode.values()).value_counts()
+    conditions_per_index_tag = pd.Series(condition_to_index_tag.values()).value_counts()
+
+    duplicated_barcodes = strains_per_barcode[strains_per_barcode > 1].index.values
+    duplicated_index_tags = conditions_per_index_tag[conditions_per_index_tag > 1].index.values
+
+    strain_to_barcode_filtered = {x:strain_to_barcode[x] for x in strain_to_barcode.iterkeys() if strain_to_barcode[x] not in duplicated_barcodes}
+    condition_to_index_tag_filtered = {x:condition_to_index_tag[x] for x in condition_to_index_tag.iterkeys() if condition_to_index_tag[x] not in duplicated_index_tags}
+
     # Make an empty final matrix
-    strains = np.array(strain_to_barcode.keys())
-    conditions = np.array(condition_to_index_tag.keys())
+    strains = np.array(strain_to_barcode_filtered.keys())
+    conditions = np.array(condition_to_index_tag_filtered.keys())
     matrix = np.zeros((len(strains), len(conditions)), dtype = np.int)
 
     # Fill in the matrix!
@@ -704,7 +733,7 @@ def map_counts_to_strains_conditions(array, array_ind_dicts, seq_types, column_n
                     barcode_counter += 1
             matrix[i, j] = array[tuple(idx)]
 
-    return strains, conditions, matrix
+    return strains, conditions, matrix, strains_per_barcode[strains_per_barcode > 1], conditions_per_index_tag[conditions_per_index_tag > 1]
 
 def filter_count_matrix(matrix, strains, conditions, config_params):
     # Here is where I implement the "dumb filter," as Justin called it, to
@@ -745,7 +774,7 @@ def main(config_file, lane_id):
     #pdb.set_trace()
     
     # Map the counts to actual conditions and strains
-    strains, conditions, count_matrix = map_counts_to_strains_conditions(count_array, array_ind_dicts, seq_types, column_names, config_params, lane_id)
+    strains, conditions, count_matrix, nonunique_barcodes, nonunique_index_tags = map_counts_to_strains_conditions(count_array, array_ind_dicts, seq_types, column_names, config_params, lane_id)
    
     #pdb.set_trace()
     
@@ -772,7 +801,10 @@ def main(config_file, lane_id):
                 'read_ids': read_ids,
                 'seq_types': seq_types,
                 'column_names': column_names},
-            total_reads, count_array.sum())
+            total_reads, count_array.sum(),
+            {'barcode': nonunique_barcodes,
+                'index_tag': nonunique_index_tags}
+            )
     
     # Dump the raw count array in case someone wants to use it
     if get_verbosity(config_params) >= 1:
