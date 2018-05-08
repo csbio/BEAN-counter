@@ -33,6 +33,8 @@ import cg_file_tools as cg_file
 from cg_common_functions import get_verbosity, get_sample_table, get_amplicon_struct_params, get_barcode_table, parse_yaml
 from version_printing import update_version_file
 
+# import pdb
+
 def get_lane_location_table(config_params):
 
     filename = config_params['lane_location_file']
@@ -419,7 +421,11 @@ def line_gen(folder, read_type):
                     if i % 4 == 1:
                         yield [line1.rstrip(), line2.rstrip()]
 
-def gen_seq_tries(seqs):
+def gen_seq_tries(seqs, tol):
+    # New: don't allow detection of any sequences whose length is equal to or
+    # less than the tolerance. This prevents weird behavior and should be a
+    # reasonable assumption for pretty much all use cases.
+    seqs = [seq for seq in seqs if len(seq) > tol]
     lengths = list(set([len(seq) for seq in seqs]))
     lengths.sort(key = lambda x: -x)
     trie_list = [trie() for i in range(len(lengths))]
@@ -428,19 +434,30 @@ def gen_seq_tries(seqs):
         trie_list[len_dict[len(seq)]][seq] = 0
     # Returns a list of tries, one for each sequence length,
     # sorted in descending order by sequence length.
+    # FUTURE PLAN: allow for the observed sequence to match a different length
+    # of reference sequence, basically so that insertions only cost 1 instead
+    # of 2.
     return trie_list, lengths
 
 def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_params, sample_tab, barcode_tab):
-    # Need to add in return of sequence tries, valid lengths, and mismatches
     '''
     read_inds, seq_types, match_dicts, array_ind_dicts, seq_trie_lists, seq_lengths, tols, column_names, array = initialize_dicts_arrays(...)
+
+    Note that the steps marked "Remove duplicated barcodes/index tags" do not
+    completely remove those sequences, just all duplicate copies. This was
+    probably not my original intention, but it works out, so that the user gets
+    to keep information on how many times that barcode was observed but it
+    doesn't mess with the results (these barcodes are filtered out during
+    mapping of barcodes/index tags to strains/conditions).
     '''
+    index_tag_tol = config_params.get('index_tag_tolerance', 0)
+    barcode_tol = config_params.get('barcode_tolerance', 0)
     if read_type_dict['type'] == 'single':
         index_tag_col = amplicon_struct_params[read_type_dict['barcode'][0]]['index_tag']['sample_table_column']
         assert index_tag_col in sample_tab.columns, 'sample_table_column "{}" specified in amplicon_struct_file is not present in the sample table.'.format(index_tag_col)
         # Remove duplicated index tags
         sample_tab = sample_tab[~sample_tab[index_tag_col].duplicated()]
-        index_tag_tries, index_tag_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col])
+        index_tag_tries, index_tag_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col], index_tag_tol)
         index_tags = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col])}
         index_tags['multi_match'] = len(index_tags)
         index_tags['no_match'] = len(index_tags)
@@ -448,12 +465,10 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
         assert barcode_col in barcode_tab.columns, 'barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene_barcode table.'.format(barcode_col)
         # Remove duplicated barcodes
         barcode_tab = barcode_tab[~barcode_tab[barcode_col].duplicated()]
-        barcode_tries, barcode_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col])
+        barcode_tries, barcode_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col], barcode_tol)
         barcodes = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col])}
         barcodes['multi_match'] = len(barcodes)
         barcodes['no_match'] = len(barcodes)
-        index_tag_tol = config_params.get('index_tag_tolerance', 0)
-        barcode_tol = config_params.get('barcode_tolerance', 0)
         count_array = np.zeros((len(index_tags), len(barcodes)), dtype = np.int)
         # While the scheme is the same whether or not the single read is read_1
         # or read_2 (would it actually ever be read_2?!), I will return the id
@@ -474,7 +489,7 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
         # Remove duplicated index tags
         sample_tab = sample_tab[~sample_tab[[index_tag_col_1, index_tag_col_2]].duplicated()]
         if read_type_dict['barcode'] == ['read_1']:
-            index_tag_1_tries, index_tag_1_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_1])
+            index_tag_1_tries, index_tag_1_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_1], index_tag_tol)
             index_tags_1 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_1])}
             index_tags_1['multi_match'] = len(index_tags_1)
             index_tags_1['no_match'] = len(index_tags_1)
@@ -482,24 +497,22 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
             assert barcode_col_1 in barcode_tab.columns, 'read_1 barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene_barcode table.'.format(barcode_col_1)
             # Remove duplicated barcodes
             barcode_tab = barcode_tab[~barcode_tab[barcode_col_1].duplicated()]
-            barcode_1_tries, barcode_1_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_1])
+            barcode_1_tries, barcode_1_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_1], barcode_tol)
             barcodes_1 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_1])}
             barcodes_1['multi_match'] = len(barcodes_1)
             barcodes_1['no_match'] = len(barcodes_1)
-            index_tag_2_tries, index_tag_2_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_2])
+            index_tag_2_tries, index_tag_2_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_2], index_tag_tol)
             index_tags_2 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_2])}
             index_tags_2['multi_match'] = len(index_tags_2)
             index_tags_2['no_match'] = len(index_tags_2)
-            index_tag_tol = config_params.get('index_tag_tolerance', 0)
-            barcode_tol = config_params.get('barcode_tolerance', 0)
             count_array = np.zeros((len(index_tags_1), len(barcodes_1), len(index_tags_2)), dtype = np.int)
             return [0, 0, 1], ['index_tag', 'barcode', 'index_tag'], ['read_1', 'read_1', 'read_2'], [{}, {}, {}], [index_tags_1, barcodes_1, index_tags_2], [index_tag_1_tries, barcode_1_tries, index_tag_2_tries], [index_tag_1_lengths, barcode_1_lengths, index_tag_2_lengths], [index_tag_tol, barcode_tol, index_tag_tol], [index_tag_col_1, barcode_col_1, index_tag_col_2], count_array
         elif read_type_dict['barcode'] == ['read_2']:
-            index_tag_1_tries, index_tag_1_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_1])
+            index_tag_1_tries, index_tag_1_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_1], index_tag_tol)
             index_tags_1 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_1])}
             index_tags_1['multi_match'] = len(index_tags_1)
             index_tags_1['no_match'] = len(index_tags_1)
-            index_tag_2_tries, index_tag_2_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_2])
+            index_tag_2_tries, index_tag_2_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_2], index_tag_tol)
             index_tags_2 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_2])}
             index_tags_2['multi_match'] = len(index_tags_2)
             index_tags_2['no_match'] = len(index_tags_2)
@@ -507,20 +520,18 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
             assert barcode_col_2 in barcode_tab.columns, 'read_2 barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene_barcode table.'.format(barcode_col_2)
             # Remove duplicated barcodes
             barcode_tab = barcode_tab[~barcode_tab[barcode_col_2].duplicated()]
-            barcode_2_tries, barcode_2_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_2])
+            barcode_2_tries, barcode_2_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_2], barcode_tol)
             barcodes_2 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_2])}
             barcodes_2['multi_match'] = len(barcodes_2)
             barcodes_2['no_match'] = len(barcodes_2)
-            index_tag_tol = config_params.get('index_tag_tolerance', 0)
-            barcode_tol = config_params.get('barcode_tolerance', 0)
             count_array = np.zeros((len(index_tags_1), len(index_tags_2), len(barcodes_2)), dtype = np.int)
             return [0, 1, 1], ['index_tag', 'index_tag', 'barcode'], ['read_1', 'read_2', 'read_2'], [{}, {}, {}], [index_tags_1, index_tags_2, barcodes_2], [index_tag_1_tries, index_tag_2_tries, barcode_2_tries], [index_tag_1_lengths, index_tag_2_lengths, barcode_2_lengths], [index_tag_tol, index_tag_tol, barcode_tol], [index_tag_col_1, index_tag_col_2, barcode_col_1], count_array
         elif read_type_dict['barcode'] == ['read_1', 'read_2']:
-            index_tag_1_tries, index_tag_1_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_1])
+            index_tag_1_tries, index_tag_1_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_1], index_tag_tol)
             index_tags_1 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_1])}
             index_tags_1['multi_match'] = len(index_tags_1)
             index_tags_1['no_match'] = len(index_tags_1)
-            index_tag_2_tries, index_tag_2_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_2])
+            index_tag_2_tries, index_tag_2_lengths = gen_seq_tries(sample_tab.loc[:, index_tag_col_2], index_tag_tol)
             index_tags_2 = {x:i for i, x in enumerate(sample_tab.loc[:, index_tag_col_2])}
             index_tags_2['multi_match'] = len(index_tags_2)
             index_tags_2['no_match'] = len(index_tags_2)
@@ -530,16 +541,14 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
             assert barcode_col_2 in barcode_tab.columns, 'read_2 barcode_file_column "{}" specified in amplicon_struct_file is not present in the gene barcode table.'.format(barcode_col_2)
             # Remove duplicated barcodes
             barcode_tab = barcode_tab[~barcode_tab[[barcode_col_1, barcode_col_2]].duplicated()]
-            barcode_1_tries, barcode_1_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_1])
+            barcode_1_tries, barcode_1_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_1], barcode_tol)
             barcodes_1 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_1])}
             barcodes_1['multi_match'] = len(barcodes_1)
             barcodes_1['no_match'] = len(barcodes_1)
-            barcode_2_tries, barcode_2_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_2])
+            barcode_2_tries, barcode_2_lengths = gen_seq_tries(barcode_tab.loc[:, barcode_col_2], barcode_tol)
             barcodes_2 = {x:i for i, x in enumerate(barcode_tab.loc[:, barcode_col_2])}
             barcodes_2['multi_match'] = len(barcodes_2)
             barcodes_2['no_match'] = len(barcodes_2)
-            index_tag_tol = config_params.get('index_tag_tolerance', 0)
-            barcode_tol = config_params.get('barcode_tolerance', 0)
             count_array = np.zeros((len(index_tags_1), len(barcodes_1), len(index_tags_2), len(barcodes_2)), dtype = np.int)
             return [0, 0, 1, 1], ['index_tag', 'barcode', 'index_tag', 'barcode'], ['read_1', 'read_1', 'read_2', 'read_2'], [{}, {}, {}, {}], [index_tags_1, barcodes_1, index_tags_2, barcodes_2], [index_tag_1_tries, barcode_1_tries, index_tag_2_tries, barcode_2_tries], [index_tag_1_lengths, barcode_1_lengths, index_tag_2_lengths, barcode_2_lengths], [index_tag_tol, barcode_tol, index_tag_tol, barcode_tol], [index_tag_col_1, barcode_col_1, index_tag_col_2, barcode_col_2], count_array
     
