@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.2.5'
+VERSION='2.3.0'
 
 # This script takes in matrices, on which LDA has been performed and from which
 # LDA components have been removed, and plots PR curves and historgrams
