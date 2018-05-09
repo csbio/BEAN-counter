@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.2.5'
+VERSION='2.3.0'
 
 # This script will read in a count matrix and, given a sample table that
 # indicates which samples are controls and which should be excluded,
@@ -106,18 +106,32 @@ def get_control_condition_ids(dataset, sample_table):
 
     return final_control_condition_ids
 
-def get_control_dataset(dataset, control_condition_ids):
+def get_control_dataset(dataset, control_condition_ids, control_detection_limit):
     
     [barcode_gene_ids, condition_ids, matrix] = dataset
-    
-    control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, control_condition_ids)])
-    
-    if control_condition_indices.size == 0:
+
+    #control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, control_condition_ids)])
+    control_condition_indices = []
+    # Get the ids of the conditions for which >= 75% of the profile is above
+    # the control count threshold. This percentage could be changed to a
+    # parameter in the future, but this is a relatively rare corner case that
+    # only occurs in per-lane scoring when all controls in that lane are of low
+    # counts/quality.
+    for i, cond_id in enumerate(condition_ids):
+        if a_is_row_in_b(cond_id, control_condition_ids):
+            if np.nanmean(matrix[:, i] >= control_detection_limit) >= 0.75:
+                control_condition_indices.append(i)
+    control_condition_indices = np.array(control_condition_indices)
+
+    # If there are less than two control profiles in the data, or if this many
+    # are left after the above quality filtering, then return the entire
+    # dataset as the control dataset.
+    if control_condition_indices.size < 2:
         control_condition_ids = condition_ids
         control_matrix = matrix
     else:
         control_condition_ids = condition_ids[control_condition_indices]
-        control_matrix = matrix[:, control_condition_indices]
+        control_matrix = matrix[:, control_condition_indices]    
 
     return [barcode_gene_ids, control_condition_ids, control_matrix]
 
@@ -169,7 +183,7 @@ def normalizeUsingAllControlsAndSave(config_params, outfolder, dataset, control_
     cPickle.dump(dataset, raw_of)
     raw_of.close()
 
-    control_matrix_gene_barcode_ids, control_matrix_condition_ids, control_matrix = get_control_dataset(dataset, control_condition_ids)
+    control_matrix_gene_barcode_ids, control_matrix_condition_ids, control_matrix = get_control_dataset(dataset, control_condition_ids, control_detection_limit)
 
     # Convert the control matrix to floats so it can incorporate NaNs
     control_matrix = control_matrix.astype(np.float)
@@ -290,14 +304,14 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
     sample_detection_limit, control_detection_limit = get_detection_limits(config_params)
     
     scaled_dev_matrix = np.zeros(matrix.shape)
-    control_matrix_gene_barcode_ids, control_matrix_condition_ids, control_matrix = get_control_dataset(deviation_dataset, control_condition_ids)
+    control_matrix_gene_barcode_ids, control_matrix_condition_ids, control_matrix = get_control_dataset(deviation_dataset, control_condition_ids, control_detection_limit)
 
     # Get rid of controls that have an infinite or NaN as one of their strains
     did = sum(np.invert(np.add(np.isfinite(control_matrix), np.isnan(control_matrix)))) == 0
     control_matrix = control_matrix[:,did]
 
     # Get the control profiles from the raw dataset!
-    control_raw_matrix_gene_barcode_ids, control_raw_matrix_condition_ids, control_raw_matrix = get_control_dataset(raw_dataset, control_condition_ids)
+    control_raw_matrix_gene_barcode_ids, control_raw_matrix_condition_ids, control_raw_matrix = get_control_dataset(raw_dataset, control_condition_ids, control_detection_limit)
     # Set all strains in control conditions with counts below the control count detection limit to NaN
     control_raw_matrix = control_raw_matrix.astype(np.float)
     control_raw_matrix[control_raw_matrix < control_detection_limit] = np.nan
@@ -677,7 +691,8 @@ def main(config_file, lane_id):
     # different stages of interaction scoring have been exported into
     # batch-specific folders. Here we reconstruct the full datasets and export
     # them.
-    if len(batches) > 1:
+    # If one or more batch names were specified, then still dump out - for per-lane scoring
+    if (len(batches) > 1) or (batches != ['']):
         combined_conditions = np.vstack(batch_condition_list)
         combined_norm_dataset = [strains, combined_conditions, np.hstack([x[2] for x in normalized_dataset_list])]
         combined_dev_dataset = [strains, combined_conditions, np.hstack([x[2] for x in deviation_dataset_list])]
@@ -688,6 +703,7 @@ def main(config_file, lane_id):
             cPickle.dump(combined_dev_dataset, f_dev)
         with gzip.open(os.path.join(outfolder, '{}_scaled_dev.dump.gz'.format(lane_id)), 'wb') as f_scaleddev:
             cPickle.dump(combined_scaled_dev_dataset, f_scaleddev)
+        # Should I dump out mean control profile here?
 
     update_version_file(outfolder, VERSION)
     update_version_file(config_params['output_folder'], VERSION)
