@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION='2.2.5'
+VERSION='2.3.0'
 
 import os
 
