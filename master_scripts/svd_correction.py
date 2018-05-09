@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.2.4'
+VERSION='2.2.5'
 
 # This script takes in a chemical genetic interaction score dataset (matrix and strain/
 # condition ids) as well as a sample table containing information on each condition.
@@ -33,7 +33,7 @@ sys.path.append(os.path.join(barseq_path, 'lib'))
 
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
-from cg_common_functions import read_sample_table
+from cg_common_functions import read_sample_table, bool_dict
 from version_printing import update_version_file
 
 #def read_sample_table(tab_filename):
@@ -91,7 +91,6 @@ def get_include_col_conditions(sample_table, include_col):
     # Do some checks to make sure the columns are in the sample table
     assert include_col in sample_table.columns, "Specified include column '{}' not in the sample table".format(include_col)
 
-    bool_dict = {'True': True, 'TRUE': True, 'False': False, 'FALSE': False}
     include_vals = [bool_dict[x] for x in sample_table[include_col]]
     if negate:
         include_vals = np.invert(include_vals)
