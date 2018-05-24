@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.3.0'
+VERSION='2.3.1'
 
 import numpy as np
 
