@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.3.0'
+VERSION='2.3.1'
 
 # This script takes in a dataset, a correlation cutoff, and a sample table with a couple of important
 # columns to be specified by the user. These columns tell the user the groups that should be
@@ -234,6 +234,11 @@ def main(dataset, sample_table, collapse_col, cor_cutoff, output_folder, cols_to
 
     barcodes, conditions, matrix = dataset
 
+    # Set all NaNs in the matrix to zero. While great pains are undertaken to
+    # make sure no data points are NaN, this can still happen, especially when
+    # combining datasets.
+    matrix[np.isnan(matrix)] = 0
+    
     # Filter the sample table, so that no samples that have been eliminated
     # are used in further processing
     sample_table = filter_sample_table(sample_table, conditions)
