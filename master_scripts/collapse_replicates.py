@@ -234,6 +234,11 @@ def main(dataset, sample_table, collapse_col, cor_cutoff, output_folder, cols_to
 
     barcodes, conditions, matrix = dataset
 
+    # Set all NaNs in the matrix to zero. While great pains are undertaken to
+    # make sure no data points are NaN, this can still happen, especially when
+    # combining datasets.
+    matrix[np.isnan(matrix)] = 0
+    
     # Filter the sample table, so that no samples that have been eliminated
     # are used in further processing
     sample_table = filter_sample_table(sample_table, conditions)
