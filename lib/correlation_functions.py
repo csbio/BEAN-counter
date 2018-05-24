@@ -2,7 +2,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.3.0'
+VERSION='2.3.1'
 
 # This file defines some useful functions for computing average
 # within- and between-group correlations from a symmetric

@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.3.0'
+VERSION='2.3.1'
 
 # This script converts all dumped count matrices into CDTs,
 # which are visualized using Java Treeview. I anticipate
