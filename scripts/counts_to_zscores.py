@@ -106,9 +106,14 @@ def get_control_condition_ids(dataset, sample_table):
 
     return final_control_condition_ids
 
-def get_control_dataset(dataset, control_condition_ids, control_detection_limit):
+def get_control_dataset(count_dataset, control_condition_ids, control_detection_limit, new_dataset = None):
     
-    [barcode_gene_ids, condition_ids, matrix] = dataset
+    [barcode_gene_ids, condition_ids, count_matrix] = count_dataset
+
+    if new_dataset is not None:
+        _, _, matrix = new_dataset
+    else:
+        matrix = count_matrix
 
     #control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, control_condition_ids)])
     control_condition_indices = []
@@ -119,13 +124,13 @@ def get_control_dataset(dataset, control_condition_ids, control_detection_limit)
     # counts/quality.
     for i, cond_id in enumerate(condition_ids):
         if a_is_row_in_b(cond_id, control_condition_ids):
-            if np.nanmean(matrix[:, i] >= control_detection_limit) >= 0.75:
+            if np.nanmean(count_matrix[:, i] >= control_detection_limit) >= 0.75:
                 control_condition_indices.append(i)
     control_condition_indices = np.array(control_condition_indices)
 
     # If there are less than two control profiles in the data, or if this many
     # are left after the above quality filtering, then return the entire
-    # dataset as the control dataset.
+    # count_dataset as the control count_dataset.
     if control_condition_indices.size < 2:
         control_condition_ids = condition_ids
         control_matrix = matrix
@@ -304,7 +309,7 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
     sample_detection_limit, control_detection_limit = get_detection_limits(config_params)
     
     scaled_dev_matrix = np.zeros(matrix.shape)
-    control_matrix_gene_barcode_ids, control_matrix_condition_ids, control_matrix = get_control_dataset(deviation_dataset, control_condition_ids, control_detection_limit)
+    control_matrix_gene_barcode_ids, control_matrix_condition_ids, control_matrix = get_control_dataset(raw_dataset, control_condition_ids, control_detection_limit, new_dataset = deviation_dataset)
 
     # Get rid of controls that have an infinite or NaN as one of their strains
     did = sum(np.invert(np.add(np.isfinite(control_matrix), np.isnan(control_matrix)))) == 0
