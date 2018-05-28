@@ -78,8 +78,8 @@ def py_lowess(x, y, f=2. / 3., iter=3, num_cores = 2, dup_x_speedup = False):
     n = len(x)
     r = int(np.ceil(f * n))
 
-    print 'total length:', n
-    print 'size of span:', r
+    #print 'total length:', n
+    #print 'size of span:', r
 
     # Calculate each x value's span (distance on the x axis from x)
     if num_cores > 1:
