@@ -269,9 +269,9 @@ def getAsymmetricSigmaForScipyMatrix(raw_mean_control_profile, dev_control_matri
             print dev_control_matrix_tall[pos],  dev_control_matrix_tall_squared[pos]
             print dev_control_matrix_tall.shape, dev_control_matrix_tall_squared.shape, pos.shape, scipy.nonzero(pos)[0].shape[0]
     lowess[pos] = py_lowess(np.asarray(repeated_raw_mean_control_profile[pos].ravel().tolist()[0]), dev_control_matrix_tall_squared[pos], 
-                                   f=0.3, iter=1, num_cores = get_num_cores(config_params))
+                                   f=0.3, iter=1, num_cores = get_num_cores(config_params), dup_x_speedup = True)
     lowess[neg] = py_lowess(np.asarray(repeated_raw_mean_control_profile[neg].ravel().tolist()[0]), dev_control_matrix_tall_squared[neg],
-                                   f=0.3, iter=1, num_cores = get_num_cores(config_params))
+                                   f=0.3, iter=1, num_cores = get_num_cores(config_params), dup_x_speedup = True)
     lowess_pos = np.zeros(raw_mean_control_profile.shape) + np.nan
     lowess_neg = np.zeros(raw_mean_control_profile.shape) + np.nan
     for i in range(raw_mean_control_profile.shape[0]):
@@ -342,7 +342,7 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
         zscores[deviation == 0] = 0
         scaled_dev_matrix[:, i] = zscores.transpose()
 
-    # Dump out the iscaled deviation matrix
+    # Dump out the scaled deviation matrix
     scaled_dev_dataset = [barcode_gene_ids, condition_ids, scaled_dev_matrix]
     scaled_dev_filename = os.path.join(outfolder, '{}_scaled_dev.dump.gz'.format(lane_id))
     scaled_dev_of = gzip.open(scaled_dev_filename, 'wb')

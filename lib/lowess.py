@@ -34,11 +34,11 @@ VERSION='2.3.1'
 
 import numpy as np
 import os, gzip, cPickle
-from scipy.linalg import solve
+from scipy.linalg import solve, LinAlgError
 from multiprocessing.pool import Pool
 from contextlib import closing
 
-def py_lowess(x, y, f=2. / 3., iter=3, num_cores = 2):
+def py_lowess(x, y, f=2. / 3., iter=3, num_cores = 2, dup_x_speedup = False):
     '''
     Performs a local scatterplot smoothing on y given x (LOWESS).
     Results line up with MATLAB's 'smooth' function.
@@ -78,6 +78,9 @@ def py_lowess(x, y, f=2. / 3., iter=3, num_cores = 2):
     n = len(x)
     r = int(np.ceil(f * n))
 
+    print 'total length:', n
+    print 'size of span:', r
+
     # Calculate each x value's span (distance on the x axis from x)
     if num_cores > 1:
         with closing(Pool(processes = num_cores)) as pool:
@@ -89,16 +92,31 @@ def py_lowess(x, y, f=2. / 3., iter=3, num_cores = 2):
     # Calculate the start and end span indices for each x value
     starts, stops = span_inds(x, h, r)
 
+    # Estimates do not need to be computed more than once for each x value. Get
+    # the first index of each unique x value and map it back to all of the
+    # indices of that x value.
+    # IN PROGRESS
+    if dup_x_speedup:
+        uniq_x, inds, reverse_inds = np.unique(x, return_index = True, return_inverse = True)
+    else:
+        inds = range(n)
+
     # Calculate the y estimates, iterate the specified number of times
     delta = np.ones(n)
     for iteration in range(iter):
         #print 'iteration:', iteration
         if num_cores > 1:
             with closing(Pool(processes=num_cores)) as pool:
-                yest = np.array(pool.map(calc_yest, range(n)))
+                yest = np.array(pool.map(calc_yest, inds))
                 pool.terminate()
         else:
-            yest = np.array(map(calc_yest, range(n)))
+            yest = np.array(map(calc_yest, inds))
+
+        # If accounting for duplicate x values, expand yest back
+        if dup_x_speedup:
+            expanded_yest = yest[reverse_inds]
+            yest = expanded_yest
+
         residuals = y - yest
         s = np.median(np.abs(residuals))
         # This is a hack to ensure that s is not zero. If the residuals are so
@@ -112,7 +130,8 @@ def py_lowess(x, y, f=2. / 3., iter=3, num_cores = 2):
         # delta values before biweight transformation should also be zero.
         if s == 0.0:
             delta = np.zeros_like(residuals, dtype = np.float)
-        delta = np.clip(residuals / (6.0 * s), -1, 1)
+        else:
+            delta = np.clip(residuals / (6.0 * s), -1, 1)
         delta = (1 - delta ** 2) ** 2
     return yest[unsort_inds]
 
@@ -173,13 +192,9 @@ def calc_yest(i):
     x_span = x_[starts[i]:(stops[i] + 1)]
     y_span = y_[starts[i]:(stops[i] + 1)]
 
-    # Update to comment paragraph above: if one or fewer unique pairs of delta
-    # and x value within the span remain, then return the original y estimate
-    # because convergence has occurred and otherwise a singular matrix error
-    # will be raised.
-    delta_span_nonzero_inds = np.where(~np.isclose(delta_span, 0))[0]
-    x_delta_nonzero_pairs = {(x_span[ii], delta_span[ii]) for ii in delta_span_nonzero_inds}
-    if len(x_delta_nonzero_pairs) <= 1:
+    # If all values in delta_span are zero, we have converged. Return the
+    # current y value to avoid unnecessary calculations.
+    if np.allclose(delta_span, 0):
         return y_[i]
     
     w = np.clip(np.abs((x_span - x_[i]) / h[i]), 0.0, 1.0)
@@ -190,8 +205,19 @@ def calc_yest(i):
                   [np.sum(weights * x_span), np.sum(weights * x_span * x_span)]])
     #print i
     #print A, b
-    beta = solve(A, b)
-        #assert False, '\n\nThe following values give rise to a LinAlgError from the scipy solver:\n\n' \
-        #        'delta_span\n{}\n\nweights\n{}\n\nx_span\n{}\n\ny_span\n{}\n\nstart\n{}\n\nstop\n{}\n\nA\n{}\n\nb\n{}\n\ni\n{}\n\nh[i]\n{}\n\nx_[i]\n{}\n\ny_[i]\n{}\n'.format(delta_span, weights, x_span, y_span, starts[i], stops[i], A, b, i, h[i], x_[i], y_[i])
+    # Despite my best efforts, it seems there is no efficient way to prevent
+    # all singular matrix errors (raised as LinAlgError exceptions). However,
+    # it has become clear that the only cases in which the solver encounters a
+    # singular matrix is when the existing y estimate has converged to the
+    # final, "correct" estimate. Most of these cases occur when all values in
+    # the delta_span vector are zero (so I check for that because I can avoid
+    # unnecessary calculations), but there is a weird corner case where one
+    # delta_span value is nonzero and it also causes a singular matrix. My
+    # attempts to fix that corner case caused a nearly 10x slowdown in the
+    # calc_yest function, which is not acceptable.
+    try:
+        beta = solve(A, b)
+    except LinAlgError as e:
+        return y_[i]
     yest_i = beta[0] + beta[1] * x_[i]
     return yest_i
