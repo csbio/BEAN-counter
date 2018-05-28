@@ -81,25 +81,29 @@ def py_lowess(x, y, f=2. / 3., iter=3, num_cores = 2, dup_x_speedup = False):
     #print 'total length:', n
     #print 'size of span:', r
 
-    # Calculate each x value's span (distance on the x axis from x)
-    if num_cores > 1:
-        with closing(Pool(processes = num_cores)) as pool:
-            h = np.array(pool.map(calc_span, range(n)))
-            pool.terminate()
-    else:
-        h = np.array(map(calc_span, range(n)))
-
-    # Calculate the start and end span indices for each x value
-    starts, stops = span_inds(x, h, r)
-
-    # Estimates do not need to be computed more than once for each x value. Get
-    # the first index of each unique x value and map it back to all of the
-    # indices of that x value.
-    # IN PROGRESS
+    # Spans and y-estimates do not need to be computed more than once for each
+    # x value. Get the first index of each unique x value and map it back to
+    # all of the indices of that x value.
     if dup_x_speedup:
         uniq_x, inds, reverse_inds = np.unique(x, return_index = True, return_inverse = True)
     else:
         inds = range(n)
+
+    # Calculate each x value's span (distance on the x axis from x)
+    if num_cores > 1:
+        with closing(Pool(processes = num_cores)) as pool:
+            h = np.array(pool.map(calc_span, inds))
+            pool.terminate()
+    else:
+        h = np.array(map(calc_span, inds))
+
+    # If accounting for duplicate x values, expand h back
+    if dup_x_speedup:
+        expanded_h = h[reverse_inds]
+        h = expanded_h
+
+    # Calculate the start and end span indices for each x value
+    starts, stops = span_inds(x, h, r)
 
     # Calculate the y estimates, iterate the specified number of times
     delta = np.ones(n)
