@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.3.1'
+VERSION='2.4.0'
 
 # This script will read in a count matrix and, given a sample table that
 # indicates which samples are controls and which should be excluded,
@@ -106,9 +106,14 @@ def get_control_condition_ids(dataset, sample_table):
 
     return final_control_condition_ids
 
-def get_control_dataset(dataset, control_condition_ids, control_detection_limit):
+def get_control_dataset(count_dataset, control_condition_ids, control_detection_limit, new_dataset = None):
     
-    [barcode_gene_ids, condition_ids, matrix] = dataset
+    [barcode_gene_ids, condition_ids, count_matrix] = count_dataset
+
+    if new_dataset is not None:
+        _, _, matrix = new_dataset
+    else:
+        matrix = count_matrix
 
     #control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, control_condition_ids)])
     control_condition_indices = []
@@ -119,13 +124,13 @@ def get_control_dataset(dataset, control_condition_ids, control_detection_limit)
     # counts/quality.
     for i, cond_id in enumerate(condition_ids):
         if a_is_row_in_b(cond_id, control_condition_ids):
-            if np.nanmean(matrix[:, i] >= control_detection_limit) >= 0.75:
+            if np.nanmean(count_matrix[:, i] >= control_detection_limit) >= 0.75:
                 control_condition_indices.append(i)
     control_condition_indices = np.array(control_condition_indices)
 
     # If there are less than two control profiles in the data, or if this many
     # are left after the above quality filtering, then return the entire
-    # dataset as the control dataset.
+    # count_dataset as the control count_dataset.
     if control_condition_indices.size < 2:
         control_condition_ids = condition_ids
         control_matrix = matrix
@@ -269,9 +274,9 @@ def getAsymmetricSigmaForScipyMatrix(raw_mean_control_profile, dev_control_matri
             print dev_control_matrix_tall[pos],  dev_control_matrix_tall_squared[pos]
             print dev_control_matrix_tall.shape, dev_control_matrix_tall_squared.shape, pos.shape, scipy.nonzero(pos)[0].shape[0]
     lowess[pos] = py_lowess(np.asarray(repeated_raw_mean_control_profile[pos].ravel().tolist()[0]), dev_control_matrix_tall_squared[pos], 
-                                   f=0.3, iter=1, num_cores = get_num_cores(config_params))
+                                   f=0.3, iter=1, num_cores = get_num_cores(config_params), dup_x_speedup = True)
     lowess[neg] = py_lowess(np.asarray(repeated_raw_mean_control_profile[neg].ravel().tolist()[0]), dev_control_matrix_tall_squared[neg],
-                                   f=0.3, iter=1, num_cores = get_num_cores(config_params))
+                                   f=0.3, iter=1, num_cores = get_num_cores(config_params), dup_x_speedup = True)
     lowess_pos = np.zeros(raw_mean_control_profile.shape) + np.nan
     lowess_neg = np.zeros(raw_mean_control_profile.shape) + np.nan
     for i in range(raw_mean_control_profile.shape[0]):
@@ -304,7 +309,7 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
     sample_detection_limit, control_detection_limit = get_detection_limits(config_params)
     
     scaled_dev_matrix = np.zeros(matrix.shape)
-    control_matrix_gene_barcode_ids, control_matrix_condition_ids, control_matrix = get_control_dataset(deviation_dataset, control_condition_ids, control_detection_limit)
+    control_matrix_gene_barcode_ids, control_matrix_condition_ids, control_matrix = get_control_dataset(raw_dataset, control_condition_ids, control_detection_limit, new_dataset = deviation_dataset)
 
     # Get rid of controls that have an infinite or NaN as one of their strains
     did = sum(np.invert(np.add(np.isfinite(control_matrix), np.isnan(control_matrix)))) == 0
@@ -342,7 +347,7 @@ def scaleInteractions(config_params, outfolder, deviation_dataset, raw_dataset, 
         zscores[deviation == 0] = 0
         scaled_dev_matrix[:, i] = zscores.transpose()
 
-    # Dump out the iscaled deviation matrix
+    # Dump out the scaled deviation matrix
     scaled_dev_dataset = [barcode_gene_ids, condition_ids, scaled_dev_matrix]
     scaled_dev_filename = os.path.join(outfolder, '{}_scaled_dev.dump.gz'.format(lane_id))
     scaled_dev_of = gzip.open(scaled_dev_filename, 'wb')

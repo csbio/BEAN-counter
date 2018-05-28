@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION='2.3.1'
+VERSION='2.4.0'
 
 # This script reads in all of the per-lane condition-strain interaction
 # files (z-scores) and computes index tag correlations. It outputs
