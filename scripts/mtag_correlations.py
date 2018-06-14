@@ -27,6 +27,7 @@ import cg_file_tools as cg_file
 from cg_common_functions import get_verbosity, get_sample_table, parse_yaml, bool_dict
 from version_printing import update_version_file
 
+import pdb
 
 #def get_sample_table(config_params):
 #
@@ -112,6 +113,9 @@ def generate_barcode_specific_template_profiles(gene_barcode_ids):
     for base in profile_ids:
         profiles.append(np.array([1 if x[1][0] == base else 0 for x in gene_barcode_ids]))
     profile_mat = np.vstack(profiles).transpose()
+    
+    pdb.set_trace()
+
     return profile_ids, profile_mat
 
 def compute_max_correlation_barcode_specific_offenders(template_profile_ids, template_profile_mat, condition_ids, matrix, config_params):
@@ -131,6 +135,8 @@ def compute_max_correlation_barcode_specific_offenders(template_profile_ids, tem
     # Compute the correlation coefficients between the template profiles and
     # the observed profiles.
     corr_mat = pearson_between_two_mats_columns(matrix, template_profile_mat)
+
+    pdb.set_trace()
 
     # Get the max value for each condition (row in this correlation matrix)
     max_corrs = np.max(corr_mat, axis = 1)
