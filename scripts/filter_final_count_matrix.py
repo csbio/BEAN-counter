@@ -30,6 +30,7 @@ import cg_file_tools as cg_file
 from cg_common_functions import get_verbosity, get_sample_table, get_barcode_table, bool_dict, parse_yaml
 from version_printing import update_version_file
 
+
 #def get_sample_table(config_params):
 #
 #    filename = config_params['sample_table_file']
@@ -238,6 +239,7 @@ def filter_dataset_for_barcode_specific_patterns(dataset, config_params):
         print cor_tab_ordered
     to_remove_table['barcode-specific_effect_correlation'] = np.array(cor_tab_ordered['corrs'])
     to_remove_table['barcode-specific_effect_start_base'] = np.array(cor_tab_ordered['bases'])
+
 
     # And, finally return everything!
     return [strain_ids, filtered_condition_ids, filtered_matrix], to_remove_table
