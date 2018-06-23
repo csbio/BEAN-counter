@@ -33,7 +33,7 @@ import cg_file_tools as cg_file
 from cg_common_functions import get_verbosity, get_sample_table, get_amplicon_struct_params, get_barcode_table, parse_yaml
 from version_printing import update_version_file
 
-# import pdb
+#import pdb
 
 def get_lane_location_table(config_params):
 
@@ -715,8 +715,9 @@ def map_counts_to_strains_conditions(array, array_ind_dicts, seq_types, column_n
     strains_per_barcode = pd.Series(strain_to_barcode.values()).value_counts()
     conditions_per_index_tag = pd.Series(condition_to_index_tag.values()).value_counts()
 
-    duplicated_barcodes = strains_per_barcode[strains_per_barcode > 1].index.values
-    duplicated_index_tags = conditions_per_index_tag[conditions_per_index_tag > 1].index.values
+    # The "in" won't work unless the duplicated barcodes/index tags are in a list or a set
+    duplicated_barcodes = set(strains_per_barcode[strains_per_barcode > 1].index.values)
+    duplicated_index_tags = set(conditions_per_index_tag[conditions_per_index_tag > 1].index.values)
 
     strain_to_barcode_filtered = {x:strain_to_barcode[x] for x in strain_to_barcode.iterkeys() if strain_to_barcode[x] not in duplicated_barcodes}
     condition_to_index_tag_filtered = {x:condition_to_index_tag[x] for x in condition_to_index_tag.iterkeys() if condition_to_index_tag[x] not in duplicated_index_tags}
