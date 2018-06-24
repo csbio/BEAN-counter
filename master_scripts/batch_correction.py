@@ -194,7 +194,7 @@ def inner_python_lda(small_x, full_x, classes, n_comps):
 
     # Gets boolean index variables
     classes = np.asarray(classes)
-    X = np.transpose(small_x)
+    X = np.transpose(small_x.copy())
     a = np.sum(np.absolute(small_x), axis=0)
     b = np.sum(np.absolute(small_x), axis=1)
     X = X[np.ix_(a > 0, b > 0)]
@@ -235,7 +235,7 @@ def inner_python_lda(small_x, full_x, classes, n_comps):
     
     #pdb.set_trace()
     
-    Xnorm = np.transpose(full_x)
+    Xnorm = np.transpose(full_x.copy())
     a = np.sum(np.absolute(Xnorm), axis=0)
     b = np.sum(np.absolute(Xnorm), axis=1)
 
@@ -250,7 +250,9 @@ def inner_python_lda(small_x, full_x, classes, n_comps):
     return Xnorm
 	
 def outer_python_lda(small_x, full_x, classes, n_comps):
-    mats = [full_x]
+    # To be as careful as possible, all matrices are copied to prevent
+    # undesired pass-by-reference behavior
+    mats = [full_x.copy()]
     for i in range(1, n_comps+1):
         mats.append(inner_python_lda(small_x, full_x, classes, i))
     return mats
