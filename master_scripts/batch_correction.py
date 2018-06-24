@@ -179,7 +179,9 @@ def scikit_lda(small_x, full_x, classes, n_comps):
     lda.fit(small_x.transpose(), classes)
 
     # Removes up to n_comps components one by one
-    mats = [full_x]
+    # For the 0-component-removed matrix, must put a copy in the array or else bad things happen
+    # (pass-by-reference issues)
+    mats = [full_x.copy()]
     full_x = full_x.transpose()
     for i in range(1, n_comps+1):
         temp_scalings = lda.scalings_[:, 0:i]
