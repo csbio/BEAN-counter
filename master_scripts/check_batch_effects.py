@@ -591,6 +591,8 @@ def main(dataset_3d, sample_table, batch_column, nondup_col_list, include_column
         # PR curves AND the histograms!
         if verbosity >= 1:
             print "\tComputing correlation matrix"
+        # Here I turn NaNs into zeros so profiles with some NaNs don't break everything
+        matrix[np.isnan(matrix)] = 0.
         corr_matrix = np.corrcoef(matrix, rowvar = 0)
         if verbosity >= 3:
             print "Number of NaNs in correlation matrix: {}".format(np.sum(np.isnan(corr_matrix)))

@@ -41,6 +41,8 @@ sys.path.append(os.path.join(barseq_path, 'lib/python2.7/site-packages'))
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn import datasets
 
+#import pdb
+
 #def read_sample_table(tab_filename):
 #
 #    # Read everything in as a string, to prevent vexing
@@ -68,7 +70,7 @@ def write_corrected_data_info(dataset_3d, batch_col, nondup_col_list, filename, 
     f = open(filename, 'wt')
     f.write("- Batch effect correction, using each condition's '{}' value from the sample table\n\n".format(batch_col))
     f.write("- Within each batch, the condtions could not possess duplicate values in these sample table columns: {}\n\n".format(', '.join(nondup_col_list)))
-    f.write("- Final dimensions of corrected dataset: {0} stacked matrices, each {1} strains X {2} conditions, representing 0 through {3} LDA components removed\n\n".format(len(dataset_3d[0]), len(dataset_3d[1]), len(dataset_3d[2]), len(dataset_3d) - 1))
+    f.write("- Final dimensions of corrected dataset: {0} stacked matrices, each {1} strains X {2} conditions, representing 0 through {3} LDA components removed\n\n".format(len(dataset_3d[0]), len(dataset_3d[1]), len(dataset_3d[2]), len(dataset_3d[3]) - 1))
     f.write("- Dataset on which batch correction was performed: {}\n".format(input_filename))
 
 def filter_sample_table(sample_table, final_conditions):
@@ -177,7 +179,9 @@ def scikit_lda(small_x, full_x, classes, n_comps):
     lda.fit(small_x.transpose(), classes)
 
     # Removes up to n_comps components one by one
-    mats = [full_x]
+    # For the 0-component-removed matrix, must put a copy in the array or else bad things happen
+    # (pass-by-reference issues)
+    mats = [full_x.copy()]
     full_x = full_x.transpose()
     for i in range(1, n_comps+1):
         temp_scalings = lda.scalings_[:, 0:i]
@@ -190,10 +194,12 @@ def inner_python_lda(small_x, full_x, classes, n_comps):
 
     # Gets boolean index variables
     classes = np.asarray(classes)
-    X = np.transpose(small_x)
+    X = np.transpose(small_x.copy())
     a = np.sum(np.absolute(small_x), axis=0)
     b = np.sum(np.absolute(small_x), axis=1)
     X = X[np.ix_(a > 0, b > 0)]
+
+    #pdb.set_trace()
 
     # Indexes classes and initializes scatter vectors
     classes = classes[a > 0]
@@ -208,32 +214,47 @@ def inner_python_lda(small_x, full_x, classes, n_comps):
         if ind.size == 0:
             continue
         # Just swapped to X[:, ind] from X[ind, :], since the latter threw an error
-        classMean = np.nanmean(X[ind, :])   # Take mean of all columns in the class AND ALSO CHECK THIS OUT LATER!!!
+        classMean = np.nanmean(X[ind, :], 0)   # Take mean of all columns in the class AND ALSO CHECK THIS OUT LATER!!!
         Sw = Sw + np.cov(X[ind, :], bias=1, rowvar=0)      # Find covariance of all columns in the class
-        Sb = Sb + ind.size*np.transpose(classMean - dataMean)*(classMean - dataMean)    # CHECK THIS OUT LATER!!!
+        # In the MATLAB version, the "*" sign worked because classMean and dataMean were row vectors,
+        # but not here, as they were 1-d arrays. Now I use the outer product.
+        Sb = Sb + ind.size*np.outer(classMean - dataMean, classMean - dataMean)    # CHECK THIS OUT LATER!!!
         # FOR REAL!!!
 
     # Gets matrix to decompose, and decomposes it
-    eig_mat = np.linalg.pinv(Sw)*Sb
-    U, D, V = np.linalg.svd(eig_mat)
+    #eig_mat = np.linalg.pinv(Sw)*Sb
+    # NOTE: I'm having issues with differences in the pseudoinverse for Python vs. MATLAB
+    # But it seems the numbers share the same general pattern.
+    eig_mat = np.matmul(np.linalg.pinv(Sw), Sb)
+    # NOTE: Python returns the transpose of V as "V", while MATLAB returns V
+    U, D, V_T = np.linalg.svd(eig_mat)
     #a = np.diag(D)/max(np.diag(D))
     stopind = n_comps
 
-    N = V[:, 0:stopind]
-    Xnorm = np.transpose(full_x)
+    N = V_T.T[:, 0:stopind]
+    
+    #pdb.set_trace()
+    
+    Xnorm = np.transpose(full_x.copy())
     a = np.sum(np.absolute(Xnorm), axis=0)
     b = np.sum(np.absolute(Xnorm), axis=1)
+
+    #pdb.set_trace()
 
     Xnorm[np.ix_(b > 0, a > 0)] = Xnorm[np.ix_(b > 0, a > 0)] - np.matmul(Xnorm[np.ix_(b > 0, a > 0)], np.matmul(N, np.transpose(N)))
     Xnorm = Xnorm - np.matmul(Xnorm, np.matmul(N, np.transpose(N)))
     Xnorm = np.transpose(Xnorm)
 
+    #pdb.set_trace()
+
     return Xnorm
 	
 def outer_python_lda(small_x, full_x, classes, n_comps):
-    mats = [full_x]
+    # To be as careful as possible, all matrices are copied to prevent
+    # undesired pass-by-reference behavior
+    mats = [full_x.copy()]
     for i in range(1, n_comps+1):
-        mats.append(inner_python_lda(small_x, full_x, classes, n_comps))
+        mats.append(inner_python_lda(small_x, full_x, classes, i))
     return mats
 
 def LDA_batch_normalization(dataset, sample_table, batch_col, output_folder, n_comps): # this is actually the batch normalization method
