@@ -216,7 +216,7 @@ def inner_python_lda(small_x, full_x, classes, n_comps):
         Sw = Sw + np.cov(X[ind, :], bias=1, rowvar=0)      # Find covariance of all columns in the class
         # In the MATLAB version, the "*" sign worked because classMean and dataMean were row vectors,
         # but not here, as they were 1-d arrays. Now I use the outer product.
-        Sb = Sb + ind.size*np.outer(classMean - dataMean, classMean - dataMean, (1, -1))    # CHECK THIS OUT LATER!!!
+        Sb = Sb + ind.size*np.outer(classMean - dataMean, classMean - dataMean)    # CHECK THIS OUT LATER!!!
         # FOR REAL!!!
 
     # Gets matrix to decompose, and decomposes it
