@@ -41,7 +41,7 @@ sys.path.append(os.path.join(barseq_path, 'lib/python2.7/site-packages'))
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn import datasets
 
-import pdb
+#import pdb
 
 #def read_sample_table(tab_filename):
 #
@@ -212,18 +212,27 @@ def inner_python_lda(small_x, full_x, classes, n_comps):
         if ind.size == 0:
             continue
         # Just swapped to X[:, ind] from X[ind, :], since the latter threw an error
-        classMean = np.nanmean(X[ind, :])   # Take mean of all columns in the class AND ALSO CHECK THIS OUT LATER!!!
+        classMean = np.nanmean(X[ind, :], 0)   # Take mean of all columns in the class AND ALSO CHECK THIS OUT LATER!!!
         Sw = Sw + np.cov(X[ind, :], bias=1, rowvar=0)      # Find covariance of all columns in the class
-        Sb = Sb + ind.size*np.transpose(classMean - dataMean)*(classMean - dataMean)    # CHECK THIS OUT LATER!!!
+        # In the MATLAB version, the "*" sign worked because classMean and dataMean were row vectors,
+        # but not here, as they were 1-d arrays. Now I use the outer product.
+        Sb = Sb + ind.size*np.outer(classMean - dataMean, classMean - dataMean, (1, -1))    # CHECK THIS OUT LATER!!!
         # FOR REAL!!!
 
     # Gets matrix to decompose, and decomposes it
-    eig_mat = np.linalg.pinv(Sw)*Sb
-    U, D, V = np.linalg.svd(eig_mat)
+    #eig_mat = np.linalg.pinv(Sw)*Sb
+    # NOTE: I'm having issues with differences in the pseudoinverse for Python vs. MATLAB
+    # But it seems the numbers share the same general pattern.
+    eig_mat = np.matmul(np.linalg.pinv(Sw), Sb)
+    # NOTE: Python returns the transpose of V as "V", while MATLAB returns V
+    U, D, V_T = np.linalg.svd(eig_mat)
     #a = np.diag(D)/max(np.diag(D))
     stopind = n_comps
 
-    N = V[:, 0:stopind]
+    N = V_T.T[:, 0:stopind]
+    
+    #pdb.set_trace()
+    
     Xnorm = np.transpose(full_x)
     a = np.sum(np.absolute(Xnorm), axis=0)
     b = np.sum(np.absolute(Xnorm), axis=1)
