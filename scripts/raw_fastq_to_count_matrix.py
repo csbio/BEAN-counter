@@ -573,8 +573,8 @@ def match_seq(seq, seq_trie_length_list, tol, lengths):
     and no match is found.
     '''
 
-    if seq == 'TAGACACGTACGCTGCAGGTC':
-        #pdb.set_trace()
+    #if seq == 'TAGACACGTACGCTGCAGGTC':
+    #    pdb.set_trace()
 
     for i, l in enumerate(lengths):
         if 0 < tol < 1:
