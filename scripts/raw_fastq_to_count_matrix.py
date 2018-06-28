@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 import cPickle
 import itertools as it
 from Bio.trie import trie
+from fractions import Fraction
 
 barseq_path = os.getenv('BARSEQ_PATH')
 assert barseq_path is not None, "'BARSEQ_PATH' environment variable is not set. Please consult the instructions for setting up BEAN-counter."
@@ -425,7 +426,10 @@ def gen_seq_tries(seqs, tol):
     # New: don't allow detection of any sequences whose length is equal to or
     # less than the tolerance. This prevents weird behavior and should be a
     # reasonable assumption for pretty much all use cases.
-    seqs = [seq for seq in seqs if len(seq) > tol]
+    # Newer: make sure sequences are at least of length 2. I think this is
+    # necessitated by the new ability to specify the tolerance as a fraction,
+    # so a length 0 sequence would slip through here.
+    seqs = [seq for seq in seqs if len(seq) > max(tol, 2)]
     lengths = list(set([len(seq) for seq in seqs]))
     lengths.sort(key = lambda x: -x)
     trie_list = [trie() for i in range(len(lengths))]
@@ -450,8 +454,11 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
     doesn't mess with the results (these barcodes are filtered out during
     mapping of barcodes/index tags to strains/conditions).
     '''
-    index_tag_tol = config_params.get('index_tag_tolerance', 0)
-    barcode_tol = config_params.get('barcode_tolerance', 0)
+    index_tag_tol = float(Fraction(config_params.get('index_tag_tolerance', 0)))
+    barcode_tol = float(Fraction(config_params.get('barcode_tolerance', 0)))
+
+    #pdb.set_trace()
+
     if read_type_dict['type'] == 'single':
         index_tag_col = amplicon_struct_params[read_type_dict['barcode'][0]]['index_tag']['sample_table_column']
         assert index_tag_col in sample_tab.columns, 'sample_table_column "{}" specified in amplicon_struct_file is not present in the sample table.'.format(index_tag_col)
@@ -553,7 +560,7 @@ def initialize_dicts_arrays(read_type_dict, amplicon_struct_params, config_param
             return [0, 0, 1, 1], ['index_tag', 'barcode', 'index_tag', 'barcode'], ['read_1', 'read_1', 'read_2', 'read_2'], [{}, {}, {}, {}], [index_tags_1, barcodes_1, index_tags_2, barcodes_2], [index_tag_1_tries, barcode_1_tries, index_tag_2_tries, barcode_2_tries], [index_tag_1_lengths, barcode_1_lengths, index_tag_2_lengths, barcode_2_lengths], [index_tag_tol, barcode_tol, index_tag_tol, barcode_tol], [index_tag_col_1, barcode_col_1, index_tag_col_2, barcode_col_2], count_array
     
 
-def match_seq(seq, seq_trie_length_list, n_mismatch, lengths):
+def match_seq(seq, seq_trie_length_list, tol, lengths):
     '''
     Returns first sequence that can be found in the given trie
     that matches the query sequences within the number of given mismatches.
@@ -566,7 +573,14 @@ def match_seq(seq, seq_trie_length_list, n_mismatch, lengths):
     and no match is found.
     '''
 
+    #if seq == 'TAGACACGTACGCTGCAGGTC':
+    #    pdb.set_trace()
+
     for i, l in enumerate(lengths):
+        if 0 < tol < 1:
+            n_mismatch = np.floor(tol * l).astype('int')
+        else:
+            n_mismatch = np.floor(tol).astype('int')
         res = seq_trie_length_list[i].get_approximate(seq[0:l], n_mismatch)
         if len(res) == 0:
             continue
