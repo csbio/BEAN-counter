@@ -68,7 +68,7 @@ def a_is_row_in_b(a, b):
 
     return np.any(np.all(a == b, axis = 1))
 
-def get_groups_and_maps(sample_table, collapse_col, conditions):
+def get_groups_and_maps(sample_table, collapse_col, conditions, verbosity):
 
     # Generate a np array of the unique groups given by the "collapse_col"
     uniq_groups = np.unique(sample_table[collapse_col])
@@ -243,7 +243,7 @@ def main(dataset, sample_table, collapse_col, cor_cutoff, output_folder, cols_to
     # are used in further processing
     sample_table = filter_sample_table(sample_table, conditions)
 
-    unique_groups, group_to_cond, group_to_ind = get_groups_and_maps(sample_table, collapse_col, conditions)
+    unique_groups, group_to_cond, group_to_ind = get_groups_and_maps(sample_table, collapse_col, conditions, verbosity)
 
     if verbosity >= 2:
         print unique_groups[0:10]
