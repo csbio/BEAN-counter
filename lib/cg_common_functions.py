@@ -2,7 +2,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.4.0'
+VERSION='2.5.0'
 
 # This library contains functions that are used across
 # the barseq_counter pipeline.
@@ -41,6 +41,12 @@ def get_sample_table(config_params, required_columns = ['screen_name', 'expt_id'
 
 def read_sample_table(tab_filename, required_columns = ['screen_name', 'expt_id']):
     tab = pd.read_table(tab_filename, dtype = 'S', comment = '#')
+    # Strip all whitespace from all columns and column headers. Since they are
+    # strings, this should work fine. This should be done before assertions on
+    # column headers or on duplicated values.
+    tab = tab.apply(lambda x: x.str.strip())
+    tab = tab.rename(columns = lambda x: x.strip())
+    # Look for required columns
     assert all([x in tab.columns for x in required_columns]), 'One or more of the required columns were not found in the sample table. If it looks like all of the columns are there, check for unwanted spaces in the column names.\nThe missing required columns are: {}\nThe sample table is here: {}'.format([x for x in required_columns if x not in tab.columns], tab_filename)
     assert not any(tab[['screen_name', 'expt_id']].duplicated()), 'Duplicated combinations of "screen_name" and "expt_id" were found in the sample table. Please ensure that each pair of "screen_name" and "expt_id" are unique. The sample table is here: {}'.format(tab_filename)
     return tab
@@ -60,6 +66,12 @@ def get_barcode_table(config_params):
 
 def read_barcode_table(tab_filename, required_columns = ['Strain_ID'], comment = '#'):
     tab = pd.read_table(tab_filename, dtype = 'S', comment = comment)
+    # Strip all whitespace from all columns and column headers. Since they are
+    # strings, this should work fine. This should be done before assertions on
+    # column headers or on duplicated values.
+    tab = tab.apply(lambda x: x.str.strip())
+    tab = tab.rename(columns = lambda x: x.strip())
+    # Look for required columns
     assert all([x in tab.columns for x in required_columns]), 'One or more of the required columns were not found in the barcode table. If it looks like all of the columns are there, check for unwanted spaces in the column names.\nThe missing required columns are: {}\nThe barcode table is here: {}'.format([x for x in required_columns if x not in tab.columns], tab_filename)
     # This will happen at some point, but not ready for prime time yet
     # until I get the strain identifier thing worked out (aka not

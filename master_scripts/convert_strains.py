@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.4.0'
+VERSION='2.5.0'
 
 # This script takes in a dataset in the original BEAN-counter
 # format, with strains identified by pairs of (Barcode, Strain_ID),

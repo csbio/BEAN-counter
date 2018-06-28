@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION='2.4.0'
+VERSION='2.5.0'
 
 # This script reads in all of the per-lane condition-strain interaction
 # files (z-scores) and computes index tag correlations. It outputs
@@ -24,9 +24,11 @@ sys.path.append('./lib')
 
 import compressed_file_opener as cfo
 import cg_file_tools as cg_file
-from cg_common_functions import get_verbosity, get_sample_table, parse_yaml, bool_dict
+from cg_common_functions import get_verbosity, get_sample_table, get_amplicon_struct_params, get_barcode_table, parse_yaml, bool_dict
+from read_type_functions import determine_read_type, get_seq_params
 from version_printing import update_version_file
 
+# import pdb
 
 #def get_sample_table(config_params):
 #
@@ -105,13 +107,16 @@ def combine_zscore_matrices(config_params):
 
     return all_gene_barcode_ids, all_condition_ids, all_zscore_matrix
 
-def generate_barcode_specific_template_profiles(gene_barcode_ids):
+def generate_barcode_specific_template_profiles(gene_barcodes):
     
     profile_ids = ['A', 'C', 'G', 'T']
     profiles = []
     for base in profile_ids:
-        profiles.append(np.array([1 if x[1][0] == base else 0 for x in gene_barcode_ids]))
+        profiles.append(np.array([1 if x[0] == base else 0 for x in gene_barcodes]))
     profile_mat = np.vstack(profiles).transpose()
+    
+    #pdb.set_trace()
+
     return profile_ids, profile_mat
 
 def compute_max_correlation_barcode_specific_offenders(template_profile_ids, template_profile_mat, condition_ids, matrix, config_params):
@@ -131,6 +136,8 @@ def compute_max_correlation_barcode_specific_offenders(template_profile_ids, tem
     # Compute the correlation coefficients between the template profiles and
     # the observed profiles.
     corr_mat = pearson_between_two_mats_columns(matrix, template_profile_mat)
+
+    #pdb.set_trace()
 
     # Get the max value for each condition (row in this correlation matrix)
     max_corrs = np.max(corr_mat, axis = 1)
@@ -347,7 +354,9 @@ def main(config_file):
 
     # Read in the config params
     config_params = parse_yaml(config_file)
+    amplicon_struct_params = get_amplicon_struct_params(config_params)
     sample_table = get_sample_table(config_params)
+    barcode_table = get_barcode_table(config_params)
 
     # Read in all of the z-score matrices and combine into one matrix
     dataset = combine_zscore_matrices(config_params)
@@ -373,12 +382,26 @@ def main(config_file):
     # Export the sorted index tag correlations to dump and text files
     write_index_tag_corrs(index_tags_sorted, control_index_tag_correlations_sorted, index_tag_path)   
 
-    # Get the correlations of each profile to the barcode-specific template profiles
-    template_profile_ids, template_profile_mat = generate_barcode_specific_template_profiles(dataset[0])
-    condition_ids_sorted, barcode_specific_template_correlations_sorted, template_profile_ids_sorted = compute_max_correlation_barcode_specific_offenders(template_profile_ids, template_profile_mat, dataset[1], dataset[2], config_params)
+    # Determine what type of barcoding/indexing scheme was used
+    read_params = [get_seq_params(amplicon_struct_params, 'read_1'), get_seq_params(amplicon_struct_params, 'read_2')]
+    read_type_dict, read_params_clean = determine_read_type(read_params[0], read_params[1])
+   
+    #pdb.set_trace()
 
-    # Export the sorted correlations of profiles to the barcode-specific template profiles
-    write_barcode_specific_template_corrs(condition_ids_sorted, barcode_specific_template_correlations_sorted, template_profile_ids_sorted, index_tag_path)   
+    # If a single barcoding scheme was used, get the correlations of each
+    # profile to the barcode-specific template profiles
+    if len(read_type_dict['barcode']) == 1:
+        single_read = read_type_dict['barcode'][0]
+        barcode_column = amplicon_struct_params[single_read]['genetic_barcode']['barcode_file_column']
+        barcode_table.set_index('Strain_ID', drop = False, inplace = True)
+        barcodes = barcode_table.loc[dataset[0], barcode_column].values
+        template_profile_ids, template_profile_mat = generate_barcode_specific_template_profiles(barcodes)
+        condition_ids_sorted, barcode_specific_template_correlations_sorted, template_profile_ids_sorted = compute_max_correlation_barcode_specific_offenders(template_profile_ids, template_profile_mat, dataset[1], dataset[2], config_params)
+
+        # Export the sorted correlations of profiles to the barcode-specific template profiles
+        write_barcode_specific_template_corrs(condition_ids_sorted, barcode_specific_template_correlations_sorted, template_profile_ids_sorted, index_tag_path)
+    else:
+        write_barcode_specific_template_corrs([], [], [], index_tag_path)
     
     ## Plot a histogram of the index tag correlations
     plot_control_index_tag_correlations(control_index_tag_correlations_sorted, index_tag_path)

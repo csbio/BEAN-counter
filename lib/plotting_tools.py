@@ -2,7 +2,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.4.0'
+VERSION='2.5.0'
 
 # Some tools to help me plot using matplotlib!
 import itertools as it
