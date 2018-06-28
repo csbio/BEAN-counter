@@ -1,3 +1,5 @@
+VERSION = '2.4.0'
+
 def get_seq_params(amplicon_struct_params, read):
     try:
         common_primer_start = int(amplicon_struct_params[read]['common_primer']['start'])
