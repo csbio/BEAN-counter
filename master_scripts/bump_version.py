@@ -88,11 +88,13 @@ def check_version(fname):
         for line in f:
             if line.startswith('VERSION'):
                 if version is not None:
-                    new_version = line.rstrip().split('=')[1].replace("'", "").replace('"', '')
+                    print line
+                    new_version = line.rstrip().split('=')[1].strip().replace("'", "").replace('"', '')
+                    print new_version
                     if version != new_version:
                         version = 'multiple'
                 else:
-                    version = line.rstrip().split('=')[1].replace("'", "").replace('"', '')
+                    version = line.rstrip().split('=')[1].strip().replace("'", "").replace('"', '')
     return version
 
 def replace_version(fname, old, new):
