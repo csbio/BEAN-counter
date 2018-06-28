@@ -1,4 +1,4 @@
-VERSION='2.4.0'
+VERSION='2.5.0'
 
 def get_seq_params(amplicon_struct_params, read):
     try:
