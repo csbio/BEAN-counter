@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.5.0'
+VERSION='2.5.1'
 
 # This script takes in a dataset, a correlation cutoff, and a sample table with a couple of important
 # columns to be specified by the user. These columns tell the user the groups that should be
@@ -68,7 +68,7 @@ def a_is_row_in_b(a, b):
 
     return np.any(np.all(a == b, axis = 1))
 
-def get_groups_and_maps(sample_table, collapse_col, conditions):
+def get_groups_and_maps(sample_table, collapse_col, conditions, verbosity):
 
     # Generate a np array of the unique groups given by the "collapse_col"
     uniq_groups = np.unique(sample_table[collapse_col])
@@ -243,7 +243,7 @@ def main(dataset, sample_table, collapse_col, cor_cutoff, output_folder, cols_to
     # are used in further processing
     sample_table = filter_sample_table(sample_table, conditions)
 
-    unique_groups, group_to_cond, group_to_ind = get_groups_and_maps(sample_table, collapse_col, conditions)
+    unique_groups, group_to_cond, group_to_ind = get_groups_and_maps(sample_table, collapse_col, conditions, verbosity)
 
     if verbosity >= 2:
         print unique_groups[0:10]
@@ -254,8 +254,8 @@ def main(dataset, sample_table, collapse_col, cor_cutoff, output_folder, cols_to
         print len(group_to_ind)
 
     # Create containers for the new collapsed profiles and sample table rows
-    sample_table['individual_rep_ids'] = ['{}_{}'.format(x[1]['screen_name'], x[1]['expt_id']) for x in sample_table.iterrows()]
-    sample_table = sample_table.set_index(['screen_name', 'expt_id'])
+    sample_table.loc[:, 'individual_rep_ids'] = ['{}_{}'.format(x[1]['screen_name'], x[1]['expt_id']) for x in sample_table.iterrows()]
+    sample_table = sample_table.set_index(['screen_name', 'expt_id'], drop = False)
     collapsed_profile_list = []
     sample_tab_row_list = []
     
@@ -362,6 +362,14 @@ if __name__ == '__main__':
         cols_to_keep = args.cols_to_keep
         how_to_collapse = args.how_to_collapse
         assert len(cols_to_keep) == len(how_to_collapse), '"how_to_collapse" must contain the same number of entries as "cols_to_keep"'
+        
+        # Remove screen_name and expt_id columns if present - taken care of automatically!
+        if 'screen_name' in cols_to_keep:
+            how_to_collapse.pop(cols_to_keep.index('screen_name'))
+            cols_to_keep.pop(cols_to_keep.index('screen_name'))
+        if 'expt_id' in cols_to_keep:
+            how_to_collapse.pop(cols_to_keep.index('expt_id'))
+            cols_to_keep.pop(cols_to_keep.index('expt_id'))
 
     # Ensure that cor_cutoff is numeric
     try:
