@@ -2,7 +2,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.5.0'
+VERSION='2.5.1'
 
 # Function to open file with any type of compression, or none at all.
 # Assumes it is a text file if the "magic bits" do not match.

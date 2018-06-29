@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.5.0'
+VERSION='2.5.1'
 
 # This script takes in a dataset, a correlation cutoff, and a sample table with a couple of important
 # columns to be specified by the user. These columns tell the user the groups that should be
