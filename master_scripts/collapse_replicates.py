@@ -254,8 +254,8 @@ def main(dataset, sample_table, collapse_col, cor_cutoff, output_folder, cols_to
         print len(group_to_ind)
 
     # Create containers for the new collapsed profiles and sample table rows
-    sample_table['individual_rep_ids'] = ['{}_{}'.format(x[1]['screen_name'], x[1]['expt_id']) for x in sample_table.iterrows()]
-    sample_table = sample_table.set_index(['screen_name', 'expt_id'])
+    sample_table.loc[:, 'individual_rep_ids'] = ['{}_{}'.format(x[1]['screen_name'], x[1]['expt_id']) for x in sample_table.iterrows()]
+    sample_table = sample_table.set_index(['screen_name', 'expt_id'], drop = False)
     collapsed_profile_list = []
     sample_tab_row_list = []
     
@@ -362,6 +362,14 @@ if __name__ == '__main__':
         cols_to_keep = args.cols_to_keep
         how_to_collapse = args.how_to_collapse
         assert len(cols_to_keep) == len(how_to_collapse), '"how_to_collapse" must contain the same number of entries as "cols_to_keep"'
+        
+        # Remove screen_name and expt_id columns if present - taken care of automatically!
+        if 'screen_name' in cols_to_keep:
+            how_to_collapse.pop(cols_to_keep.index('screen_name'))
+            cols_to_keep.pop(cols_to_keep.index('screen_name'))
+        if 'expt_id' in cols_to_keep:
+            how_to_collapse.pop(cols_to_keep.index('expt_id'))
+            cols_to_keep.pop(cols_to_keep.index('expt_id'))
 
     # Ensure that cor_cutoff is numeric
     try:
