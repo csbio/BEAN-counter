@@ -19,7 +19,6 @@ import pandas as pd
 import numpy as np
 import scipy
 import sys, os, gzip
-import jellyfish as jf
 import matplotlib
 matplotlib.use('Agg') # Force matplotlib to not use any Xwindows backend.
 import matplotlib.pyplot as plt
