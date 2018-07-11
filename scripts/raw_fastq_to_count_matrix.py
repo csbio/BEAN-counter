@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.5.1'
+VERSION='2.6.0'
 
 # This script takes in the barseq_counter main configuration and species configuration files
 # and a sequencing lane identifier. It exports 1) reports on the total number

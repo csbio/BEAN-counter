@@ -2,7 +2,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.5.1'
+VERSION='2.6.0'
 
 import os
 import textwrap
@@ -418,7 +418,7 @@ common_primer_tolerance = Param(
 
 index_tag_tolerance = Param(
         name = 'index_tag_tolerance',
-        value = 0,
+        value = '0',
         type = str,
         help = 'Number of substitution errors or indels allowed in the barcode sequence. '\
                 'Can be specified as a fraction or decimal as the number of "errors-per-base." '\
@@ -427,7 +427,7 @@ index_tag_tolerance = Param(
 
 barcode_tolerance = Param(
         name = 'barcode_tolerance',
-        value = 2,
+        value = '2',
         type = str,
         help = 'Number of substitution errors or indels allowed in the barcode sequence. '\
                 'Can be specified as a fraction or decimal as the number of "errors-per-base." '\
