@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.5.1'
+VERSION='2.6.0'
 
 # This script takes in a chemical genetic interaction score dataset (matrix and strain/
 # condition ids) as well as a sample table containing information on each condition.
@@ -19,7 +19,6 @@ import pandas as pd
 import numpy as np
 import scipy
 import sys, os, gzip
-import jellyfish as jf
 import matplotlib
 matplotlib.use('Agg') # Force matplotlib to not use any Xwindows backend.
 import matplotlib.pyplot as plt

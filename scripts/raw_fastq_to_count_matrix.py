@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.5.1'
+VERSION='2.6.0'
 
 # This script takes in the barseq_counter main configuration and species configuration files
 # and a sequencing lane identifier. It exports 1) reports on the total number
@@ -16,7 +16,6 @@ VERSION='2.5.1'
 import pandas as pd
 import numpy as np
 import sys, os, gzip
-import jellyfish as jf
 import matplotlib
 matplotlib.use('Agg') # Force matplotlib to not use any Xwindows backend.
 import matplotlib.pyplot as plt

@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.5.1'
+VERSION='2.6.0'
 
 # This script will read in a count matrix and, given a sample table that
 # indicates which samples are controls and which should be excluded,
@@ -14,7 +14,6 @@ import numpy as np
 import scipy
 from scipy.stats import rankdata
 import sys, os, gzip
-import jellyfish as jf
 import matplotlib
 matplotlib.use('Agg') # Force matplotlib to not use any Xwindows backend.
 import matplotlib.pyplot as plt

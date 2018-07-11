@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.5.1'
+VERSION='2.6.0'
 
 # This script takes in mulitple datasets and their corresponding sample tables and
 # spits out a combined dataset and a combined sample table. The only option
@@ -156,6 +156,16 @@ def combine_datasets(datasets, all_strains, verbosity):
 
     return [final_strains, final_conditions, final_matrix]
 
+def filter_sample_tables(tables, datasets):
+
+    conditions = [x[1] for x in datasets]
+
+    tables = [x.copy().set_index(['screen_name', 'expt_id'], drop = False) for x in tables]
+
+    filtered_tables = [x.loc[[tuple(y) for y in conditions[i]], :].reset_index(drop = True) for i, x in enumerate(tables)]
+
+    return filtered_tables
+
 def combine_sample_tables(tables):
 
     # Iterate over all of the sample tables and get the column names
@@ -176,7 +186,14 @@ def main(dataset_list, sample_table_list, all_strains, output_folder, verbosity)
         print combined_dataset[1].shape
         print combined_dataset[2].shape
 
-    combined_sample_table = combine_sample_tables(sample_table_list)
+    # Here, filter each sample table to match its respective dataset
+    filtered_sample_table_list = filter_sample_tables(sample_table_list, dataset_list)
+
+    # Combine 'em
+    combined_sample_table = combine_sample_tables(filtered_sample_table_list)
+
+    # Sort the combined table based on screen_name & expt_id
+    combined_sample_table.sort_values(['screen_name', 'expt_id'], inplace = True)
 
     if verbosity >= 2:
         print combined_sample_table

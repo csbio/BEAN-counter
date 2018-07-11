@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.5.1'
+VERSION='2.6.0'
 
 # This script takes in matrices, on which LDA has been performed and from which
 # LDA components have been removed, and plots PR curves and historgrams
@@ -16,7 +16,6 @@ import scipy
 from scipy.stats import rankdata
 import scipy.stats as stats
 import sys, os, gzip
-import jellyfish as jf
 import matplotlib
 matplotlib.use('Agg') # Force matplotlib to not use any Xwindows backend.
 import matplotlib.pyplot as plt

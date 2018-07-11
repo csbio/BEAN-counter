@@ -24,10 +24,6 @@ BEAN-counter is written in Python 2. It is recommended to download the latest ve
     fastcluster (>=1.1.20)
     pyyaml (>= 3.11)
     networkx (>=1.11)
-    jellyfish (>=0.2.0)
-    - Two python libraries exist with the name "jellyfish." BEAN-counter
-      requires the installation of the jellyfish library for string distance
-      computation, not the library for kmer counting.
 
 Conda (https://conda.io/docs/user-guide/install/index.html) provides a way to
 quickly install python and the required libraries. If you install conda, then

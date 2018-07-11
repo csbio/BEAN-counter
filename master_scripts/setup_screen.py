@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.5.1'
+VERSION='2.6.0'
 
 # This script provides both interactive and programmable interfaces
 # for setting up configuration files in the default directory
@@ -72,7 +72,7 @@ raw_dat_list = ['num_lanes']
 sample_tab_list = ['new_sample_table', 'screen_name', 'plate_size', 'plates_per_lane', 'extra_columns']
 bas_list = ['verbosity', 'sub_screen_column']
 adv_list = ['num_cores', 'remove_barcode_specific_conditions', 'barcode_specific_template_correlation_cutoff',
-        'remove_correlated_index_tags', 'index_tag_correlation_cutoff', 'common_primer_tolerance',
+        'remove_correlated_index_tags', 'index_tag_correlation_cutoff', 'common_primer_tolerance', 'index_tag_tolerance',
         'barcode_tolerance', 'control_detection_limit', 'sample_detection_limit', 'strain_pass_read_count',
         'strain_pass_fraction', 'condition_pass_read_count', 'condition_pass_fraction']
 
