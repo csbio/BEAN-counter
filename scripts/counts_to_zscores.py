@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.5.1'
+VERSION='2.6.0'
 
 # This script will read in a count matrix and, given a sample table that
 # indicates which samples are controls and which should be excluded,
