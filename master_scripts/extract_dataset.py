@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.6.0'
+VERSION='2.6.1'
 
 # This brief script takes in a 3D dataset (stacked matrices) and exports,
 # as a similar format, one of the stacked matrices, with its row and
