@@ -662,6 +662,8 @@ def main(config_file, lane_id):
 
         # Get list of control samples (control? = True)
         control_condition_ids = get_control_condition_ids(batch_dataset, sample_table)
+        if len(control_condition_ids) == 0:
+            print 'No control conditions detected for lane "{}", using all conditions as pseudo-controls instead'.format(lane_id)
 
         # Proceed with algorithm to obtain chemical genetic interaction zscores (scaled deviations)
         if get_verbosity(config_params) >= 1:
