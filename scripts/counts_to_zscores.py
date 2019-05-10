@@ -4,7 +4,7 @@
 ######  Copyright: Regents of the University of Minnesota  ######
 #################################################################
 
-VERSION='2.6.0'
+VERSION='2.6.1'
 
 # This script will read in a count matrix and, given a sample table that
 # indicates which samples are controls and which should be excluded,
@@ -100,7 +100,9 @@ def get_control_condition_ids(dataset, sample_table):
     control_expt_ids = control_table['expt_id']
     control_condition_ids = np.array(list(it.izip(control_screen_names, control_expt_ids)))
     
-    control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, control_condition_ids)])
+    # Adding the dtype allows for empty arrays (aka no control conditions), as the default numpy
+    # array dtype for an empty array is np.float64, which cannot be used to index another array.
+    control_condition_indices = np.array([i for i, cond_id in enumerate(condition_ids) if a_is_row_in_b(cond_id, control_condition_ids)], dtype = np.int)
     final_control_condition_ids = condition_ids[control_condition_indices]
 
     return final_control_condition_ids
