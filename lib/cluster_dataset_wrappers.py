@@ -118,7 +118,7 @@ def customize_conditions(conditions, sample_table, fmt_string, verbosity = 1):
         raise ColumnError('{} sample table column names contain commas,\nwhich must be addressed before visualizing'.format(num_with_commas))
 
     custom_columns = fmt_string.split(',')
-    assert all([x in sample_table.columns for x in custom_columns]), "Not all of the specified columns are in the provided sample table"
+    assert all([x in sample_table.columns for x in custom_columns]), "Not all of the specified columns are in the provided sample table ({})".format(';'.join(list(set(custom_columns) - set(sample_table.columns))))
     custom_sample_table = sample_table[custom_columns]
     condition_keys = [tuple(cond) for cond in conditions]
     
